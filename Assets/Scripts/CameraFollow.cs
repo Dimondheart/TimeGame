@@ -2,26 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/**<summary>Script for making a camera hold a set position over
+ * a specified game object.</summary>
+ */
 public class CameraFollow : MonoBehaviour
 {
-	public GameObject follow;
+	/**<summary>The Transform to follow.</summary>*/
+	public Transform follow;
 
-	private Vector3 offset;
+	/**<summary>The offset of the camera from the followed object.</summary>*/
+	private Vector3 offset = new Vector3(0.0f, 0.0f, -10.0f);
 
 	private void Start()
-	{
-		if (follow != null)
-		{
-			offset = transform.position - follow.transform.position;
-		}
-	}
-
-	private void OnPreCull()
 	{
 		if (follow == null)
 		{
 			return;
 		}
-		transform.position = follow.transform.position + offset;
+		offset = transform.position - follow.position;
+	}
+
+	private void LateUpdate()
+	{
+		if (follow == null)
+		{
+			return;
+		}
+		transform.position = follow.position + offset;
 	}
 }
