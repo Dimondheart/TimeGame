@@ -11,10 +11,14 @@ public class PlayerMovement : MonoBehaviour
 	{
 		if (freezeMovement)
 		{
-			return;
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 		}
-		GetComponent<Rigidbody2D>().velocity =
-			new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0.0f).normalized
-			* movementSpeed;
+		else
+		{
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
+			GetComponent<Rigidbody2D>().velocity =
+				new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0.0f).normalized
+				* movementSpeed;
+		}
 	}
 }
