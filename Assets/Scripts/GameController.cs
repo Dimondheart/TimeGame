@@ -11,6 +11,9 @@ public class GameController : MonoBehaviour
 	 * game over conditions are met.</summary>
 	 */
 	public GameObject gameOverPanel;
+	public GameObject pauseMenuPanel;
+	public GameObject gameOverPanelFirstSelected;
+	public GameObject pauseMenuPanelFirstSelected;
 
 	private void Update()
 	{
@@ -19,12 +22,60 @@ public class GameController : MonoBehaviour
 			gameOverPanel.SetActive(true);
 			player.GetComponent<PlayerMovement>().freezeMovement = true;
 		}
+		else if (Input.GetButtonDown("TogglePauseMenu"))
+		{
+			if (pauseMenuPanel.activeSelf)
+			{
+				ClosePauseMenu();
+			}
+			else
+			{
+				OpenPauseMenu();
+			}
+		}
+	}
+
+	private void OnApplicationPause(bool pause)
+	{
+		if (pause)
+		{
+			OpenPauseMenu();
+		}
 	}
 
 	/**<summary>Restart the game.</summary>*/
-	public void Restart()
+	public void RestartGame()
 	{
-		UnityEngine.SceneManagement.SceneManager.LoadScene(gameObject.scene.buildIndex);
 		gameOverPanel.SetActive(false);
+		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(gameObject.scene.buildIndex);
+	}
+
+	public void QuitToMainMenu()
+	{
+		pauseMenuPanel.SetActive(false);
+		gameOverPanel.SetActive(false);
+		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(0);
+	}
+
+	public void OpenPauseMenu()
+	{
+		if (pauseMenuPanel.activeSelf)
+		{
+			return;
+		}
+		Time.timeScale = 0.0f;
+		pauseMenuPanel.SetActive(true);
+		UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = pauseMenuPanelFirstSelected;
+	}
+
+	public void ClosePauseMenu()
+	{
+		if (!pauseMenuPanel.activeSelf)
+		{
+			return;
+		}
+		Time.timeScale = 1.0f;
+		pauseMenuPanel.SetActive(false);
+		UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = null;
 	}
 }
