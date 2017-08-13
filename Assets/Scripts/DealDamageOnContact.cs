@@ -11,8 +11,13 @@ public class DealDamageOnContact : MonoBehaviour
 	public float damagePerHit = 5.0f;
 	/**<summary>Time the last attack was made.</summary>*/
 	private float lastAttackTime = 0.0f;
+
 	private void OnTriggerStay2D(Collider2D other)
 	{
+		if (GetComponent<Health>().currentHealth <= 0)
+		{
+			return;
+		}
 		Health otherHealth = other.GetComponent<Health>();
 		if (
 			other.isTrigger

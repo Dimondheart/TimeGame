@@ -13,6 +13,10 @@ public class FollowDefinedPath : MonoBehaviour
 
 	private void Update()
 	{
+		if (GetComponent<Health>().currentHealth <= 0)
+		{
+			return;
+		}
 		if (targetPointIndex >= points.Length)
 		{
 			targetPointIndex = 0;

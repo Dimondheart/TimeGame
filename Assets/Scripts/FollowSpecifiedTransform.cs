@@ -11,6 +11,10 @@ public class FollowSpecifiedTransform : MonoBehaviour
 
 	private void Update()
 	{
+		if (GetComponent<Health>().currentHealth <= 0)
+		{
+			return;
+		}
 		Vector2 newVelocity =
 				Vector3.ClampMagnitude(
 					(follow.position - transform.position).normalized * maxSpeed,
