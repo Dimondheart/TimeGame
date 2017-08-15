@@ -59,7 +59,7 @@ public class GameController : MonoBehaviour
 
 	public void OpenPauseMenu()
 	{
-		if (pauseMenuPanel.activeSelf)
+		if (pauseMenuPanel.activeSelf || gameOverPanel.activeSelf)
 		{
 			return;
 		}

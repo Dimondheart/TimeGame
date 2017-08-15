@@ -6,6 +6,11 @@ public class MainMenuController : MonoBehaviour
 {
 	public GameObject mainMenuPanel;
 
+	private void Awake()
+	{
+		Time.timeScale = 1.0f;
+	}
+
 	public void StartGame()
 	{
 		mainMenuPanel.SetActive(false);
