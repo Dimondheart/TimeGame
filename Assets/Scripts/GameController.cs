@@ -11,8 +11,17 @@ public class GameController : MonoBehaviour
 	 * game over conditions are met.</summary>
 	 */
 	public GameObject gameOverPanel;
+	/**<summary>The panel to be displayed when the pause menu is
+	 * open.</summary>
+	 */
 	public GameObject pauseMenuPanel;
+	/**<summary>The GUI element to select first in the game over panel (used for
+	 * gamepad menu navigation.)</summary>
+	 */
 	public GameObject gameOverPanelFirstSelected;
+	/**<summary>The GUI element to select first in the pause menu panel (used for
+	 * gamepad menu navigation.)</summary>
+	 */
 	public GameObject pauseMenuPanelFirstSelected;
 
 	private void Update()
@@ -22,7 +31,7 @@ public class GameController : MonoBehaviour
 			gameOverPanel.SetActive(true);
 			player.GetComponent<PlayerMovement>().freezeMovement = true;
 		}
-		else if (Input.GetButtonDown("TogglePauseMenu"))
+		else if (DynamicInput.GetButtonDown("Toggle Pause Menu"))
 		{
 			if (pauseMenuPanel.activeSelf)
 			{
@@ -43,13 +52,14 @@ public class GameController : MonoBehaviour
 		}
 	}
 
-	/**<summary>Restart the game.</summary>*/
+	/**<summary>Restart the current level.</summary>*/
 	public void RestartGame()
 	{
 		gameOverPanel.SetActive(false);
 		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(gameObject.scene.buildIndex);
 	}
 
+	/**<summary>Quit to the main menu.</summary>*/
 	public void QuitToMainMenu()
 	{
 		pauseMenuPanel.SetActive(false);
@@ -57,6 +67,7 @@ public class GameController : MonoBehaviour
 		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(0);
 	}
 
+	/**<summary>Open the pause menu.</summary>*/
 	public void OpenPauseMenu()
 	{
 		if (pauseMenuPanel.activeSelf || gameOverPanel.activeSelf)
@@ -68,6 +79,7 @@ public class GameController : MonoBehaviour
 		UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = pauseMenuPanelFirstSelected;
 	}
 
+	/**<summary>Close the pause menu.</summary>*/
 	public void ClosePauseMenu()
 	{
 		if (!pauseMenuPanel.activeSelf)

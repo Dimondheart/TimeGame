@@ -11,6 +11,7 @@ public class Health : MonoBehaviour
 	public int currentHealth { get; private set; }
 	/**<summary>If the GameObject is friendly/neutral towards the player.</summary>*/
 	public bool isAlignedWithPlayer = false;
+	/**<summary>If damage should be delt or ignored.</summary>*/
 	public bool takeDamage = true;
 
 	private void Start()
@@ -18,6 +19,10 @@ public class Health : MonoBehaviour
 		currentHealth = maxHealth;
 	}
 
+	/**<summary>Deal damage to this thing. Will not be applied if takeDamage
+	 * is false.</summary>
+	 * <param name="damage">The amount of damage to deal</param>
+	 */
 	public void DoDamage(int damage)
 	{
 		if (takeDamage)

@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerGuard : MonoBehaviour
 {
+	/**<summary>Color to make the player sprite while guarding, a placeholder
+	 * for animations.</summary>
+	 */
 	public Color colorDuringAction;
 
 	private void Update()
@@ -13,7 +16,7 @@ public class PlayerGuard : MonoBehaviour
 		{
 			return;
 		}
-		if (Input.GetButton("Guard"))
+		if (DynamicInput.GetButton("Guard"))
 		{
 			GetComponent<SpriteColorChanger>().SpriteColor = colorDuringAction;
 			GetComponent<Health>().takeDamage = false;
@@ -21,7 +24,7 @@ public class PlayerGuard : MonoBehaviour
 		else
 		{
 			GetComponent<Health>().takeDamage = true;
-			if (!Input.GetButton("Melee"))
+			if (!DynamicInput.GetButton("Melee"))
 			{
 				GetComponent<SpriteColorChanger>().SpriteColor = Color.white;
 			}

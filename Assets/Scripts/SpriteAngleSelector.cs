@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/**<summary>Selcts which sprite to display based on which direction this thing
+ * is currently facing.</summary>
+ */
 public class SpriteAngleSelector : MonoBehaviour
 {
+	/**<summary>Sprite facing the camera.</summary>*/
 	public Sprite frontSprite;
+	/**<summary>Sprite facing away from the camera.</summary>*/
 	public Sprite backSprite;
+	/**<summary>Sprite facing to the left.</summary>*/
 	public Sprite leftSprite;
+	/**<summary>Sprite facing to the right.</summary>*/
 	public Sprite rightSprite;
 
 	private void Update()
