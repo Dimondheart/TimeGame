@@ -11,6 +11,14 @@ public class SpriteAngleSelector : MonoBehaviour
 
 	private void Update()
 	{
+		if (GetComponent<Health>().currentHealth <= 0 || Mathf.Approximately(0.0f, Time.timeScale))
+		{
+			return;
+		}
+		if (GetComponent<PlayerMovement>() != null && GetComponent<PlayerMovement>().freezeMovement)
+		{
+			return;
+		}
 		float verticalAngle = Vector2.Angle(GetComponent<Rigidbody2D>().velocity, Vector2.up);
 		if (verticalAngle <= 45.0f)
 		{

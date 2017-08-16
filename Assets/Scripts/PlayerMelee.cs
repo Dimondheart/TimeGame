@@ -11,13 +11,17 @@ public class PlayerMelee : MonoBehaviour
 	/**<summary>Delay between attacks, in seconds.</summary>*/
 	public float cooldown = 0.25f;
 	/**<summary>HP damage per attack.</summary>*/
-	public float damagePerHit = 5.0f;
+	public int damagePerHit = 5;
 	/**<summary>Time the last attack was made.</summary>*/
 	private float lastAttackTime = 0.0f;
 	private List<Collider2D> attackable = new List<Collider2D>();
 
 	private void Update()
 	{
+		if (Mathf.Approximately(0.0f, Time.timeScale))
+		{
+			return;
+		}
 		if (Input.GetButton("Melee") && GetComponent<Health>().currentHealth > 0)
 		{
 			GetComponent<SpriteColorChanger>().SpriteColor = colorDuringAction;
@@ -33,7 +37,7 @@ public class PlayerMelee : MonoBehaviour
 						&& otherHealth.isAlignedWithPlayer != GetComponent<Health>().isAlignedWithPlayer
 					)
 					{
-						otherHealth.currentHealth -= damagePerHit;
+						otherHealth.DoDamage(damagePerHit);
 						atLeastOneAttacked = true;
 					}
 				}
@@ -43,7 +47,7 @@ public class PlayerMelee : MonoBehaviour
 				}
 			}
 		}
-		else
+		else if (!Input.GetButton("Guard"))
 		{
 			GetComponent<SpriteColorChanger>().SpriteColor = Color.white;
 		}
