@@ -26,6 +26,11 @@ public class GameController : MonoBehaviour
 
 	private void Update()
 	{
+		// Temporary gamepad mode toggle
+		if (Input.GetKeyDown(KeyCode.G))
+		{
+			DynamicInput.GamepadModeEnabled = !DynamicInput.GamepadModeEnabled;
+		}
 		if (player.GetComponent<Health>().currentHealth <= 0)
 		{
 			gameOverPanel.SetActive(true);

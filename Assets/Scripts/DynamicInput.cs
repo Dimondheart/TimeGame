@@ -22,7 +22,20 @@ public class DynamicInput : MonoBehaviour
 		}
 		set
 		{
+			if (value == gamepadModeEnabled)
+			{
+				return;
+			}
 			gamepadModeEnabled = value;
+			Cursor.visible = !value;
+			if (value)
+			{
+				Cursor.lockState = CursorLockMode.Locked;
+			}
+			else
+			{
+				Cursor.lockState = CursorLockMode.None;
+			}
 		}
 	}
 	/**<summary>The current mouse position converted to the range of (-1, 1), where
@@ -66,30 +79,50 @@ public class DynamicInput : MonoBehaviour
 			"Guard",
 			new VirtualButton("Guard", KeyCode.Joystick1Button5, KeyCode.Mouse1)
 			);
+		virtualControls.Add(
+			"Dash",
+			new VirtualButtonFromJoystick("Dash in a direction", 0.1f, "10th axis (Joysticks)", KeyCode.LeftShift)
+			);
 	}
 
 	/**<summary>Input.GetButtonDown equivalent.</summary>*/
 	public static bool GetButtonDown(string virtualName)
 	{
+		VirtualControl control = virtualControls[virtualName];
+		if (control.GetType() == typeof(VirtualButtonFromJoystick))
+		{
+			return Input.GetKeyDown(((VirtualButtonFromJoystick)control).keyboardMouseKeyCode);
+		}
 		return
-			Input.GetKeyDown(((VirtualButton)virtualControls[virtualName]).gamepadKeyCode)
-			|| Input.GetKeyDown(((VirtualButton)virtualControls[virtualName]).keyboardMouseKeyCode);
+			Input.GetKeyDown(((VirtualButton)control).gamepadKeyCode)
+			|| Input.GetKeyDown(((VirtualButton)control).keyboardMouseKeyCode);
 	}
 
 	/**<summary>Input.GetButton equivalent.</summary>*/
 	public static bool GetButton(string virtualName)
 	{
+		VirtualControl control = virtualControls[virtualName];
+		if (control.GetType() == typeof(VirtualButtonFromJoystick))
+		{
+			return Mathf.Abs(Input.GetAxisRaw(((VirtualButtonFromJoystick)control).gamepadName)) >= ((VirtualButtonFromJoystick)control).cutoff
+				|| Input.GetKey(((VirtualButtonFromJoystick)control).keyboardMouseKeyCode);
+		}
 		return
-			Input.GetKey(((VirtualButton)virtualControls[virtualName]).gamepadKeyCode)
-			|| Input.GetKey(((VirtualButton)virtualControls[virtualName]).keyboardMouseKeyCode);
+			Input.GetKey(((VirtualButton)control).gamepadKeyCode)
+			|| Input.GetKey(((VirtualButton)control).keyboardMouseKeyCode);
 	}
 
 	/**<summary>Input.GetButtonUp equivalent.</summary>*/
 	public static bool GetButtonUp(string virtualName)
 	{
+		VirtualControl control = virtualControls[virtualName];
+		if (control.GetType() == typeof(VirtualButtonFromJoystick))
+		{
+			return Input.GetKeyUp(((VirtualButtonFromJoystick)control).keyboardMouseKeyCode);
+		}
 		return
-			Input.GetKeyUp(((VirtualButton)virtualControls[virtualName]).gamepadKeyCode)
-			|| Input.GetKeyUp(((VirtualButton)virtualControls[virtualName]).keyboardMouseKeyCode);
+			Input.GetKeyUp(((VirtualButton)control).gamepadKeyCode)
+			|| Input.GetKeyUp(((VirtualButton)control).keyboardMouseKeyCode);
 	}
 
 	/**<summary>Input.GetAxisRaw equivalent.</summary>*/
@@ -139,6 +172,9 @@ public class DynamicInput : MonoBehaviour
 		public bool isMouseXAsJoy { get; private set; }
 		private string keyboardMouseNameInternal;
 
+		/**<summary>The name of the axis in Input for the keyboard/mouse
+		 * controls.</summary>
+		 */
 		public string keyboardMouseName
 		{
 			get
@@ -164,45 +200,61 @@ public class DynamicInput : MonoBehaviour
 		{
 			get
 			{
-				if (gamepadModeEnabled)
+				float axisValue = Input.GetAxisRaw(gamepadName);
+				if (Mathf.Approximately(0.0f, axisValue))
 				{
-					return Input.GetAxisRaw(gamepadName);
-				}
-				if (isMouseAsJoy)
-				{
-					if (isMouseXAsJoy)
+					if (isMouseAsJoy)
 					{
-						return Input.GetAxisRaw("Mouse X") / Screen.width * 2.0f - 1.0f;
+						if (isMouseXAsJoy)
+						{
+							return Input.GetAxisRaw("Mouse X") / Screen.width * 2.0f - 1.0f;
+						}
+						return Input.GetAxisRaw("Mouse Y") / Screen.height * 2.0f - 1.0f;
 					}
-					return Input.GetAxisRaw("Mouse Y") / Screen.height * 2.0f - 1.0f;
+					return Input.GetAxisRaw(keyboardMouseName);
 				}
-				return Input.GetAxisRaw(keyboardMouseName);
+				return axisValue;
 			}
 		}
-
 		public float Axis
 		{
 			get
 			{
-				if (gamepadModeEnabled)
+				float axisValue = Input.GetAxis(gamepadName);
+				if (Mathf.Approximately(0.0f, axisValue))
 				{
-					return Input.GetAxis(gamepadName);
-				}
-				if (isMouseAsJoy)
-				{
-					if (isMouseXAsJoy)
+					if (isMouseAsJoy)
 					{
-						return Input.GetAxis("Mouse X") / Screen.width * 2.0f - 1.0f;
+						if (isMouseXAsJoy)
+						{
+							return Input.GetAxis("Mouse X") / Screen.width * 2.0f - 1.0f;
+						}
+						return Input.GetAxis("Mouse Y") / Screen.height * 2.0f - 1.0f;
 					}
-					return Input.GetAxis("Mouse Y") / Screen.height * 2.0f - 1.0f;
+					return Input.GetAxis(keyboardMouseName);
 				}
-				return Input.GetAxis(keyboardMouseName);
+				return axisValue;
 			}
 		}
 
 		public VirtualAxis(string description, string gamepadName, string keyboardMouseName) : base(description)
 		{
+			this.gamepadName = gamepadName;
 			this.keyboardMouseName = keyboardMouseName;
+		}
+	}
+
+	public class VirtualButtonFromJoystick : VirtualControl
+	{
+		public string gamepadName;
+		public KeyCode keyboardMouseKeyCode;
+		public float cutoff;
+
+		public VirtualButtonFromJoystick(string description, float cutoff, string gamepadName, KeyCode keyboardMouseKeyCode) : base(description)
+		{
+			this.gamepadName = gamepadName;
+			this.cutoff = cutoff;
+			this.keyboardMouseKeyCode = keyboardMouseKeyCode;
 		}
 	}
 }
