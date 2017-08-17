@@ -5,7 +5,7 @@ using UnityEngine;
 /**<summary>Follow a path using a predefined set of points, which
  * loop back to the first point.</summary>
  */
-public class FollowDefinedPath : MonoBehaviour
+public class FollowDefinedPath : ControlledMovement
 {
 	public Vector3[] points = new Vector3[1];
 	public float maxSpeed = 4.0f;
@@ -15,6 +15,7 @@ public class FollowDefinedPath : MonoBehaviour
 	{
 		if (GetComponent<Health>().currentHealth <= 0 || Mathf.Approximately(0.0f, Time.timeScale))
 		{
+			IsApplyingMotion = false;
 			return;
 		}
 		if (targetPointIndex >= points.Length)
@@ -35,5 +36,6 @@ public class FollowDefinedPath : MonoBehaviour
 					maxSpeed
 					);
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
+		IsApplyingMotion = true;
 	}
 }

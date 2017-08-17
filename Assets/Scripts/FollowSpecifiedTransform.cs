@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary>Move towards the specified transform.</summary>*/
-public class FollowSpecifiedTransform : MonoBehaviour
+public class FollowSpecifiedTransform : ControlledMovement
 {
 	public Transform follow;
 	public float maxSpeed = 4.0f;
@@ -13,6 +13,7 @@ public class FollowSpecifiedTransform : MonoBehaviour
 	{
 		if (GetComponent<Health>().currentHealth <= 0 || Mathf.Approximately(0.0f, Time.timeScale))
 		{
+			IsApplyingMotion = false;
 			return;
 		}
 		Vector2 newVelocity =
@@ -27,5 +28,6 @@ public class FollowSpecifiedTransform : MonoBehaviour
 		}
 		newVelocity = Vector3.ClampMagnitude(newVelocity, maxSpeed);
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
+		IsApplyingMotion = true;
 	}
 }
