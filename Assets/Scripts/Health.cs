@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary>HP tracking and releated data/functionality.</summary>*/
-public class Health : MonoBehaviour
+public class Health : MonoBehaviour, IMaxValue, ICurrentValue
 {
 	/**<summary>Maximum HP.</summary>*/
 	public int maxHealth;
@@ -13,6 +13,22 @@ public class Health : MonoBehaviour
 	public bool isAlignedWithPlayer = false;
 	/**<summary>If damage should be delt or ignored.</summary>*/
 	public bool takeDamage = true;
+
+	float IMaxValue.MaxValue
+	{
+		get
+		{
+			return maxHealth;
+		}
+	}
+
+	float ICurrentValue.CurrentValue
+	{
+		get
+		{
+			return currentHealth;
+		}
+	}
 
 	private void Start()
 	{
