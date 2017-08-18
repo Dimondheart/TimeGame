@@ -4,7 +4,7 @@ using UnityEngine;
 
 /**<summary>Interface for the Unity Input that can be dynamically changed
  * during runtime. Use instead of the Unity Input class for virtual
- * controls such as buttons and joystick axes.</summary>
+ * controls such as buttons and axes.</summary>
  */
 public class DynamicInput : MonoBehaviour
 {

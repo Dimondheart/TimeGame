@@ -11,6 +11,10 @@ public class GameController : MonoBehaviour
 	 * game over conditions are met.</summary>
 	 */
 	public GameObject gameOverPanel;
+	/**<summary>The panel to be displayed (set active) when
+	 * victory conditions are met.</summary>
+	 */
+	public GameObject victoryPanel;
 	/**<summary>The panel to be displayed when the pause menu is
 	 * open.</summary>
 	 */
@@ -23,28 +27,37 @@ public class GameController : MonoBehaviour
 	 * gamepad menu navigation.)</summary>
 	 */
 	public GameObject pauseMenuPanelFirstSelected;
+	/**<summary>If the current level is finished loading or not.</summary>*/
+	public bool isLevelLoaded;
 
 	private void Update()
 	{
-		// Temporary gamepad mode toggle
-		if (Input.GetKeyDown(KeyCode.G))
+		if (isLevelLoaded)
 		{
-			DynamicInput.GamepadModeEnabled = !DynamicInput.GamepadModeEnabled;
-		}
-		if (player.GetComponent<Health>().currentHealth <= 0)
-		{
-			gameOverPanel.SetActive(true);
-			player.GetComponent<PlayerMovement>().freezeMovement = true;
-		}
-		else if (DynamicInput.GetButtonDown("Toggle Pause Menu"))
-		{
-			if (pauseMenuPanel.activeSelf)
+			// Temporary gamepad mode toggle
+			if (Input.GetKeyDown(KeyCode.G))
 			{
-				ClosePauseMenu();
+				DynamicInput.GamepadModeEnabled = !DynamicInput.GamepadModeEnabled;
 			}
-			else
+			if (GetComponent<CharacterTracker>().LivePlayerCount <= 0)
 			{
-				OpenPauseMenu();
+				gameOverPanel.SetActive(true);
+				player.GetComponent<PlayerMovement>().freezeMovement = true;
+			}
+			else if (GetComponent<CharacterTracker>().LiveEnemyCount <= 0)
+			{
+				victoryPanel.SetActive(true);
+			}
+			else if (DynamicInput.GetButtonDown("Toggle Pause Menu"))
+			{
+				if (pauseMenuPanel.activeSelf)
+				{
+					ClosePauseMenu();
+				}
+				else
+				{
+					OpenPauseMenu();
+				}
 			}
 		}
 	}
@@ -60,22 +73,25 @@ public class GameController : MonoBehaviour
 	/**<summary>Restart the current level.</summary>*/
 	public void RestartGame()
 	{
+		ClosePauseMenu();
 		gameOverPanel.SetActive(false);
+		victoryPanel.SetActive(false);
 		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(gameObject.scene.buildIndex);
 	}
 
 	/**<summary>Quit to the main menu.</summary>*/
 	public void QuitToMainMenu()
 	{
-		pauseMenuPanel.SetActive(false);
+		ClosePauseMenu();
 		gameOverPanel.SetActive(false);
+		victoryPanel.SetActive(false);
 		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(0);
 	}
 
 	/**<summary>Open the pause menu.</summary>*/
 	public void OpenPauseMenu()
 	{
-		if (pauseMenuPanel.activeSelf || gameOverPanel.activeSelf)
+		if (pauseMenuPanel.activeSelf || gameOverPanel.activeSelf || victoryPanel.activeSelf)
 		{
 			return;
 		}

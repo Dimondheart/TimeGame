@@ -39,7 +39,6 @@ public class PlayerMovement : ControlledMovement
 			{
 				if (DynamicInput.GetButton("Dash"))
 				{
-					Debug.Log("activate");
 					IsDashing = true;
 					lastDashStart = Time.time;
 					dashVelocity = newVelocity * dashSpeedFactor;

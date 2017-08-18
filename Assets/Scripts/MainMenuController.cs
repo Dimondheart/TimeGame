@@ -5,6 +5,7 @@ using UnityEngine;
 public class MainMenuController : MonoBehaviour
 {
 	public GameObject mainMenuPanel;
+	public GameObject activateOnQuit;
 
 	private void Awake()
 	{
@@ -20,6 +21,7 @@ public class MainMenuController : MonoBehaviour
 	public void QuitToDesktop()
 	{
 		mainMenuPanel.SetActive(false);
+		activateOnQuit.SetActive(true);
 		Application.Quit();
 	}
 }
