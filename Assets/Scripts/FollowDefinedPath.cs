@@ -7,9 +7,9 @@ using UnityEngine;
  */
 public class FollowDefinedPath : ControlledMovement
 {
-	public Vector3[] points = new Vector3[1];
+	public Transform[] targets;
 	public float maxSpeed = 4.0f;
-	public int targetPointIndex = 0;
+	public int targetIndex = 0;
 
 	private void Update()
 	{
@@ -18,21 +18,21 @@ public class FollowDefinedPath : ControlledMovement
 			IsApplyingMotion = false;
 			return;
 		}
-		if (targetPointIndex >= points.Length)
+		if (targetIndex >= targets.Length)
 		{
-			targetPointIndex = 0;
+			targetIndex = 0;
 		}
-		if (Vector3.Distance(transform.position, points[targetPointIndex]) <= 0.25f)
+		if (Vector3.Distance(transform.position, targets[targetIndex].position) <= 0.25f)
 		{
-			targetPointIndex++;
-			if (targetPointIndex >= points.Length)
+			targetIndex++;
+			if (targetIndex >= targets.Length)
 			{
-				targetPointIndex = 0;
+				targetIndex = 0;
 			}
 		}
 		Vector3 newVelocity =
 				Vector3.ClampMagnitude(
-					(points[targetPointIndex] - transform.position).normalized * maxSpeed,
+					(targets[targetIndex].position - transform.position).normalized * maxSpeed,
 					maxSpeed
 					);
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
