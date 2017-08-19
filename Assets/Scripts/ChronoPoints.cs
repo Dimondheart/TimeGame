@@ -8,6 +8,8 @@ public class ChronoPoints : MonoBehaviour, IMaxValue, ICurrentValue
 {
 	public float maxCP;
 	public float currentCP { get; private set; }
+	public float timeFreezeDrainRate = 5.0f;
+	public bool isTimeFreezeActive;
 
 	float IMaxValue.MaxValue
 	{
@@ -32,7 +34,9 @@ public class ChronoPoints : MonoBehaviour, IMaxValue, ICurrentValue
 
 	private void Update()
 	{
-		currentCP -= 20.0f * Time.deltaTime;
-		currentCP = currentCP < 0.0f ? 0.0f : currentCP;
+		if (isTimeFreezeActive)
+		{
+			currentCP = Mathf.Clamp(currentCP - Time.deltaTime * timeFreezeDrainRate, 0.0f, maxCP);
+		}
 	}
 }
