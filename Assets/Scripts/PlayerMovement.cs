@@ -4,14 +4,27 @@ using UnityEngine;
 
 public class PlayerMovement : ControlledMovement
 {
-	public float movementSpeed = 5.0f;
+	public float movementSpeed = 6.0f;
 	public bool freezeMovement = false;
-	public float dashSpeedFactor = 4.0f;
-	public float dashDuration = 0.25f;
-	public bool IsDashing { get; private set; }
+	public float dashSpeed = 15.0f;
+	public float dashDuration = 0.2f;
 
 	private float lastDashStart = 0.0f;
-	public Vector3 dashVelocity;
+	private Vector3 dashVelocity;
+	private bool isDashingInternal = false;
+
+	public bool IsDashing
+	{
+		get
+		{
+			return isDashingInternal;
+		}
+		private set
+		{
+			isDashingInternal = value;
+			GetComponent<SurfaceFriction>().enabled = !value;
+		}
+	}
 
 	private void Update()
 	{
@@ -39,9 +52,17 @@ public class PlayerMovement : ControlledMovement
 			{
 				if (DynamicInput.GetButton("Dash"))
 				{
-					IsDashing = true;
-					lastDashStart = Time.time;
-					dashVelocity = newVelocity * dashSpeedFactor;
+					SurfaceFriction sf = GetComponent<SurfaceFriction>();
+					if (sf.IsSwimming)
+					{
+						newVelocity = newVelocity.normalized * ((movementSpeed + dashSpeed) / 2.0f);
+					}
+					else
+					{
+						IsDashing = true;
+						lastDashStart = Time.time;
+						dashVelocity = newVelocity.normalized * dashSpeed;
+					}
 				}
 			}
 		}
