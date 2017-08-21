@@ -30,7 +30,7 @@ public class SurfaceWithFriction : MonoBehaviour
 				case SurfaceType.ShallowWater:
 					return 0.35f;
 				case SurfaceType.Water:
-					return 0.25f;
+					return 0.2f;
 				case SurfaceType.Floor:
 					return 1.0f;
 				case SurfaceType.Path:

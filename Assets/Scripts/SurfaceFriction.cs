@@ -5,8 +5,14 @@ using UnityEngine;
 /**<summary>Applies surface friction to a game object.</summary>*/
 public class SurfaceFriction : MonoBehaviour
 {
-	public static float defaultVelocityMultiplier = 0.1f;
+	/**<summary>Velocity multiplier when not touching a specific surface
+	 * (meaning outside the map/play area.)</summary>
+	 */
+	public static float defaultVelocityMultiplier = 0.08f;
 
+	/**<summary>Resistance to friction effects. 0 is no resistance, 1
+	 * means friction has no effect.</summary>
+	 */
 	public float frictionResistance = 0.0f;
 
 	private List<SurfaceWithFriction> touchingSurfaces = new List<SurfaceWithFriction>();
