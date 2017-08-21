@@ -7,6 +7,10 @@ using UnityEngine;
  */
 public class SpriteAngleSelector : MonoBehaviour
 {
+	private static readonly Quaternion upRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
+	private static readonly Quaternion downRotation = Quaternion.Euler(0.0f, 0.0f, 180.0f);
+	private static readonly Quaternion rightRotation = Quaternion.Euler(0.0f, 0.0f, -90.0f);
+	private static readonly Quaternion leftRotation = Quaternion.Euler(0.0f, 0.0f, 90.0f);
 	/**<summary>Sprite facing the camera.</summary>*/
 	public Sprite frontSprite;
 	/**<summary>Sprite facing away from the camera.</summary>*/
@@ -23,6 +27,11 @@ public class SpriteAngleSelector : MonoBehaviour
 	public Sprite leftDeadSprite;
 	/**<summary>Dead version of rightSprite.</summary>*/
 	public Sprite rightDeadSprite;
+	/**<summary>Transforms that should be rotated to match
+	 * the current sprite direction. A rotation of 0 is
+	 * when the back sprite is being shown.</summary>
+	 */
+	public List<Transform> syncronizeRotations = new List<Transform>();
 
 	private void Update()
 	{
@@ -37,51 +46,60 @@ public class SpriteAngleSelector : MonoBehaviour
 		float verticalAngle = Vector2.Angle(GetComponent<Rigidbody2D>().velocity, Vector2.up);
 		if (verticalAngle <= 45.0f)
 		{
-			if (GetComponent<Health>().currentHealth <= 0)
-			{
-				GetComponent<SpriteRenderer>().sprite = backDeadSprite;
-			}
-			else
-			{
-				GetComponent<SpriteRenderer>().sprite = backSprite;
-			}
+			SetSelectedRotation(0, GetComponent<Health>().currentHealth <= 0);
 		}
 		else if (verticalAngle >= 135.0f)
 		{
-			if (GetComponent<Health>().currentHealth <= 0)
-			{
-				GetComponent<SpriteRenderer>().sprite = frontDeadSprite;
-			}
-			else
-			{
-				GetComponent<SpriteRenderer>().sprite = frontSprite;
-			}
+			SetSelectedRotation(180, GetComponent<Health>().currentHealth <= 0);
 		}
 		else
 		{
 			float horizontalAngle = Vector2.Angle(GetComponent<Rigidbody2D>().velocity, Vector2.right);
 			if (horizontalAngle < 45.0f)
 			{
-				if (GetComponent<Health>().currentHealth <= 0)
-				{
-					GetComponent<SpriteRenderer>().sprite = rightDeadSprite;
-				}
-				else
-				{
-					GetComponent<SpriteRenderer>().sprite = rightSprite;
-				}
+				SetSelectedRotation(-90, GetComponent<Health>().currentHealth <= 0);
 			}
 			else if (horizontalAngle > 135.0f)
 			{
-				if (GetComponent<Health>().currentHealth <= 0)
-				{
-					GetComponent<SpriteRenderer>().sprite = leftDeadSprite;
-				}
-				else
-				{
-					GetComponent<SpriteRenderer>().sprite = leftSprite;
-				}
+				SetSelectedRotation(90, GetComponent<Health>().currentHealth <= 0);
 			}
+		}
+	}
+
+	private void SetSelectedRotation(int angle, bool useDeadVersion)
+	{
+		Quaternion synchRotation;
+		Sprite selSprite;
+		switch (angle)
+		{
+			// Back sprite
+			case 0:
+				synchRotation = upRotation;
+				selSprite = useDeadVersion ? backDeadSprite : backSprite;
+				break;
+			// Left sprite
+			case 90:
+				synchRotation = leftRotation;
+				selSprite = useDeadVersion ? leftDeadSprite : leftSprite;
+				break;
+			// Right sprite
+			case -90:
+				synchRotation = rightRotation;
+				selSprite = useDeadVersion ? rightDeadSprite : rightSprite;
+				break;
+			// Front sprite
+			case 180:
+				synchRotation = downRotation;
+				selSprite = useDeadVersion ? frontDeadSprite : frontSprite;
+				break;
+			default:
+				Debug.LogWarning("Attempted to select a sprite with an unsupported angle:" + angle);
+				return;
+		}
+		GetComponent<SpriteRenderer>().sprite = selSprite;
+		foreach (Transform t in syncronizeRotations)
+		{
+			t.localRotation = synchRotation;
 		}
 	}
 }

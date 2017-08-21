@@ -45,7 +45,6 @@ public class SurfaceFriction : MonoBehaviour
 		}
 		multiplier = Mathf.Clamp01(multiplier + frictionResistance * (1.0f - multiplier));
 		GetComponent<Rigidbody2D>().velocity = GetComponent<Rigidbody2D>().velocity * multiplier;
-		Debug.Log(GetComponent<Rigidbody2D>().velocity);
 	}
 
 	public void AddSurface(SurfaceWithFriction surface)
