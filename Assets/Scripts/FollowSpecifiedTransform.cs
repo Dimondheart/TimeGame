@@ -5,37 +5,66 @@ using UnityEngine;
 /**<summary>Move towards the specified transform.</summary>*/
 public class FollowSpecifiedTransform : ControlledMovement
 {
-	public Transform followOverride;
 	public float maxSpeed = 4.0f;
 	public float velocityBlendRate = 100.0f;
+	public bool targetLocationReached { get; private set; }
+
+	public Transform TargetTransform
+	{
+		get
+		{
+			if (GetComponent<HostileTargetSelector>() == null
+				|| GetComponent<HostileTargetSelector>().target == null
+				)
+			{
+				return null;
+			}
+			return GetComponent<HostileTargetSelector>().target.transform;
+		}
+	}
 
 	public Vector3 TargetPositon
 	{
 		get
 		{
-			if (followOverride == null && GetComponent<HostileTargetSelector>() != null)
+			if (TargetTransform == null)
 			{
-				if (GetComponent<HostileTargetSelector>().target == null)
+				if (GetComponent<HostileTargetSelector>() == null)
 				{
-					return GetComponent<HostileTargetSelector>().targetLastSpotted;
+					return new Vector3(float.MaxValue, 0.0f, 0.0f);
 				}
-				return GetComponent<HostileTargetSelector>().target.transform.position;
+				return GetComponent<HostileTargetSelector>().targetLastSpotted;
 			}
-			return followOverride.position;
+			return TargetTransform.position;
 		}
+	}
+
+	private void Start()
+	{
+		targetLocationReached = true;
 	}
 
 	private void Update()
 	{
-		if (TargetPositon == null
+		if ((TargetTransform == null && targetLocationReached)
 			|| GetComponent<Health>().currentHealth <= 0
 			|| Mathf.Approximately(0.0f, Time.timeScale)
 			|| Vector3.Distance(TargetPositon, transform.position) < 0.3f
 			)
 		{
 			IsApplyingMotion = false;
+			targetLocationReached = true;
+			if (GetComponent<FollowDefinedPath>() != null)
+			{
+				GetComponent<FollowDefinedPath>().enabled = true;
+			}
 			return;
 		}
+		if (GetComponent<FollowDefinedPath>() != null)
+		{
+			GetComponent<FollowDefinedPath>().enabled = false;
+		}
+		targetLocationReached = false;
 		Vector2 newVelocity =
 				Vector3.ClampMagnitude(
 					(TargetPositon - transform.position).normalized * maxSpeed,
