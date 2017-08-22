@@ -247,12 +247,10 @@ public class DynamicInput : MonoBehaviour
 						if (isMouseXAsJoy)
 						{
 							value = Input.mousePosition.x / Screen.width * 2.0f - 1.0f;
-							Debug.Log("MXJ:" + value);
 						}
 						else
 						{
 							value = Input.mousePosition.y / Screen.height * 2.0f - 1.0f;
-							Debug.Log("MYJ:" + value);
 						}
 						if (Mathf.Abs(value) <= mouseAsJoystickDeadzone)
 						{

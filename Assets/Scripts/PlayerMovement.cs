@@ -71,10 +71,8 @@ public class PlayerMovement : ControlledMovement
 		Vector2 lookDirection = new Vector2(DynamicInput.GetAxis("Look Horizontal"), DynamicInput.GetAxis("Look Vertical"));
 		if (lookDirection.magnitude < 0.01f)
 		{
-			Debug.Log(Time.time);
 			lookDirection = newVelocity;
 		}
 		GetComponent<DirectionLooking>().Direction = lookDirection;
-		Debug.Log(lookDirection);
 	}
 }
