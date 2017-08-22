@@ -68,6 +68,14 @@ public class DynamicInput : MonoBehaviour
 			new VirtualAxis("Vertical movement", "Y axis", "SW axis")
 			);
 		virtualControls.Add(
+			"Look Horizontal",
+			new VirtualAxis("Horizontal look direction", "4th axis (Joysticks)", VirtualAxis.mouseXAsJoystickName)
+			);
+		virtualControls.Add(
+			"Look Vertical",
+			new VirtualAxis("Vertical look direction", "5th axis (Joysticks)", VirtualAxis.mouseYAsJoystickName)
+			);
+		virtualControls.Add(
 			"Toggle Pause Menu",
 			new VirtualButton("Open/Close the pause menu", KeyCode.Joystick1Button6, KeyCode.Escape)
 			);
@@ -170,6 +178,7 @@ public class DynamicInput : MonoBehaviour
 		public string gamepadName;
 		public bool isMouseAsJoy { get; private set; }
 		public bool isMouseXAsJoy { get; private set; }
+		public float mouseAsJoystickDeadzone = 0.05f;
 		private string keyboardMouseNameInternal;
 
 		/**<summary>The name of the axis in Input for the keyboard/mouse
@@ -205,11 +214,20 @@ public class DynamicInput : MonoBehaviour
 				{
 					if (isMouseAsJoy)
 					{
+						float value = 0.0f;
 						if (isMouseXAsJoy)
 						{
-							return Input.GetAxisRaw("Mouse X") / Screen.width * 2.0f - 1.0f;
+							value = Input.mousePosition.x / Screen.width * 2.0f - 1.0f;
 						}
-						return Input.GetAxisRaw("Mouse Y") / Screen.height * 2.0f - 1.0f;
+						else
+						{
+							value = Input.mousePosition.y / Screen.height * 2.0f - 1.0f;
+						}
+						if (value <= mouseAsJoystickDeadzone)
+						{
+							return 0.0f;
+						}
+						return value;
 					}
 					return Input.GetAxisRaw(keyboardMouseName);
 				}
@@ -225,11 +243,22 @@ public class DynamicInput : MonoBehaviour
 				{
 					if (isMouseAsJoy)
 					{
+						float value = 0.0f;
 						if (isMouseXAsJoy)
 						{
-							return Input.GetAxis("Mouse X") / Screen.width * 2.0f - 1.0f;
+							value = Input.mousePosition.x / Screen.width * 2.0f - 1.0f;
+							Debug.Log("MXJ:" + value);
 						}
-						return Input.GetAxis("Mouse Y") / Screen.height * 2.0f - 1.0f;
+						else
+						{
+							value = Input.mousePosition.y / Screen.height * 2.0f - 1.0f;
+							Debug.Log("MYJ:" + value);
+						}
+						if (Mathf.Abs(value) <= mouseAsJoystickDeadzone)
+						{
+							return 0.0f;
+						}
+						return value;
 					}
 					return Input.GetAxis(keyboardMouseName);
 				}

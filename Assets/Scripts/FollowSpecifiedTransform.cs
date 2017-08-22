@@ -78,5 +78,6 @@ public class FollowSpecifiedTransform : ControlledMovement
 		newVelocity = Vector3.ClampMagnitude(newVelocity, maxSpeed);
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
 		IsApplyingMotion = true;
+		GetComponent<DirectionLooking>().Direction = newVelocity;
 	}
 }

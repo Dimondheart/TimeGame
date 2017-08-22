@@ -43,6 +43,24 @@ public class SpriteAngleSelector : MonoBehaviour
 		{
 			return;
 		}
+		float angle = GetComponent<DirectionLooking>().Angle;
+		if (Mathf.Abs(angle) <= 45.0f)
+		{
+			SetSelectedRotation(0, GetComponent<Health>().currentHealth <= 0);
+		}
+		else if (Mathf.Abs(angle) >= 135.0f)
+		{
+			SetSelectedRotation(180, GetComponent<Health>().currentHealth <= 0);
+		}
+		else if (angle < 0.0f)
+		{
+			SetSelectedRotation(-90, GetComponent<Health>().currentHealth <= 0);
+		}
+		else
+		{
+			SetSelectedRotation(90, GetComponent<Health>().currentHealth <= 0);
+		}
+		/*
 		float verticalAngle = Vector2.Angle(GetComponent<Rigidbody2D>().velocity, Vector2.up);
 		if (verticalAngle <= 45.0f)
 		{
@@ -63,7 +81,7 @@ public class SpriteAngleSelector : MonoBehaviour
 			{
 				SetSelectedRotation(90, GetComponent<Health>().currentHealth <= 0);
 			}
-		}
+		}*/
 	}
 
 	private void SetSelectedRotation(int angle, bool useDeadVersion)

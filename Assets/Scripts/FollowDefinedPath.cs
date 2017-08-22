@@ -38,5 +38,6 @@ public class FollowDefinedPath : ControlledMovement
 					);
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
 		IsApplyingMotion = true;
+		GetComponent<DirectionLooking>().Direction = newVelocity;
 	}
 }

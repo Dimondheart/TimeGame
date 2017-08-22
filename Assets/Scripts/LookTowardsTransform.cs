@@ -18,7 +18,7 @@ public class LookTowardsTransform : MonoBehaviour
 		Vector2 lookVector = lookTowards.position - transform.position;
 		if (lookVector.magnitude <= maxDistance)
 		{
-			GetComponent<Rigidbody2D>().velocity = lookVector;
+			GetComponent<DirectionLooking>().Direction = lookVector;
 		}
 	}
 }
