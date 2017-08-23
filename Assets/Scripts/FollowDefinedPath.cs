@@ -29,7 +29,7 @@ public class FollowDefinedPath : ControlledMovement
 
 	private void Update()
 	{
-		if (GetComponent<Health>().currentHealth <= 0 || Mathf.Approximately(0.0f, Time.timeScale))
+		if (GetComponent<Health>().health <= 0 || Mathf.Approximately(0.0f, Time.timeScale))
 		{
 			IsApplyingMotion = false;
 			return;

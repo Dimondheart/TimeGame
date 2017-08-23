@@ -47,7 +47,7 @@ public class FollowTarget : ControlledMovement
 	private void Update()
 	{
 		if ((TargetTransform == null && targetLocationReached)
-			|| GetComponent<Health>().currentHealth <= 0
+			|| GetComponent<Health>().health <= 0
 			|| Mathf.Approximately(0.0f, Time.timeScale)
 			|| Vector3.Distance(TargetPositon, transform.position) < 0.3f
 			)

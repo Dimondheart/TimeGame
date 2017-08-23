@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**<summary>The attached trigger represents a region that has
- * surface friction.</summary>
+/**<summary>Information about a ground/etc. surface and detecting
+ * touching game objects that have SurfaceIntaraction.</summary>
  */
 public class Surface : MonoBehaviour
 {
+	/**<summary>What type of ground/etc. covers this surface.</summary>*/
 	public SurfaceType surfaceType;
 
+	/**<summary>True if this surface is a liquid such as water.</summary>*/
 	public bool IsLiquid
 	{
 		get
@@ -17,6 +19,9 @@ public class Surface : MonoBehaviour
 		}
 	}
 
+	/**<summary>Velocity multiplier on this surface due to effects like
+	 * friction.</summary>
+	 */
 	public float velocityMultiplier
 	{
 		get
@@ -32,16 +37,19 @@ public class Surface : MonoBehaviour
 				case SurfaceType.Water:
 					return 0.2f;
 				case SurfaceType.Floor:
-					return 1.0f;
+					return 0.95f;
 				case SurfaceType.Path:
 					return 0.8f;
 				default:
 					Debug.Log("Unknown SurfaceWithFriction.SurfaceType:" + (int)surfaceType);
-					return 1.0f;
+					return 0.95f;
 			}
 		}
 	}
 
+	/**<summary>Resulting velocity multiplier when something is equally
+	 * touching all of the specified surfaces.</summary>
+	 */
 	public static float ResultingVelocityMultiplier(List<Surface> surfaces)
 	{
 		if (surfaces.Count <= 0)

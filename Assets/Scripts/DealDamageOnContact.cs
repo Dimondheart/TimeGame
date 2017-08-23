@@ -14,7 +14,7 @@ public class DealDamageOnContact : MonoBehaviour
 
 	private void OnTriggerStay2D(Collider2D other)
 	{
-		if (GetComponent<Health>().currentHealth <= 0 || Mathf.Approximately(0.0f, Time.timeScale))
+		if (GetComponent<Health>().health <= 0 || Mathf.Approximately(0.0f, Time.timeScale))
 		{
 			return;
 		}
@@ -23,7 +23,7 @@ public class DealDamageOnContact : MonoBehaviour
 			other.isTrigger
 			|| otherHealth == null
 			|| Time.time - lastAttackTime < cooldown
-			|| otherHealth.currentHealth <= 0
+			|| otherHealth.health <= 0
 			|| otherHealth.isAlignedWithPlayer == GetComponent<Health>().isAlignedWithPlayer
 		)
 		{

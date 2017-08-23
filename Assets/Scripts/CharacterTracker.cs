@@ -50,7 +50,7 @@ public class CharacterTracker : MonoBehaviour
 			int count = 0;
 			foreach (Component t in players)
 			{
-				if (t.GetComponent<Health>().currentHealth > 0)
+				if (t.GetComponent<Health>().health > 0)
 				{
 					count++;
 				}
@@ -66,7 +66,7 @@ public class CharacterTracker : MonoBehaviour
 			int count = 0;
 			foreach (Component t in enemies)
 			{
-				if (t.GetComponent<Health>().currentHealth > 0)
+				if (t.GetComponent<Health>().health > 0)
 				{
 					count++;
 				}

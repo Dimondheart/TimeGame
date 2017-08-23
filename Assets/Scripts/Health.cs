@@ -8,7 +8,7 @@ public class Health : MonoBehaviour, IMaxValue, ICurrentValue
 	/**<summary>Maximum HP.</summary>*/
 	public int maxHealth;
 	/**<summary>Current HP.</summary>*/
-	public int currentHealth { get; private set; }
+	public int health { get; private set; }
 	/**<summary>If the GameObject is friendly/neutral towards the player.</summary>*/
 	public bool isAlignedWithPlayer = false;
 	/**<summary>If damage should be delt or ignored.</summary>*/
@@ -26,13 +26,13 @@ public class Health : MonoBehaviour, IMaxValue, ICurrentValue
 	{
 		get
 		{
-			return currentHealth;
+			return health;
 		}
 	}
 
-	private void Start()
+	private void Awake()
 	{
-		currentHealth = maxHealth;
+		health = maxHealth;
 	}
 
 	/**<summary>Deal damage to this thing. Will not be applied if takeDamage
@@ -43,7 +43,7 @@ public class Health : MonoBehaviour, IMaxValue, ICurrentValue
 	{
 		if (takeDamage)
 		{
-			currentHealth = Mathf.Clamp(currentHealth - damage, 0, maxHealth);
+			health = Mathf.Clamp(health - damage, 0, maxHealth);
 		}
 	}
 }
