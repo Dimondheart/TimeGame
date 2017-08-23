@@ -32,7 +32,7 @@ public class MagicPoints : MonoBehaviour, IMaxValue, ICurrentValue
 
 	private void Update()
 	{
-		currentMP -= 20.0f * Time.deltaTime;
+		currentMP -= 20.0f * ManipulableTime.deltaTime;
 		currentMP = currentMP < 0.0f ? 0.0f : currentMP;
 	}
 }

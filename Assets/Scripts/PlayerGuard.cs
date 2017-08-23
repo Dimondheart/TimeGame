@@ -12,7 +12,7 @@ public class PlayerGuard : MonoBehaviour
 	private void Update()
 	{
 
-		if (Mathf.Approximately(0.0f, Time.timeScale))
+		if (ManipulableTime.IsTimeFrozen)
 		{
 			return;
 		}

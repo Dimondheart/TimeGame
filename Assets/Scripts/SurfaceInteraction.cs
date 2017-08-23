@@ -40,6 +40,10 @@ public class SurfaceInteraction : MonoBehaviour
 
 	private void Update()
 	{
+		if (ManipulableTime.IsTimeFrozen)
+		{
+			return;
+		}
 		if (GetComponent<Health>() == null
 			|| GetComponent<Health>().health <= 0
 			|| (GetComponent<ControlledMovement>() != null && !GetComponent<ControlledMovement>().IsApplyingMotion)
@@ -58,6 +62,10 @@ public class SurfaceInteraction : MonoBehaviour
 
 	private void FixedUpdate()
 	{
+		if (ManipulableTime.IsTimeFrozen)
+		{
+			return;
+		}
 		if (GetComponent<ControlledMovement>() != null && GetComponent<ControlledMovement>().IsApplyingMotion)
 		{
 			return;
@@ -68,7 +76,7 @@ public class SurfaceInteraction : MonoBehaviour
 			multiplier = Surface.ResultingVelocityMultiplier(touchingSurfaces);
 		}
 		multiplier = Mathf.Clamp01(multiplier + frictionResistance * (1.0f - multiplier));
-		GetComponent<Rigidbody2D>().velocity = GetComponent<Rigidbody2D>().velocity * (multiplier * Time.fixedDeltaTime);
+		GetComponent<Rigidbody2D>().velocity = GetComponent<Rigidbody2D>().velocity * (multiplier * ManipulableTime.fixedDeltaTime);
 	}
 
 	public void AddSurface(Surface surface)

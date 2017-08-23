@@ -9,7 +9,7 @@ public class MainMenuController : MonoBehaviour
 
 	private void Awake()
 	{
-		Time.timeScale = 1.0f;
+		ManipulableTime.IsGameFrozen = false;
 	}
 
 	public void StartGame()

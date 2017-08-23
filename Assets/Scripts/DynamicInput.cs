@@ -91,6 +91,14 @@ public class DynamicInput : MonoBehaviour
 			"Dash",
 			new VirtualButtonFromJoystick("Dash in a direction", 0.1f, "10th axis (Joysticks)", KeyCode.LeftShift)
 			);
+		virtualControls.Add(
+			"Toggle Time Freeze",
+			new VirtualButton("Toggle time freezing", KeyCode.Joystick1Button3, KeyCode.Q)
+			);
+		virtualControls.Add(
+			"Freeze Move",
+			new VirtualButton("Allows the player to move while time is frozen", KeyCode.Joystick1Button0, KeyCode.Space)
+			);
 	}
 
 	/**<summary>Input.GetButtonDown equivalent.</summary>*/

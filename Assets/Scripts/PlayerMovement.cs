@@ -28,8 +28,21 @@ public class PlayerMovement : ControlledMovement
 
 	private void Update()
 	{
-		Vector3 newVelocity = new Vector3(DynamicInput.GetAxis("Move Horizontal"), DynamicInput.GetAxis("Move Vertical"), 0.0f).normalized
-						 * movementSpeed;
+		if (ManipulableTime.IsTimeFrozen && !DynamicInput.GetButton("Freeze Move"))
+		{
+			if (DynamicInput.GetButton("Freeze Move"))
+			{
+				IsDashing = false;
+			}
+			else
+			{
+				GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+				return;
+			}
+		}
+		Vector3 newVelocity =
+			new Vector3(DynamicInput.GetAxis("Move Horizontal"), DynamicInput.GetAxis("Move Vertical"), 0.0f).normalized
+			* movementSpeed;
 		if (freezeMovement)
 		{
 			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
@@ -39,7 +52,7 @@ public class PlayerMovement : ControlledMovement
 			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 			if (IsDashing)
 			{
-				if (Time.time - lastDashStart >= dashDuration)
+				if (ManipulableTime.time - lastDashStart >= dashDuration)
 				{
 					IsDashing = false;
 				}
@@ -60,7 +73,7 @@ public class PlayerMovement : ControlledMovement
 					else
 					{
 						IsDashing = true;
-						lastDashStart = Time.time;
+						lastDashStart = ManipulableTime.time;
 						dashVelocity = newVelocity.normalized * dashSpeed;
 					}
 				}

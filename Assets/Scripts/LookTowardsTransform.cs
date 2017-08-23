@@ -12,6 +12,10 @@ public class LookTowardsTransform : MonoBehaviour
 
 	private void Update()
 	{
+		if (ManipulableTime.IsTimeFrozen)
+		{
+			return;
+		}
 		Vector2 lookVector = lookTowards.position - transform.position;
 		if (lookVector.magnitude <= maxDistance)
 		{

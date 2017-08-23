@@ -41,6 +41,10 @@ public class HostileTargetSelector : MonoBehaviour
 
 	private void Update()
 	{
+		if (ManipulableTime.IsTimeFrozen)
+		{
+			return;
+		}
 		GameObject newTarget = ClosestVisibleHostile();
 		if (newTarget == null && target != null)
 		{

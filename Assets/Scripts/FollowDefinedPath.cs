@@ -29,7 +29,16 @@ public class FollowDefinedPath : ControlledMovement
 
 	private void Update()
 	{
-		if (GetComponent<Health>().health <= 0 || Mathf.Approximately(0.0f, Time.timeScale))
+		if (ManipulableTime.IsTimeFrozen)
+		{
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+			return;
+		}
+		else
+		{
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
+		}
+		if (GetComponent<Health>().health <= 0)
 		{
 			IsApplyingMotion = false;
 			return;

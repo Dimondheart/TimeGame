@@ -95,7 +95,7 @@ public class GameController : MonoBehaviour
 		{
 			return;
 		}
-		Time.timeScale = 0.0f;
+		ManipulableTime.IsGameFrozen = true;
 		pauseMenuPanel.SetActive(true);
 		UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = pauseMenuPanelFirstSelected;
 	}
@@ -107,7 +107,7 @@ public class GameController : MonoBehaviour
 		{
 			return;
 		}
-		Time.timeScale = 1.0f;
+		ManipulableTime.IsGameFrozen = false;
 		pauseMenuPanel.SetActive(false);
 		UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = null;
 	}

@@ -46,9 +46,17 @@ public class FollowTarget : ControlledMovement
 
 	private void Update()
 	{
+		if (ManipulableTime.IsTimeFrozen)
+		{
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+			return;
+		}
+		else
+		{
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
+		}
 		if ((TargetTransform == null && targetLocationReached)
 			|| GetComponent<Health>().health <= 0
-			|| Mathf.Approximately(0.0f, Time.timeScale)
 			|| Vector3.Distance(TargetPositon, transform.position) < 0.3f
 			)
 		{
@@ -70,7 +78,7 @@ public class FollowTarget : ControlledMovement
 					(TargetPositon - transform.position).normalized * maxSpeed,
 					maxSpeed
 					);
-		float blendFactor = velocityBlendRate * Time.deltaTime;
+		float blendFactor = velocityBlendRate * ManipulableTime.deltaTime;
 		for (int c = 0; c < 2; c++)
 		{
 			newVelocity[c] = newVelocity[c] * blendFactor + GetComponent<Rigidbody2D>().velocity[c] * (1.0f - blendFactor);

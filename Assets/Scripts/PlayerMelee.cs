@@ -19,14 +19,14 @@ public class PlayerMelee : MonoBehaviour
 
 	private void Update()
 	{
-		if (Mathf.Approximately(0.0f, Time.timeScale))
+		if (ManipulableTime.IsTimeFrozen)
 		{
 			return;
 		}
 		if (DynamicInput.GetButton("Melee") && GetComponent<Health>().health > 0)
 		{
 			GetComponent<SpriteColorChanger>().SpriteColor = colorDuringAction;
-			if (Time.time - lastAttackTime >= cooldown)
+			if (ManipulableTime.time - lastAttackTime >= cooldown)
 			{
 				bool atLeastOneAttacked = false;
 				foreach (Collider2D col2D in attackable)
@@ -44,7 +44,7 @@ public class PlayerMelee : MonoBehaviour
 				}
 				if (atLeastOneAttacked)
 				{
-					lastAttackTime = Time.time;
+					lastAttackTime = ManipulableTime.time;
 				}
 			}
 		}
