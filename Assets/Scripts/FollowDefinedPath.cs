@@ -11,10 +11,25 @@ public class FollowDefinedPath : ControlledMovement
 	public float maxSpeed = 4.0f;
 	public int targetIndex = 0;
 
+	private void OnEnable()
+	{
+		float shortestDist = float.PositiveInfinity;
+		float dist;
+		// Find the nearest target
+		for (int i = 0; i < targets.Length; i++)
+		{
+			dist = Vector3.Distance(transform.position, targets[i].position);
+			if (dist < shortestDist)
+			{
+				shortestDist = dist;
+				targetIndex = i;
+			}
+		}
+	}
+
 	private void Update()
 	{
-		if (GetComponent<Health>().currentHealth <= 0 || Mathf.Approximately(0.0f, Time.timeScale)
-			)
+		if (GetComponent<Health>().currentHealth <= 0 || Mathf.Approximately(0.0f, Time.timeScale))
 		{
 			IsApplyingMotion = false;
 			return;

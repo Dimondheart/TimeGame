@@ -22,7 +22,7 @@ public class PlayerMovement : ControlledMovement
 		private set
 		{
 			isDashingInternal = value;
-			GetComponent<SurfaceFriction>().enabled = !value;
+			GetComponent<SurfaceInteraction>().enabled = !value;
 		}
 	}
 
@@ -52,7 +52,7 @@ public class PlayerMovement : ControlledMovement
 			{
 				if (DynamicInput.GetButton("Dash"))
 				{
-					SurfaceFriction sf = GetComponent<SurfaceFriction>();
+					SurfaceInteraction sf = GetComponent<SurfaceInteraction>();
 					if (sf.IsSwimming)
 					{
 						newVelocity = newVelocity.normalized * ((movementSpeed + dashSpeed) / 2.0f);

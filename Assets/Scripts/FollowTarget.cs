@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**<summary>Move towards the specified transform.</summary>*/
-public class FollowSpecifiedTransform : ControlledMovement
+/**<summary>Move towards a target.</summary>*/
+public class FollowTarget : ControlledMovement
 {
 	public float maxSpeed = 4.0f;
 	public float velocityBlendRate = 100.0f;

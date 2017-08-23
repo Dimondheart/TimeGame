@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**<summary>Applies surface friction to a game object.</summary>*/
-public class SurfaceFriction : MonoBehaviour
+/**<summary>Surface interactions (like friction) and information
+ * relating to touching surfaces.</summary>
+ */
+public class SurfaceInteraction : MonoBehaviour
 {
 	/**<summary>Velocity multiplier when not touching a specific surface
 	 * (meaning outside the map/play area.)</summary>
@@ -15,7 +17,7 @@ public class SurfaceFriction : MonoBehaviour
 	 */
 	public float frictionResistance = 0.0f;
 
-	private List<SurfaceWithFriction> touchingSurfaces = new List<SurfaceWithFriction>();
+	private List<Surface> touchingSurfaces = new List<Surface>();
 
 	public bool IsSwimming
 	{
@@ -25,7 +27,7 @@ public class SurfaceFriction : MonoBehaviour
 			{
 				return true;
 			}
-			foreach (SurfaceWithFriction s in touchingSurfaces)
+			foreach (Surface s in touchingSurfaces)
 			{
 				if (s.IsLiquid)
 				{
@@ -41,13 +43,13 @@ public class SurfaceFriction : MonoBehaviour
 		float multiplier = defaultVelocityMultiplier;
 		if (touchingSurfaces.Count > 0)
 		{
-			multiplier = SurfaceWithFriction.ResultingVelocityMultiplier(touchingSurfaces);
+			multiplier = Surface.ResultingVelocityMultiplier(touchingSurfaces);
 		}
 		multiplier = Mathf.Clamp01(multiplier + frictionResistance * (1.0f - multiplier));
 		GetComponent<Rigidbody2D>().velocity = GetComponent<Rigidbody2D>().velocity * multiplier;
 	}
 
-	public void AddSurface(SurfaceWithFriction surface)
+	public void AddSurface(Surface surface)
 	{
 		if (!touchingSurfaces.Contains(surface))
 		{
@@ -55,7 +57,7 @@ public class SurfaceFriction : MonoBehaviour
 		}
 	}
 
-	public void RemoveSurface(SurfaceWithFriction surface)
+	public void RemoveSurface(Surface surface)
 	{
 		touchingSurfaces.Remove(surface);
 	}

@@ -5,7 +5,7 @@ using UnityEngine;
 /**<summary>The attached trigger represents a region that has
  * surface friction.</summary>
  */
-public class SurfaceWithFriction : MonoBehaviour
+public class Surface : MonoBehaviour
 {
 	public SurfaceType surfaceType;
 
@@ -42,14 +42,14 @@ public class SurfaceWithFriction : MonoBehaviour
 		}
 	}
 
-	public static float ResultingVelocityMultiplier(List<SurfaceWithFriction> surfaces)
+	public static float ResultingVelocityMultiplier(List<Surface> surfaces)
 	{
 		if (surfaces.Count <= 0)
 		{
 			return 1.0f;
 		}
 		float sum = 0.0f;
-		foreach (SurfaceWithFriction s in surfaces)
+		foreach (Surface s in surfaces)
 		{
 			sum += s.velocityMultiplier;
 		}
@@ -58,18 +58,18 @@ public class SurfaceWithFriction : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
-		if (collision.GetComponent<SurfaceFriction>() != null)
+		if (collision.GetComponent<SurfaceInteraction>() != null)
 		{
-			collision.GetComponent<SurfaceFriction>().AddSurface(this);
+			collision.GetComponent<SurfaceInteraction>().AddSurface(this);
 		}
 	}
 
 	private void OnTriggerExit2D(Collider2D collision)
 	{
 
-		if (collision.GetComponent<SurfaceFriction>() != null)
+		if (collision.GetComponent<SurfaceInteraction>() != null)
 		{
-			collision.GetComponent<SurfaceFriction>().RemoveSurface(this);
+			collision.GetComponent<SurfaceInteraction>().RemoveSurface(this);
 		}
 	}
 
