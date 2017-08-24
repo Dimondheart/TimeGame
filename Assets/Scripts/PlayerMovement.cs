@@ -9,9 +9,10 @@ public class PlayerMovement : ControlledMovement
 	public float dashSpeed = 15.0f;
 	public float dashDuration = 0.2f;
 
-	private float lastDashStart = 0.0f;
+	private ConvertableTimeRecord lastDashStart;
 	private Vector3 dashVelocity;
 	private bool isDashingInternal = false;
+	private bool dashReleasedAfterExitingWater = true;
 
 	public bool IsDashing
 	{
@@ -24,6 +25,11 @@ public class PlayerMovement : ControlledMovement
 			isDashingInternal = value;
 			GetComponent<SurfaceInteraction>().enabled = !value;
 		}
+	}
+
+	private void Awake()
+	{
+		lastDashStart = ConvertableTimeRecord.GetTime();
 	}
 
 	private void Update()
@@ -52,7 +58,14 @@ public class PlayerMovement : ControlledMovement
 			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 			if (IsDashing)
 			{
-				if (ManipulableTime.time - lastDashStart >= dashDuration)
+				float currentTime = ManipulableTime.time;
+				float lastDashTime = lastDashStart.manipulableTime;
+				if (ManipulableTime.IsTimeFrozen)
+				{
+					currentTime = Time.time;
+					lastDashTime = lastDashStart.unityTime;
+				}
+				if (currentTime - lastDashTime >= dashDuration)
 				{
 					IsDashing = false;
 				}
@@ -68,14 +81,19 @@ public class PlayerMovement : ControlledMovement
 					SurfaceInteraction sf = GetComponent<SurfaceInteraction>();
 					if (sf.IsSwimming)
 					{
+						dashReleasedAfterExitingWater = false;
 						newVelocity = newVelocity.normalized * ((movementSpeed + dashSpeed) / 2.0f);
 					}
-					else
+					else if (dashReleasedAfterExitingWater)
 					{
 						IsDashing = true;
-						lastDashStart = ManipulableTime.time;
+						lastDashStart.SetToCurrent();
 						dashVelocity = newVelocity.normalized * dashSpeed;
 					}
+				}
+				else
+				{
+					dashReleasedAfterExitingWater = true;
 				}
 			}
 		}

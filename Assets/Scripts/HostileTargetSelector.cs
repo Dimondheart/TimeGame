@@ -8,12 +8,12 @@ public class HostileTargetSelector : MonoBehaviour
 {
 	public GameObject target { get; private set; }
 	public List<GameObject> hostilesInLineOfSight = new List<GameObject>();
+	public List<GameObject> otherHostilesDetected = new List<GameObject>();
 	public Vector3 targetLastSpotted { get; private set; }
 
 	public void OnLineOfSightEnter(GameObject entered)
 	{
-		//Debug.Log("Entered line of sight:" + entered.name);
-		if (IsHostile(entered))
+		if (!hostilesInLineOfSight.Contains(entered) && IsHostile(entered))
 		{
 			hostilesInLineOfSight.Add(entered);
 		}
@@ -21,7 +21,6 @@ public class HostileTargetSelector : MonoBehaviour
 
 	public void OnLineOfSightExit(GameObject exited)
 	{
-		//Debug.Log("Left line of sight:" + exited.name);
 		hostilesInLineOfSight.Remove(exited);
 	}
 
@@ -32,6 +31,19 @@ public class HostileTargetSelector : MonoBehaviour
 		{
 			hostilesInLineOfSight.Add(seen);
 		}
+	}
+
+	private void OnCollisionEnter2D(Collision2D collision)
+	{
+		if (!otherHostilesDetected.Contains(collision.gameObject) && IsHostile(collision.gameObject))
+		{
+			otherHostilesDetected.Add(collision.gameObject);
+		}
+	}
+
+	private void OnCollisionExit2D(Collision2D collision)
+	{
+		otherHostilesDetected.Remove(collision.gameObject);
 	}
 
 	private void Start()
@@ -45,12 +57,15 @@ public class HostileTargetSelector : MonoBehaviour
 		{
 			return;
 		}
-		GameObject newTarget = ClosestVisibleHostile();
-		if (newTarget == null && target != null)
+		if (!hostilesInLineOfSight.Contains(target))
+		{
+			target = null;
+		}
+		if (target != null)
 		{
 			targetLastSpotted = target.transform.position;
 		}
-		target = newTarget;
+		target = ClosestDetectedHostile();
 	}
 
 	/**<summary>Checks if this thing considers the specified other thing
@@ -62,9 +77,9 @@ public class HostileTargetSelector : MonoBehaviour
 			&& otherThing.GetComponent<Health>().isAlignedWithPlayer != GetComponent<Health>().isAlignedWithPlayer;
 	}
 
-	public GameObject ClosestVisibleHostile()
+	public GameObject ClosestDetectedHostile()
 	{
-		if (hostilesInLineOfSight.Count <= 0)
+		if (hostilesInLineOfSight.Count <= 0 && otherHostilesDetected.Count <= 0)
 		{
 			return null;
 		}
@@ -72,6 +87,15 @@ public class HostileTargetSelector : MonoBehaviour
 		float closestDist = float.PositiveInfinity;
 		float dist;
 		foreach (GameObject go in hostilesInLineOfSight)
+		{
+			dist = Vector3.Distance(go.transform.position, transform.position);
+			if (dist < closestDist)
+			{
+				closestDist = dist;
+				closest = go;
+			}
+		}
+		foreach (GameObject go in otherHostilesDetected)
 		{
 			dist = Vector3.Distance(go.transform.position, transform.position);
 			if (dist < closestDist)

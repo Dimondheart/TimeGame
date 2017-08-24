@@ -44,19 +44,19 @@ public class SpriteAngleSelector : MonoBehaviour
 			return;
 		}
 		float angle = GetComponent<DirectionLooking>().Angle;
-		if (Mathf.Abs(angle) <= 45.0f)
+		if (Mathf.Abs(angle) <= 40.0f)
 		{
 			SetSelectedRotation(0, GetComponent<Health>().health <= 0);
 		}
-		else if (Mathf.Abs(angle) >= 135.0f)
+		else if (Mathf.Abs(angle) >= 140.0f)
 		{
 			SetSelectedRotation(180, GetComponent<Health>().health <= 0);
 		}
-		else if (angle < 0.0f)
+		else if (angle <= -5.0f)
 		{
 			SetSelectedRotation(-90, GetComponent<Health>().health <= 0);
 		}
-		else
+		else if (angle >= 5.0f)
 		{
 			SetSelectedRotation(90, GetComponent<Health>().health <= 0);
 		}

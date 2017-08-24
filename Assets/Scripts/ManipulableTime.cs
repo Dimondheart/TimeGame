@@ -7,7 +7,8 @@ using UnityEngine;
  */
 public class ManipulableTime : MonoBehaviour
 {
-	private static bool isTimeFrozenInternal = false;
+	private static bool isTimeFrozenInternal;
+	private static TimeFreezeState timeFreezeState;
 
 	public static float time { get; private set; }
 	public static float deltaTime { get; private set; }
@@ -21,6 +22,17 @@ public class ManipulableTime : MonoBehaviour
 		}
 		set
 		{
+			if (value != isTimeFrozenInternal)
+			{
+				if (timeFreezeState == TimeFreezeState.ChangedLastFrame)
+				{
+					timeFreezeState = TimeFreezeState.ChangedThisFrameAndLastFrame;
+				}
+				else if (timeFreezeState != TimeFreezeState.ChangedThisFrameAndLastFrame)
+				{
+					timeFreezeState = TimeFreezeState.ChangedThisFrame;
+				}
+			}
 			isTimeFrozenInternal = value;
 		}
 	}
@@ -35,6 +47,16 @@ public class ManipulableTime : MonoBehaviour
 			Time.timeScale = value ? 0.0f : 1.0f;
 		}
 	}
+	/**<summary>Check if the status of time freeze was changed during the previous
+	 * frame.</summary>
+	 */
+	public static bool TimeFreezeChanged
+	{
+		get
+		{
+			return timeFreezeState == TimeFreezeState.ChangedLastFrame || timeFreezeState == TimeFreezeState.ChangedThisFrameAndLastFrame;
+		}
+	}
 
 	private void Awake()
 	{
@@ -47,6 +69,23 @@ public class ManipulableTime : MonoBehaviour
 
 	private void Update()
 	{
+		switch (timeFreezeState)
+		{
+			case TimeFreezeState.NotChangedRecently:
+				break;
+			case TimeFreezeState.ChangedLastFrame:
+				timeFreezeState = TimeFreezeState.NotChangedRecently;
+				break;
+			case TimeFreezeState.ChangedThisFrame:
+				timeFreezeState = TimeFreezeState.ChangedLastFrame;
+				break;
+			case TimeFreezeState.ChangedThisFrameAndLastFrame:
+				timeFreezeState = TimeFreezeState.ChangedLastFrame;
+				break;
+			default:
+				Debug.LogWarning("Unhandled TimeFreezeState ID:" + (int)timeFreezeState);
+				break;
+		}
 		if (IsTimeFrozen)
 		{
 			deltaTime = 0.0f;
@@ -69,5 +108,13 @@ public class ManipulableTime : MonoBehaviour
 			fixedDeltaTime = Time.fixedDeltaTime;
 			fixedTime += fixedDeltaTime;
 		}
+	}
+
+	private enum TimeFreezeState
+	{
+		NotChangedRecently = 0,
+		ChangedThisFrame,
+		ChangedLastFrame,
+		ChangedThisFrameAndLastFrame
 	}
 }

@@ -13,9 +13,14 @@ public class PlayerMelee : MonoBehaviour
 	/**<summary>HP damage per attack.</summary>*/
 	public int damagePerHit = 5;
 	/**<summary>Time the last attack was made.</summary>*/
-	private float lastAttackTime = 0.0f;
+	private ConvertableTimeRecord lastAttackTime;
 	/**<summary>List of things that are hit when melee is active.</summary>*/
 	private List<Collider2D> attackable = new List<Collider2D>();
+
+	private void Awake()
+	{
+		lastAttackTime = ConvertableTimeRecord.GetTime();
+	}
 
 	private void Update()
 	{
@@ -26,7 +31,7 @@ public class PlayerMelee : MonoBehaviour
 		if (DynamicInput.GetButton("Melee") && GetComponent<Health>().health > 0)
 		{
 			GetComponent<SpriteColorChanger>().SpriteColor = colorDuringAction;
-			if (ManipulableTime.time - lastAttackTime >= cooldown)
+			if (ManipulableTime.time - lastAttackTime.manipulableTime >= cooldown)
 			{
 				bool atLeastOneAttacked = false;
 				foreach (Collider2D col2D in attackable)
@@ -44,7 +49,7 @@ public class PlayerMelee : MonoBehaviour
 				}
 				if (atLeastOneAttacked)
 				{
-					lastAttackTime = ManipulableTime.time;
+					lastAttackTime.SetToCurrent();
 				}
 			}
 		}

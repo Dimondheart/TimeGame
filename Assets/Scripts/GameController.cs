@@ -19,6 +19,12 @@ public class GameController : MonoBehaviour
 	 * open.</summary>
 	 */
 	public GameObject pauseMenuPanel;
+	/**<summary>The credits panel.</summary>*/
+	public GameObject creditsPanel;
+	/**<summary>Set active when displaying any menus that pause
+	 * the game.</summary>
+	 */
+	public GameObject menuBackgroundPanel;
 	/**<summary>The GUI element to select first in the game over panel (used for
 	 * gamepad menu navigation.)</summary>
 	 */
@@ -91,12 +97,13 @@ public class GameController : MonoBehaviour
 	/**<summary>Open the pause menu.</summary>*/
 	public void OpenPauseMenu()
 	{
-		if (pauseMenuPanel.activeSelf || gameOverPanel.activeSelf || victoryPanel.activeSelf)
+		if (menuBackgroundPanel.activeSelf)
 		{
 			return;
 		}
 		ManipulableTime.IsGameFrozen = true;
 		pauseMenuPanel.SetActive(true);
+		menuBackgroundPanel.SetActive(true);
 		UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = pauseMenuPanelFirstSelected;
 	}
 
@@ -109,6 +116,7 @@ public class GameController : MonoBehaviour
 		}
 		ManipulableTime.IsGameFrozen = false;
 		pauseMenuPanel.SetActive(false);
+		menuBackgroundPanel.SetActive(false);
 		UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = null;
 	}
 }
