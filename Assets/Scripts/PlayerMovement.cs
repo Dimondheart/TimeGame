@@ -100,7 +100,7 @@ public class PlayerMovement : ControlledMovement
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
 		IsApplyingMotion = IsDashing || !Mathf.Approximately(0.0f, newVelocity.x) || !Mathf.Approximately(0.0f, newVelocity.y);
 		Vector2 lookDirection = new Vector2(DynamicInput.GetAxis("Look Horizontal"), DynamicInput.GetAxis("Look Vertical"));
-		if (lookDirection.magnitude < 0.01f)
+		if (Mathf.Approximately(0.0f, lookDirection.magnitude))
 		{
 			lookDirection = newVelocity;
 		}
