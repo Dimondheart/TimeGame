@@ -34,6 +34,23 @@ public class PlayerMovement : ControlledMovement
 
 	private void Update()
 	{
+		/*
+		if (DynamicInput.GetButtonDown("Freeze Move"))
+		{
+			if (ManipulableTime.RewindModeEnabled)
+			{
+				ManipulableTime.InitiateReplay();
+			}
+			else if (ManipulableTime.ReplayModeEnabled)
+			{
+				ManipulableTime.StopReplay();
+			}
+			else
+			{
+				ManipulableTime.InitiateRewind();
+			}
+		}
+		*/
 		if (ManipulableTime.IsTimeFrozen && !DynamicInput.GetButton("Freeze Move"))
 		{
 			if (DynamicInput.GetButton("Freeze Move"))
