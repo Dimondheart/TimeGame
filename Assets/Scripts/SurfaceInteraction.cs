@@ -40,6 +40,10 @@ public class SurfaceInteraction : MonoBehaviour
 
 	private void Update()
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (ManipulableTime.IsTimeFrozen)
 		{
 			return;
@@ -62,6 +66,10 @@ public class SurfaceInteraction : MonoBehaviour
 
 	private void FixedUpdate()
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (ManipulableTime.IsTimeFrozen)
 		{
 			return;

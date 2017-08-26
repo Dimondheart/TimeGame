@@ -19,6 +19,10 @@ public class DealDamageOnContact : MonoBehaviour
 
 	private void OnTriggerStay2D(Collider2D other)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (GetComponent<Health>().health <= 0 || ManipulableTime.IsTimeFrozen)
 		{
 			return;

@@ -66,6 +66,10 @@ public class Surface : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (collision.GetComponent<SurfaceInteraction>() != null)
 		{
 			collision.GetComponent<SurfaceInteraction>().AddSurface(this);
@@ -74,7 +78,10 @@ public class Surface : MonoBehaviour
 
 	private void OnTriggerExit2D(Collider2D collision)
 	{
-
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (collision.GetComponent<SurfaceInteraction>() != null)
 		{
 			collision.GetComponent<SurfaceInteraction>().RemoveSurface(this);

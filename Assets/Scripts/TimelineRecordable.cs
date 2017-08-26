@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**<summary>Base for all custom monobehaviors that support creating
+/**<summary>Interface for all custom monobehaviors that support creating
  * and using timeline records.</summary>
  */
-public class TimelineRecordable : MonoBehaviour
+public interface ITimelineRecordable
 {
+	TimelineRecord MakeTimelineRecord();
+	void ApplyTimelineRecord(TimelineRecord record);
 }

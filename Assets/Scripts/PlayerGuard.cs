@@ -11,7 +11,10 @@ public class PlayerGuard : MonoBehaviour
 
 	private void Update()
 	{
-
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (ManipulableTime.IsTimeFrozen)
 		{
 			return;

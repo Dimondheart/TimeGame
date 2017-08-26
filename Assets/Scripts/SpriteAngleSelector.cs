@@ -57,6 +57,10 @@ public class SpriteAngleSelector : MonoBehaviour
 
 	private void Update()
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (ManipulableTime.IsTimeFrozen)
 		{
 			return;

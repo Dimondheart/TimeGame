@@ -7,4 +7,25 @@ using UnityEngine;
  */
 public class TimelineSnapshot
 {
+	private Dictionary<Component, TimelineRecord> records = new Dictionary<Component, TimelineRecord>();
+
+	public void AddRecord(Component component, TimelineRecord record)
+	{
+		records[component] = record;
+	}
+
+	public void ApplyRecords()
+	{
+		foreach (KeyValuePair<Component, TimelineRecord> kvp in records)
+		{
+			if (kvp.Key is ITimelineRecordable)
+			{
+				((ITimelineRecordable)kvp.Key).ApplyTimelineRecord(kvp.Value);
+			}
+			else
+			{
+				TimelineRecord.ApplyTimelineRecord(kvp.Key, kvp.Value);
+			}
+		}
+	}
 }

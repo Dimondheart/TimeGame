@@ -24,6 +24,10 @@ public class PlayerMelee : MonoBehaviour
 
 	private void Update()
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (ManipulableTime.IsTimeFrozen)
 		{
 			return;
@@ -61,6 +65,10 @@ public class PlayerMelee : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		Health otherHealth = collision.gameObject.GetComponent<Health>();
 		if (collision.isTrigger || otherHealth == null)
 		{
@@ -74,6 +82,10 @@ public class PlayerMelee : MonoBehaviour
 
 	private void OnTriggerExit2D(Collider2D collision)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		attackable.Remove(collision);
 	}
 }

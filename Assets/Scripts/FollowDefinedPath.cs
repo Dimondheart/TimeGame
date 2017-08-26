@@ -13,6 +13,10 @@ public class FollowDefinedPath : ControlledMovement
 
 	private void OnEnable()
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		float shortestDist = float.PositiveInfinity;
 		float dist;
 		// Find the nearest target
@@ -29,6 +33,10 @@ public class FollowDefinedPath : ControlledMovement
 
 	private void Update()
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (ManipulableTime.IsTimeFrozen)
 		{
 			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;

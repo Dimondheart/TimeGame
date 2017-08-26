@@ -13,6 +13,10 @@ public class HostileTargetSelector : MonoBehaviour
 
 	public void OnLineOfSightEnter(GameObject entered)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (!hostilesInLineOfSight.Contains(entered) && IsHostile(entered))
 		{
 			hostilesInLineOfSight.Add(entered);
@@ -21,11 +25,19 @@ public class HostileTargetSelector : MonoBehaviour
 
 	public void OnLineOfSightExit(GameObject exited)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		hostilesInLineOfSight.Remove(exited);
 	}
 
 	public void OnLineOfSightPersist(GameObject seen)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		//Debug.Log("In line of sight:" + seen.name);
 		if (!hostilesInLineOfSight.Contains(seen) && IsHostile(seen))
 		{
@@ -35,6 +47,10 @@ public class HostileTargetSelector : MonoBehaviour
 
 	private void OnCollisionEnter2D(Collision2D collision)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (!otherHostilesDetected.Contains(collision.gameObject) && IsHostile(collision.gameObject))
 		{
 			otherHostilesDetected.Add(collision.gameObject);
@@ -43,6 +59,10 @@ public class HostileTargetSelector : MonoBehaviour
 
 	private void OnCollisionExit2D(Collision2D collision)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		otherHostilesDetected.Remove(collision.gameObject);
 	}
 
@@ -53,6 +73,10 @@ public class HostileTargetSelector : MonoBehaviour
 
 	private void Update()
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (ManipulableTime.IsTimeFrozen)
 		{
 			return;
