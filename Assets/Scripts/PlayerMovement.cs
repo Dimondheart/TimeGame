@@ -35,7 +35,7 @@ public class PlayerMovement : ControlledMovement
 	private void Update()
 	{
 		///*
-		if (DynamicInput.GetButtonDown("Freeze Move"))
+		if (DynamicInput.GetButtonUp("Test Time Recording"))
 		{
 			if (ManipulableTime.RewindModeEnabled)
 			{
@@ -55,17 +55,10 @@ public class PlayerMovement : ControlledMovement
 		{
 			return;
 		}
-		if (ManipulableTime.IsTimeFrozen && !DynamicInput.GetButton("Freeze Move"))
+		if (ManipulableTime.IsTimeFrozen)
 		{
-			if (DynamicInput.GetButton("Freeze Move"))
-			{
-				IsDashing = false;
-			}
-			else
-			{
-				GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-				return;
-			}
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+			return;
 		}
 		Vector3 newVelocity =
 			new Vector3(DynamicInput.GetAxis("Move Horizontal"), DynamicInput.GetAxis("Move Vertical"), 0.0f).normalized

@@ -96,8 +96,8 @@ public class DynamicInput : MonoBehaviour
 			new VirtualButton("Toggle time freezing", KeyCode.Joystick1Button3, KeyCode.Q)
 			);
 		virtualControls.Add(
-			"Freeze Move",
-			new VirtualButton("Allows the player to move while time is frozen", KeyCode.Joystick1Button0, KeyCode.Space)
+			"Test Time Recording",
+			new VirtualButton("Cycle through several actions for testing time rewind/replay", KeyCode.Joystick1Button0, KeyCode.Space)
 			);
 	}
 

@@ -291,7 +291,7 @@ public class ManipulableTime : MonoBehaviour
 				if (cycleNumber > oldestRecordedCycle)
 				{
 					SetCurrentCycle(cycleNumber - 1);
-					Debug.Log("Rewinding (new cycle):" + cycleNumber);
+					//Debug.Log("Rewinding (new cycle):" + cycleNumber);
 				}
 				break;
 			case TimelineState.ReplayInitiated:
@@ -301,7 +301,7 @@ public class ManipulableTime : MonoBehaviour
 				if (cycleNumber < newestRecordedCycle)
 				{
 					SetCurrentCycle(cycleNumber + 1);
-					Debug.Log("Replaying (new cycle):" + cycleNumber);
+					//Debug.Log("Replaying (new cycle):" + cycleNumber);
 				}
 				break;
 			default:
