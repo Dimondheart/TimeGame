@@ -7,8 +7,6 @@ using UnityEngine;
  */
 public class ManipulableTime : MonoBehaviour
 {
-	private static readonly int recordInterval = 4;
-
 	private static bool isTimeFrozenInternal;
 	private static TimeFreezeState timeFreezeState;
 	private static TimelineState timelineState;
@@ -119,8 +117,6 @@ public class ManipulableTime : MonoBehaviour
 		switch (timelineState)
 		{
 			case TimelineState.Flowing:
-				// Fall through
-			case TimelineState.RecordInitiated:
 				timelineState = TimelineState.RewindInitiated;
 				break;
 			case TimelineState.Recording:
@@ -153,14 +149,7 @@ public class ManipulableTime : MonoBehaviour
 			case TimelineState.RewindInitiated:
 				// Fall through
 			case TimelineState.Rewinding:
-				if ((cycleNumber + 1) % recordInterval == 0)
-				{
-					timelineState = TimelineState.RecordInitiated;
-				}
-				else
-				{
-					timelineState = TimelineState.Flowing;
-				}
+				timelineState = TimelineState.Flowing;
 				break;
 			default:
 				break;
@@ -210,14 +199,7 @@ public class ManipulableTime : MonoBehaviour
 			case TimelineState.ReplayInitiated:
 				// Fall through
 			case TimelineState.Replaying:
-				if ((cycleNumber + 1) % recordInterval == 0)
-				{
-					timelineState = TimelineState.RecordInitiated;
-				}
-				else
-				{
-					timelineState = TimelineState.Flowing;
-				}
+				timelineState = TimelineState.Flowing;
 				break;
 			default:
 				break;
@@ -229,7 +211,7 @@ public class ManipulableTime : MonoBehaviour
 		cycleNumber = -1;
 		oldestRecordedCycle = 0;
 		newestRecordedCycle = 0;
-		timelineState = TimelineState.RecordInitiated;
+		timelineState = TimelineState.Flowing;
 		IsGameFrozen = false;
 		time = Time.time;
 		deltaTime = Time.deltaTime;
@@ -251,14 +233,7 @@ public class ManipulableTime : MonoBehaviour
 		{
 			case TimelineState.Flowing:
 				UpdateInternalTime();
-				if (!IsTimeFrozen && (cycleNumber + 1) % recordInterval == 0)
-				{
-					timelineState = TimelineState.RecordInitiated;
-				}
-				break;
-			case TimelineState.RecordInitiated:
-				UpdateInternalTime();
-				if (!IsTimeFrozen)
+				if (!IsTimeFrozen && (cycleNumber % 2 == 0 || cycleNumber == 0))
 				{
 					timelineState = TimelineState.Recording;
 				}
@@ -277,14 +252,7 @@ public class ManipulableTime : MonoBehaviour
 				else
 				{
 					UpdateInternalTime();
-					if ((cycleNumber + 1) % recordInterval == 0)
-					{
-						timelineState = TimelineState.RecordInitiated;
-					}
-					else
-					{
-						timelineState = TimelineState.Flowing;
-					}
+					timelineState = TimelineState.Flowing;
 				}
 				break;
 			case TimelineState.Rewinding:
@@ -383,8 +351,6 @@ public class ManipulableTime : MonoBehaviour
 		 * moving forward like normal or is frozen.</summary>
 		 */
 		Flowing = 0,
-		/**<summary>Timelines will be recording next cycle.</summary>*/
-		RecordInitiated,
 		/**<summary>Timelines should be recording states, and time is
 		 * moving forward like normal.</summary>
 		 */
