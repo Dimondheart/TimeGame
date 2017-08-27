@@ -24,8 +24,9 @@ public class TimelineSnapshot
 			}
 			else
 			{
-				TimelineRecord.ApplyTimelineRecord(kvp.Key, kvp.Value);
+				TimelineRecordForComponent.ApplyTimelineRecord(kvp.Key, (TimelineRecordForComponent)kvp.Value);
 			}
+			kvp.Value.ApplyCommonData(kvp.Key);
 		}
 	}
 

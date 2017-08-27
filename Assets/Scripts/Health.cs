@@ -70,7 +70,7 @@ public class Health : MonoBehaviour, IMaxValue, ICurrentValue, ITimelineRecordab
 		}
 	}
 
-	public class TimelineRecord_Health : TimelineRecord
+	public class TimelineRecord_Health : TimelineRecordForComponent
 	{
 		public int maxHealth;
 		public int health;

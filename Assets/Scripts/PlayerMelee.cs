@@ -111,7 +111,7 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 		attackable.Remove(collision);
 	}
 
-	public class TimelineRecord_PlayerMelee : TimelineRecord
+	public class TimelineRecord_PlayerMelee : TimelineRecordForComponent
 	{
 		public Color colorDuringAction;
 		public float cooldown;

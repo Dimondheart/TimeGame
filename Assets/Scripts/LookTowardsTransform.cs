@@ -42,7 +42,7 @@ public class LookTowardsTransform : MonoBehaviour, ITimelineRecordable
 		}
 	}
 
-	public class TimelineRecord_LookTowardsTransform : TimelineRecord
+	public class TimelineRecord_LookTowardsTransform : TimelineRecordForComponent
 	{
 		public Transform lookTowards;
 		public float maxDistance;

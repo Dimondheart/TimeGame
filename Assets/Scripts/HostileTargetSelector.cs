@@ -152,7 +152,7 @@ public class HostileTargetSelector : MonoBehaviour, ITimelineRecordable
 		return closest;
 	}
 
-	public class TimelineRecord_HostileTargetSelector : TimelineRecord
+	public class TimelineRecord_HostileTargetSelector : TimelineRecordForComponent
 	{
 		public GameObject target;
 		public GameObject[] hostilesInLineOfSight;

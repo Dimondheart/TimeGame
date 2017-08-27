@@ -47,7 +47,7 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable
 		}
 	}
 
-	public class TimelineRecord_PlayerGuard : TimelineRecord
+	public class TimelineRecord_PlayerGuard : TimelineRecordForComponent
 	{
 		public Color colorDuringAction;
 	}

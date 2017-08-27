@@ -59,7 +59,7 @@ public class DealDamageOnContact : MonoBehaviour, ITimelineRecordable
 		lastAttackTime.SetToCurrent();
 	}
 
-	public class TimelineRecord_DealDamageOnContact : TimelineRecord
+	public class TimelineRecord_DealDamageOnContact : TimelineRecordForComponent
 	{
 		public float cooldown;
 		public int damagePerHit;

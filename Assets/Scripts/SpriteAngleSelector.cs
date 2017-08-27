@@ -205,7 +205,7 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 		}
 	}
 
-	public class TimelineRecord_SpriteAngleSelector : TimelineRecord
+	public class TimelineRecord_SpriteAngleSelector : TimelineRecordForComponent
 	{
 		public Transform[] syncronizeRotations;
 		public Vector2 forward;

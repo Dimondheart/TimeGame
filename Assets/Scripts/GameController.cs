@@ -132,7 +132,7 @@ public class GameController : MonoBehaviour, ITimelineRecordable
 		UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = null;
 	}
 
-	public class TimelineRecord_GameController : TimelineRecord
+	public class TimelineRecord_GameController : TimelineRecordForComponent
 	{
 		public GameObject player;
 	}

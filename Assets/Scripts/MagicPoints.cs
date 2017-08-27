@@ -59,7 +59,7 @@ public class MagicPoints : MonoBehaviour, IMaxValue, ICurrentValue, ITimelineRec
 		currentMP = currentMP < 0.0f ? 0.0f : currentMP;
 	}
 
-	public class TimelineRecord_MagicPoints : TimelineRecord
+	public class TimelineRecord_MagicPoints : TimelineRecordForComponent
 	{
 		public float maxMP;
 		public float currentMP;

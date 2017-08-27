@@ -111,7 +111,7 @@ public class Surface : MonoBehaviour, ITimelineRecordable
 		Path
 	}
 
-	public class TimelineRecord_Surface : TimelineRecord
+	public class TimelineRecord_Surface : TimelineRecordForComponent
 	{
 		public SurfaceType surfaceType;
 	}

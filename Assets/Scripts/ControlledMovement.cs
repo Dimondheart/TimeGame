@@ -49,7 +49,7 @@ public abstract class ControlledMovement : MonoBehaviour, ITimelineRecordable
 		isApplyingMotion = record.isApplyingMotion;
 	}
 
-	public abstract class TimelineRecord_ControlledMovement : TimelineRecord
+	public abstract class TimelineRecord_ControlledMovement : TimelineRecordForComponent
 	{
 		public bool isApplyingMotion;
 	}

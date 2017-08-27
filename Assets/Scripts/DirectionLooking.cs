@@ -44,7 +44,7 @@ public class DirectionLooking : MonoBehaviour, ITimelineRecordable
 		direction = r.direction;
 	}
 
-	public class TimelineRecord_DirectionLooking : TimelineRecord
+	public class TimelineRecord_DirectionLooking : TimelineRecordForComponent
 	{
 		public Vector2 direction;
 	}

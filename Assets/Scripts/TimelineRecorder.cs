@@ -12,14 +12,12 @@ public class TimelineRecorder : MonoBehaviour, ITimelineRecordable
 
 	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 	{
-		TimelineRecord_GameObject newTR = new TimelineRecord_GameObject();
-		newTR.activeSelf = gameObject.activeSelf;
-		return newTR;
+		return new TimelineRecordForGameObject();
 	}
 
 	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
 	{
-		TimelineRecord_GameObject tr = (TimelineRecord_GameObject)record;
+		TimelineRecordForGameObject tr = (TimelineRecordForGameObject)record;
 		gameObject.SetActive(tr.activeSelf);
 	}
 
@@ -47,11 +45,15 @@ public class TimelineRecorder : MonoBehaviour, ITimelineRecordable
 			{
 				if (c is ITimelineRecordable)
 				{
-					snapshot.AddRecord(c, ((ITimelineRecordable)c).MakeTimelineRecord());
+					TimelineRecord rec = ((ITimelineRecordable)c).MakeTimelineRecord();
+					rec.AddCommonData(c);
+					snapshot.AddRecord(c, rec);
 				}
-				else if (TimelineRecord.HasTimelineRecordMaker(c))
+				else if (TimelineRecordForComponent.HasTimelineRecordMaker(c))
 				{
-					snapshot.AddRecord(c, TimelineRecord.MakeTimelineRecord(c));
+					TimelineRecord rec = TimelineRecordForComponent.MakeTimelineRecord(c);
+					rec.AddCommonData(c);
+					snapshot.AddRecord(c, rec);
 				}
 			}
 			timeline.AddSnapshot(ManipulableTime.cycleNumber, snapshot);
@@ -63,10 +65,5 @@ public class TimelineRecorder : MonoBehaviour, ITimelineRecordable
 				timeline.ApplySnapshot(ManipulableTime.cycleNumber);
 			}
 		}
-	}
-
-	public class TimelineRecord_GameObject : TimelineRecord
-	{
-		public bool activeSelf;
 	}
 }

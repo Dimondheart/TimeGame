@@ -116,7 +116,7 @@ public class SurfaceInteraction : MonoBehaviour, ITimelineRecordable
 		touchingSurfaces.Remove(surface);
 	}
 
-	public class TimelineRecord_SurfaceInteraction : TimelineRecord
+	public class TimelineRecord_SurfaceInteraction : TimelineRecordForComponent
 	{
 		public float frictionResistance;
 		public Surface[] touchingSurfaces;

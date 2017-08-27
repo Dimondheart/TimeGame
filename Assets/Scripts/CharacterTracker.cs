@@ -120,7 +120,7 @@ public class CharacterTracker : MonoBehaviour, ITimelineRecordable
 		enemies.Add(helper);
 	}
 
-	public class TimelineRecord_CharacterTracker : TimelineRecord
+	public class TimelineRecord_CharacterTracker : TimelineRecordForComponent
 	{
 		public PlayerTrackerHelper[] players;
 		public EnemyTrackerHelper[] enemies;
