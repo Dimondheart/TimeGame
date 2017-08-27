@@ -28,4 +28,9 @@ public class TimelineSnapshot
 			}
 		}
 	}
+
+	public void ClearRecords()
+	{
+		records.Clear();
+	}
 }

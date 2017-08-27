@@ -56,4 +56,43 @@ public class Timeline
 			snapshot.ApplyRecords();
 		}
 	}
+
+	/**<summary>Clear/Remove all snapshots outside the specified range. The
+	 * two snapshots that fall on the specifed bounds will be kept.</summary>
+	 */
+	public void ClearSnapshotsOutsideRange(int oldestInclusive, int newestInclusive)
+	{
+		/*
+		if (debugThing != null && debugThing.name == "Player")
+		{
+			Debug.Log("Before2:" + snapshots.Count);
+		}
+		*/
+		for (int cn = oldestInclusive - 1; cn >= oldestSnapshot; cn--)
+		{
+			if (!snapshots.ContainsKey(cn))
+			{
+				continue;
+			}
+			snapshots[cn].ClearRecords();
+			snapshots.Remove(cn);
+		}
+		oldestSnapshot = oldestInclusive;
+		for (int cn = newestInclusive + 1; cn <= newestSnapshot; cn++)
+		{
+			if (!snapshots.ContainsKey(cn))
+			{
+				continue;
+			}
+			snapshots[cn].ClearRecords();
+			snapshots.Remove(cn);
+		}
+		newestSnapshot = newestInclusive;
+		/*
+		if (debugThing.name == "Player")
+		{
+			Debug.Log("After2:" + snapshots.Count);
+		}
+		*/
+	}
 }

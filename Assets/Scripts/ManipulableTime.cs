@@ -7,22 +7,40 @@ using UnityEngine;
  */
 public class ManipulableTime : MonoBehaviour
 {
+	/**<summary>The furthest that time can rewind from the newest recorded
+	 * cycle.</summary>
+	 */
+	public static readonly float rewindTimeLimit = 2.01f;
+
 	private static bool isTimeFrozenInternal;
-	private static TimeFreezeState timeFreezeState;
+	private static TimeFreezeChangeState timeFreezeState;
 	private static TimelineState timelineState;
+	private static ExcessDataClearingState excessDataClearingState;
 	private static Dictionary<int, float> timeAtCycle;
 	private static Dictionary<int, float> deltaTimeAtCycle;
 	private static Dictionary<int, float> fixedTimeAtCycle;
 	private static Dictionary<int, float> fixedDeltaTimeAtCycle;
 
+	/**<summary>The time when the current Update cycle started.</summary>*/
 	public static float time { get; private set; }
+	/**<summary>The time that passed between this Update cycle and
+	 * the previous one. Is set to 0 when time is frozen.</summary>
+	 */
 	public static float deltaTime { get; private set; }
+	/**<summary>The time when the current FixedUpdate cycle started.</summary>*/
 	public static float fixedTime { get; private set; }
+	/**<summary>The time that passed between this FixedUpdate cycle and
+	 * the previous one. Is set to 0 when time is frozen.</summary>
+	 */
 	public static float fixedDeltaTime { get; private set; }
 	public static int cycleNumber { get; private set; }
 	public static int oldestRecordedCycle { get; private set; }
 	public static int newestRecordedCycle { get; private set; }
-	/**<summary></summary>*/
+	public static int oldestCycleWithinRewindLimit { get; private set; }
+	/**<summary>Check if time is frozen (also returns true if the game is
+	 * frozen/paused or time is rewinding/replaying.) Will return before applying
+	 * changes if the game is frozen.</summary>
+	 */
 	public static bool IsTimeFrozen
 	{
 		get
@@ -37,13 +55,13 @@ public class ManipulableTime : MonoBehaviour
 			}
 			if (value != isTimeFrozenInternal)
 			{
-				if (timeFreezeState == TimeFreezeState.ChangedLastUpdate)
+				if (timeFreezeState == TimeFreezeChangeState.ChangedLastUpdate)
 				{
-					timeFreezeState = TimeFreezeState.ChangedThisUpdateAndLastUpdate;
+					timeFreezeState = TimeFreezeChangeState.ChangedThisUpdateAndLastUpdate;
 				}
-				else if (timeFreezeState != TimeFreezeState.ChangedThisUpdateAndLastUpdate)
+				else if (timeFreezeState != TimeFreezeChangeState.ChangedThisUpdateAndLastUpdate)
 				{
-					timeFreezeState = TimeFreezeState.ChangedThisUpdate;
+					timeFreezeState = TimeFreezeChangeState.ChangedThisUpdate;
 				}
 			}
 			isTimeFrozenInternal = value;
@@ -51,6 +69,7 @@ public class ManipulableTime : MonoBehaviour
 			{
 				StopRewind();
 				StopReplay();
+				InitiateExcessDataClearing();
 			}
 		}
 	}
@@ -72,7 +91,7 @@ public class ManipulableTime : MonoBehaviour
 	{
 		get
 		{
-			return timeFreezeState == TimeFreezeState.ChangedLastUpdate || timeFreezeState == TimeFreezeState.ChangedThisUpdateAndLastUpdate;
+			return timeFreezeState == TimeFreezeChangeState.ChangedLastUpdate || timeFreezeState == TimeFreezeChangeState.ChangedThisUpdateAndLastUpdate;
 		}
 	}
 	public static bool RecordModeEnabled
@@ -103,6 +122,18 @@ public class ManipulableTime : MonoBehaviour
 			return RewindModeEnabled || ReplayModeEnabled;
 		}
 	}
+	/**<summary>If timeline data that is no longer needed (older than
+	 * the max rewind time, or data that is newer than the current cycle
+	 * when time is unfrozen) should be cleared. Check oldestCycleWithinRewindLimit
+	 * for the oldest cycle to keep records for.</summary>
+	 */
+	public static bool ClearingExcessTimelineData
+	{
+		get
+		{
+			return excessDataClearingState == ExcessDataClearingState.Clearing;
+		}
+	}
 
 	/**<summary>Set the state to begin rewinding on the next update.
 	 * Will not initiate the state if the game is frozen, time is
@@ -110,7 +141,7 @@ public class ManipulableTime : MonoBehaviour
 	 */
 	public static void InitiateRewind()
 	{
-		if (IsGameFrozen || !IsTimeFrozen || cycleNumber == oldestRecordedCycle)
+		if (IsGameFrozen || !IsTimeFrozen || cycleNumber == oldestCycleWithinRewindLimit)
 		{
 			return;
 		}
@@ -206,11 +237,57 @@ public class ManipulableTime : MonoBehaviour
 		}
 	}
 
+	/**<summary>Set the excess data clearing state to be active next update.</summary>*/
+	private static void InitiateExcessDataClearing()
+	{
+		if (excessDataClearingState != ExcessDataClearingState.None)
+		{
+			return;
+		}
+		excessDataClearingState = ExcessDataClearingState.ClearingNextUpdate;
+	}
+
+	/**<summary>Clear excess cycle data that is no longer needed and update
+	 * oldest/newest recorded cycle values accordingly. This only clears
+	 * data stored within ManipulableTime. Other classes that record timeline
+	 * data are responsible for clearing their own excess data, and can check
+	 * ClearingExcessTimelineData to see when excess data should be
+	 * cleared.</summary>
+	 */
+	private static void ClearExcessData()
+	{
+		//Debug.Log("Before:" + timeAtCycle.Count);
+		for (int cn = oldestCycleWithinRewindLimit - 1; cn >= oldestRecordedCycle; cn--)
+		{
+			if (!timeAtCycle.Remove(cn))
+			{
+				Debug.LogWarning("failed to remove");
+			}
+			deltaTimeAtCycle.Remove(cn);
+			fixedTimeAtCycle.Remove(cn);
+			fixedDeltaTimeAtCycle.Remove(cn);
+		}
+		oldestRecordedCycle = oldestCycleWithinRewindLimit;
+		for (int cn = cycleNumber + 1; cn <= newestRecordedCycle; cn++)
+		{
+			if (!timeAtCycle.Remove(cn))
+			{
+				Debug.LogWarning("failed to remove 2");
+			}
+			deltaTimeAtCycle.Remove(cn);
+			fixedTimeAtCycle.Remove(cn);
+			fixedDeltaTimeAtCycle.Remove(cn);
+		}
+		newestRecordedCycle = cycleNumber;
+		//Debug.Log("After:" + timeAtCycle.Count);
+	}
+
 	private void Awake()
 	{
 		cycleNumber = -1;
 		oldestRecordedCycle = 0;
 		newestRecordedCycle = 0;
+		oldestCycleWithinRewindLimit = oldestRecordedCycle;
 		timelineState = TimelineState.Flowing;
 		IsGameFrozen = false;
 		time = Time.time;
@@ -256,7 +333,7 @@ public class ManipulableTime : MonoBehaviour
 				}
 				break;
 			case TimelineState.Rewinding:
-				if (cycleNumber > oldestRecordedCycle)
+				if (cycleNumber > oldestCycleWithinRewindLimit)
 				{
 					SetCurrentCycle(cycleNumber - 1);
 					//Debug.Log("Rewinding (new cycle):" + cycleNumber);
@@ -295,20 +372,36 @@ public class ManipulableTime : MonoBehaviour
 	{
 		switch (timeFreezeState)
 		{
-			case TimeFreezeState.NotChangedRecently:
+			case TimeFreezeChangeState.NotChangedRecently:
 				break;
-			case TimeFreezeState.ChangedLastUpdate:
-				timeFreezeState = TimeFreezeState.NotChangedRecently;
+			case TimeFreezeChangeState.ChangedLastUpdate:
+				timeFreezeState = TimeFreezeChangeState.NotChangedRecently;
 				break;
-			case TimeFreezeState.ChangedThisUpdate:
-				timeFreezeState = TimeFreezeState.ChangedLastUpdate;
+			case TimeFreezeChangeState.ChangedThisUpdate:
+				timeFreezeState = TimeFreezeChangeState.ChangedLastUpdate;
 				break;
-			case TimeFreezeState.ChangedThisUpdateAndLastUpdate:
-				timeFreezeState = TimeFreezeState.ChangedLastUpdate;
+			case TimeFreezeChangeState.ChangedThisUpdateAndLastUpdate:
+				timeFreezeState = TimeFreezeChangeState.ChangedLastUpdate;
 				break;
 			default:
 				Debug.LogWarning("Unhandled TimeFreezeState ID:" + (int)timeFreezeState);
 				break;
+		}
+		switch (excessDataClearingState)
+		{
+			case ExcessDataClearingState.ClearingNextUpdate:
+				excessDataClearingState = ExcessDataClearingState.Clearing;
+				ClearExcessData();
+				break;
+			case ExcessDataClearingState.Clearing:
+				excessDataClearingState = ExcessDataClearingState.None;
+				break;
+			default:
+				break;
+		}
+		if (timeAtCycle.Count > 400)
+		{
+			InitiateExcessDataClearing();
 		}
 		if (IsTimeFrozen)
 		{
@@ -325,11 +418,28 @@ public class ManipulableTime : MonoBehaviour
 		deltaTimeAtCycle[cycleNumber] = deltaTime;
 		fixedTimeAtCycle[cycleNumber] = fixedTime;
 		fixedDeltaTimeAtCycle[cycleNumber] = fixedDeltaTime;
+		for (int cn = newestRecordedCycle; cn >= 0; cn--)
+		{
+			// When older timeline data has been cleared
+			if (!timeAtCycle.ContainsKey(cn))
+			{
+				break;
+			}
+			if (timeAtCycle[newestRecordedCycle] - timeAtCycle[cn] <= rewindTimeLimit)
+			{
+				oldestCycleWithinRewindLimit = cn;
+			}
+			else
+			{
+				break;
+			}
+		}
+		//Debug.Log((timeAtCycle[newestRecordedCycle] - timeAtCycle[oldestCycleWithinRewindLimit]));
 	}
 
 	private void SetCurrentCycle(int newCycleNumber)
 	{
-		timeFreezeState = TimeFreezeState.NotChangedRecently;
+		timeFreezeState = TimeFreezeChangeState.NotChangedRecently;
 		cycleNumber = newCycleNumber;
 		time = timeAtCycle[cycleNumber];
 		deltaTime = deltaTimeAtCycle[cycleNumber];
@@ -337,12 +447,22 @@ public class ManipulableTime : MonoBehaviour
 		fixedDeltaTime = fixedDeltaTimeAtCycle[cycleNumber];
 	}
 
-	private enum TimeFreezeState
+	/**<summary>The states of time freeze relating to how recently it has
+	 * been changed.</summary>
+	 */
+	private enum TimeFreezeChangeState
 	{
 		NotChangedRecently = 0,
 		ChangedThisUpdate,
 		ChangedLastUpdate,
 		ChangedThisUpdateAndLastUpdate
+	}
+
+	private enum ExcessDataClearingState
+	{
+		None = 0,
+		ClearingNextUpdate,
+		Clearing
 	}
 
 	private enum TimelineState

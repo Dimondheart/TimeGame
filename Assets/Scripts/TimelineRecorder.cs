@@ -35,6 +35,10 @@ public class TimelineRecorder : MonoBehaviour, ITimelineRecordable
 
 	public void Update()
 	{
+		if (ManipulableTime.ClearingExcessTimelineData)
+		{
+			timeline.ClearSnapshotsOutsideRange(ManipulableTime.oldestRecordedCycle, ManipulableTime.newestRecordedCycle);
+		}
 		if (ManipulableTime.RecordModeEnabled)
 		{
 			TimelineSnapshot snapshot = new TimelineSnapshot();
