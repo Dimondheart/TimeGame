@@ -5,7 +5,7 @@ using UnityEngine;
 /**<summary>Track statistics and other data on all characters currently in
  * the scene.</summary>
  */
-public class CharacterTracker : MonoBehaviour
+public class CharacterTracker : MonoBehaviour, ITimelineRecordable
 {
 	private List<PlayerTrackerHelper> players = new List<PlayerTrackerHelper>();
 	private List<EnemyTrackerHelper> enemies = new List<EnemyTrackerHelper>();
@@ -75,9 +75,30 @@ public class CharacterTracker : MonoBehaviour
 		}
 	}
 
+	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	{
+		TimelineRecord_CharacterTracker record = new TimelineRecord_CharacterTracker();
+		record.players = players.ToArray();
+		record.enemies = enemies.ToArray();
+		return record;
+	}
+
+	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_CharacterTracker rec = (TimelineRecord_CharacterTracker)record;
+		players.Clear();
+		players.AddRange(rec.players);
+		enemies.Clear();
+		enemies.AddRange(rec.enemies);
+	}
+
 	/**<summary>Add a player character to the tracking system.</summary>*/
 	public void AddPlayer(PlayerTrackerHelper helper)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (players.Contains(helper))
 		{
 			return;
@@ -88,10 +109,20 @@ public class CharacterTracker : MonoBehaviour
 	/**<summary>Add an enemy to the tracking system.</summary>*/
 	public void AddEnemy(EnemyTrackerHelper helper)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (enemies.Contains(helper))
 		{
 			return;
 		}
 		enemies.Add(helper);
+	}
+
+	public class TimelineRecord_CharacterTracker : TimelineRecord
+	{
+		public PlayerTrackerHelper[] players;
+		public EnemyTrackerHelper[] enemies;
 	}
 }

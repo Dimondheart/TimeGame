@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary>HP tracking and releated data/functionality.</summary>*/
-public class Health : MonoBehaviour, IMaxValue, ICurrentValue
+public class Health : MonoBehaviour, IMaxValue, ICurrentValue, ITimelineRecordable
 {
 	/**<summary>Maximum HP.</summary>*/
 	public int maxHealth;
@@ -30,6 +30,25 @@ public class Health : MonoBehaviour, IMaxValue, ICurrentValue
 		}
 	}
 
+	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	{
+		TimelineRecord_Health record = new TimelineRecord_Health();
+		record.maxHealth = maxHealth;
+		record.health = health;
+		record.isAlignedWithPlayer = isAlignedWithPlayer;
+		record.takeDamage = takeDamage;
+		return record;
+	}
+
+	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_Health rec = (TimelineRecord_Health)record;
+		maxHealth = rec.maxHealth;
+		health = rec.health;
+		isAlignedWithPlayer = rec.isAlignedWithPlayer;
+		takeDamage = rec.takeDamage;
+	}
+
 	private void Awake()
 	{
 		health = maxHealth;
@@ -41,9 +60,21 @@ public class Health : MonoBehaviour, IMaxValue, ICurrentValue
 	 */
 	public void DoDamage(int damage)
 	{
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
 		if (takeDamage)
 		{
 			health = Mathf.Clamp(health - damage, 0, maxHealth);
 		}
+	}
+
+	public class TimelineRecord_Health : TimelineRecord
+	{
+		public int maxHealth;
+		public int health;
+		public bool isAlignedWithPlayer;
+		public bool takeDamage;
 	}
 }

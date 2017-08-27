@@ -11,6 +11,25 @@ public class FollowDefinedPath : ControlledMovement
 	public float maxSpeed = 4.0f;
 	public int targetIndex = 0;
 
+	public override TimelineRecord MakeTimelineRecord()
+	{
+		TimelineRecord_FollowDefinedPath record = new TimelineRecord_FollowDefinedPath();
+		AddTimelineRecordValues(record);
+		record.targets = (Transform[])targets.Clone();
+		record.maxSpeed = maxSpeed;
+		record.targetIndex = targetIndex;
+		return record;
+	}
+
+	public override void ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_FollowDefinedPath rec = (TimelineRecord_FollowDefinedPath)record;
+		ApplyTimelineRecordValues(rec);
+		targets = (Transform[])rec.targets.Clone();
+		maxSpeed = rec.maxSpeed;
+		targetIndex = rec.targetIndex;
+	}
+
 	private void OnEnable()
 	{
 		if (ManipulableTime.ApplyingTimelineRecords)
@@ -71,5 +90,12 @@ public class FollowDefinedPath : ControlledMovement
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
 		IsApplyingMotion = true;
 		GetComponent<DirectionLooking>().Direction = newVelocity;
+	}
+
+	public class TimelineRecord_FollowDefinedPath : ControlledMovement.TimelineRecord_ControlledMovement
+	{
+		public Transform[] targets;
+		public float maxSpeed;
+		public int targetIndex;
 	}
 }

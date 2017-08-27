@@ -27,6 +27,37 @@ public class PlayerMovement : ControlledMovement
 		}
 	}
 
+	public override TimelineRecord MakeTimelineRecord()
+	{
+		TimelineRecord_PlayerMovement record = new TimelineRecord_PlayerMovement();
+		AddTimelineRecordValues(record);
+		record.movementSpeed = movementSpeed;
+		record.freezeMovement = freezeMovement;
+		record.dashSpeed = dashSpeed;
+		record.dashDuration = dashDuration;
+
+		record.lastDashStart = lastDashStart;
+		record.dashVelocity = dashVelocity;
+		record.isDashingInternal = isDashingInternal;
+		record.dashReleasedAfterExitingWater = dashReleasedAfterExitingWater;
+		return record;
+}
+
+	public override void ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_PlayerMovement rec = (TimelineRecord_PlayerMovement)record;
+		ApplyTimelineRecordValues(rec);
+		movementSpeed = rec.movementSpeed;
+		freezeMovement = rec.freezeMovement;
+		dashSpeed = rec.dashSpeed;
+		dashDuration = rec.dashDuration;
+
+		lastDashStart = rec.lastDashStart;
+		dashVelocity = rec.dashVelocity;
+		isDashingInternal = rec.isDashingInternal;
+		dashReleasedAfterExitingWater = rec.dashReleasedAfterExitingWater;
+	}
+
 	private void Awake()
 	{
 		lastDashStart = ConvertableTimeRecord.GetTime();
@@ -102,5 +133,18 @@ public class PlayerMovement : ControlledMovement
 			lookDirection = newVelocity;
 		}
 		GetComponent<DirectionLooking>().Direction = lookDirection;
+	}
+
+	public class TimelineRecord_PlayerMovement : ControlledMovement.TimelineRecord_ControlledMovement
+	{
+		public float movementSpeed;
+		public bool freezeMovement;
+		public float dashSpeed;
+		public float dashDuration;
+
+		public ConvertableTimeRecord lastDashStart;
+		public Vector3 dashVelocity;
+		public bool isDashingInternal;
+		public bool dashReleasedAfterExitingWater;
 	}
 }

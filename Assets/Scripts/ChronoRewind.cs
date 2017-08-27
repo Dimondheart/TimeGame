@@ -13,6 +13,10 @@ public class ChronoRewind : MonoBehaviour
 
 	private void Update()
 	{
+		if (GetComponent<Health>().health <= 0)
+		{
+			return;
+		}
 		float controlValue = DynamicInput.GetAxisRaw("Rewind/Replay");
 		isAbilityActive = !Mathf.Approximately(0.0f, controlValue);
 		if (isAbilityActive)

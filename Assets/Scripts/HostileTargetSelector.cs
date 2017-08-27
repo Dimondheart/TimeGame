@@ -4,12 +4,33 @@ using UnityEngine;
 
 /**<summary>Selects a target for hostile actions.</summary>*/
 [RequireComponent(typeof(Health))]
-public class HostileTargetSelector : MonoBehaviour
+public class HostileTargetSelector : MonoBehaviour, ITimelineRecordable
 {
 	public GameObject target { get; private set; }
 	public List<GameObject> hostilesInLineOfSight = new List<GameObject>();
 	public List<GameObject> otherHostilesDetected = new List<GameObject>();
 	public Vector3 targetLastSpotted { get; private set; }
+
+	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	{
+		TimelineRecord_HostileTargetSelector record = new TimelineRecord_HostileTargetSelector();
+		record.target = target;
+		record.hostilesInLineOfSight = hostilesInLineOfSight.ToArray();
+		record.otherHostilesDetected = otherHostilesDetected.ToArray();
+		record.targetLastSpotted = targetLastSpotted;
+		return record;
+	}
+
+	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_HostileTargetSelector rec = (TimelineRecord_HostileTargetSelector)record;
+		target = rec.target;
+		hostilesInLineOfSight.Clear();
+		hostilesInLineOfSight.AddRange(rec.hostilesInLineOfSight);
+		otherHostilesDetected.Clear();
+		otherHostilesDetected.AddRange(rec.otherHostilesDetected);
+		targetLastSpotted = rec.targetLastSpotted;
+	}
 
 	public void OnLineOfSightEnter(GameObject entered)
 	{
@@ -129,5 +150,13 @@ public class HostileTargetSelector : MonoBehaviour
 			}
 		}
 		return closest;
+	}
+
+	public class TimelineRecord_HostileTargetSelector : TimelineRecord
+	{
+		public GameObject target;
+		public GameObject[] hostilesInLineOfSight;
+		public GameObject[] otherHostilesDetected;
+		public Vector3 targetLastSpotted;
 	}
 }

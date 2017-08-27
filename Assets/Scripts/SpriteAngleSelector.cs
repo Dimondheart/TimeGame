@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary>Selcts which sprite to display based on which direction this thing
- * is currently facing, and other factors.</summary>
+ * is currently facing, and other factors. ITimelineRecordable implementation
+ * note; the sprite variables are not accounted for in the record, so if in
+ * the future the sprites are changed then this will need to be added.</summary>
  */
-public class SpriteAngleSelector : MonoBehaviour
+public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 {
 	private static readonly Quaternion upRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 	private static readonly Quaternion downRotation = Quaternion.Euler(0.0f, 0.0f, 180.0f);
@@ -54,6 +56,22 @@ public class SpriteAngleSelector : MonoBehaviour
 	 */
 	public List<Transform> syncronizeRotations = new List<Transform>();
 	public Vector2 forward { get; private set; }
+
+	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	{
+		TimelineRecord_SpriteAngleSelector record = new TimelineRecord_SpriteAngleSelector();
+		record.syncronizeRotations = syncronizeRotations.ToArray();
+		record.forward = forward;
+		return record;
+	}
+
+	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_SpriteAngleSelector rec = (TimelineRecord_SpriteAngleSelector)record;
+		syncronizeRotations.Clear();
+		syncronizeRotations.AddRange(rec.syncronizeRotations);
+		forward = rec.forward;
+	}
 
 	private void Update()
 	{
@@ -185,5 +203,11 @@ public class SpriteAngleSelector : MonoBehaviour
 		{
 			t.localRotation = synchRotation;
 		}
+	}
+
+	public class TimelineRecord_SpriteAngleSelector : TimelineRecord
+	{
+		public Transform[] syncronizeRotations;
+		public Vector2 forward;
 	}
 }

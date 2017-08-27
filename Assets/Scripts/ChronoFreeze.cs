@@ -7,6 +7,10 @@ public class ChronoFreeze : MonoBehaviour
 {
 	private void Update()
 	{
+		if (GetComponent<Health>().health <= 0)
+		{
+			return;
+		}
 		if (DynamicInput.GetButtonDown("Toggle Time Freeze") && !ManipulableTime.IsGameFrozen)
 		{
 			if (GetComponent<ChronoPoints>().isCharacterFreezingTime)

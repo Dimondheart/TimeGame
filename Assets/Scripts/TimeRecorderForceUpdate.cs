@@ -28,10 +28,13 @@ public class TimeRecorderForceUpdate : MonoBehaviour
 		List<TimelineRecorder> noLongerDisabled = new List<TimelineRecorder>();
 		foreach (TimelineRecorder tr in disabledTimeRecorders)
 		{
-			tr.Update();
 			if (tr.gameObject.activeInHierarchy && tr.enabled)
 			{
 				noLongerDisabled.Add(tr);
+			}
+			else
+			{
+				tr.Update();
 			}
 		}
 		foreach (TimelineRecorder tr in noLongerDisabled)

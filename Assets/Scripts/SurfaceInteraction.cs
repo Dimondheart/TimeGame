@@ -5,12 +5,12 @@ using UnityEngine;
 /**<summary>Surface interactions (like friction) and information
  * relating to touching surfaces.</summary>
  */
-public class SurfaceInteraction : MonoBehaviour
+public class SurfaceInteraction : MonoBehaviour, ITimelineRecordable
 {
 	/**<summary>Velocity multiplier when not touching a specific surface
 	 * (meaning outside the map/play area.)</summary>
 	 */
-	public static float defaultVelocityMultiplier = 0.08f;
+	public static readonly float defaultVelocityMultiplier = 0.08f;
 
 	/**<summary>Resistance to friction effects. 0 is no resistance, 1
 	 * means friction has no effect.</summary>
@@ -36,6 +36,22 @@ public class SurfaceInteraction : MonoBehaviour
 			}
 			return false;
 		}
+	}
+
+	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	{
+		TimelineRecord_SurfaceInteraction record = new TimelineRecord_SurfaceInteraction();
+		record.frictionResistance = frictionResistance;
+		record.touchingSurfaces = touchingSurfaces.ToArray();
+		return record;
+	}
+
+	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_SurfaceInteraction rec = (TimelineRecord_SurfaceInteraction)record;
+		frictionResistance = rec.frictionResistance;
+		touchingSurfaces.Clear();
+		touchingSurfaces.AddRange(rec.touchingSurfaces);
 	}
 
 	private void Update()
@@ -98,5 +114,11 @@ public class SurfaceInteraction : MonoBehaviour
 	public void RemoveSurface(Surface surface)
 	{
 		touchingSurfaces.Remove(surface);
+	}
+
+	public class TimelineRecord_SurfaceInteraction : TimelineRecord
+	{
+		public float frictionResistance;
+		public Surface[] touchingSurfaces;
 	}
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMelee : MonoBehaviour
+public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 {
 	/**<summary>Color to change the player sprite to while melee is 
 	 * active. Placeholder for animations.</summary>
@@ -16,6 +16,28 @@ public class PlayerMelee : MonoBehaviour
 	private ConvertableTimeRecord lastAttackTime;
 	/**<summary>List of things that are hit when melee is active.</summary>*/
 	private List<Collider2D> attackable = new List<Collider2D>();
+
+	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	{
+		TimelineRecord_PlayerMelee record = new TimelineRecord_PlayerMelee();
+		record.colorDuringAction = colorDuringAction;
+		record.cooldown = cooldown;
+		record.damagePerHit = damagePerHit;
+		record.lastAttackTime = lastAttackTime;
+		record.attackable = attackable.ToArray();
+		return record;
+	}
+
+	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_PlayerMelee rec = (TimelineRecord_PlayerMelee)record;
+		colorDuringAction = rec.colorDuringAction;
+		cooldown = rec.cooldown;
+		damagePerHit = rec.damagePerHit;
+		lastAttackTime = rec.lastAttackTime;
+		attackable.Clear();
+		attackable.AddRange(rec.attackable);
+	}
 
 	private void Awake()
 	{
@@ -87,5 +109,14 @@ public class PlayerMelee : MonoBehaviour
 			return;
 		}
 		attackable.Remove(collision);
+	}
+
+	public class TimelineRecord_PlayerMelee : TimelineRecord
+	{
+		public Color colorDuringAction;
+		public float cooldown;
+		public int damagePerHit;
+		public ConvertableTimeRecord lastAttackTime;
+		public Collider2D[] attackable;
 	}
 }

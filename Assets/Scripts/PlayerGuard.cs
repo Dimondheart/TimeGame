@@ -2,12 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerGuard : MonoBehaviour
+public class PlayerGuard : MonoBehaviour, ITimelineRecordable
 {
 	/**<summary>Color to make the player sprite while guarding, a placeholder
 	 * for animations.</summary>
 	 */
 	public Color colorDuringAction;
+
+	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	{
+		TimelineRecord_PlayerGuard record = new TimelineRecord_PlayerGuard();
+		record.colorDuringAction = colorDuringAction;
+		return record;
+	}
+
+	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_PlayerGuard rec = (TimelineRecord_PlayerGuard)record;
+		colorDuringAction = rec.colorDuringAction;
+	}
 
 	private void Update()
 	{
@@ -32,5 +45,10 @@ public class PlayerGuard : MonoBehaviour
 				GetComponent<SpriteColorChanger>().SpriteColor = Color.white;
 			}
 		}
+	}
+
+	public class TimelineRecord_PlayerGuard : TimelineRecord
+	{
+		public Color colorDuringAction;
 	}
 }

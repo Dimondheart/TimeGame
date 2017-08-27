@@ -39,6 +39,25 @@ public class FollowTarget : ControlledMovement
 		}
 	}
 
+	public override TimelineRecord MakeTimelineRecord()
+	{
+		TimelineRecord_FollowTarget record = new TimelineRecord_FollowTarget();
+		AddTimelineRecordValues(record);
+		record.maxSpeed = maxSpeed;
+		record.velocityBlendRate = velocityBlendRate;
+		record.targetLocationReached = targetLocationReached;
+		return record;
+	}
+
+	public override void ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_FollowTarget rec = (TimelineRecord_FollowTarget)record;
+		ApplyTimelineRecordValues(rec);
+		maxSpeed = rec.maxSpeed;
+		velocityBlendRate = rec.velocityBlendRate;
+		targetLocationReached = rec.targetLocationReached;
+	}
+
 	private void Start()
 	{
 		targetLocationReached = true;
@@ -91,5 +110,12 @@ public class FollowTarget : ControlledMovement
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
 		IsApplyingMotion = true;
 		GetComponent<DirectionLooking>().Direction = newVelocity;
+	}
+
+	public class TimelineRecord_FollowTarget : ControlledMovement.TimelineRecord_ControlledMovement
+	{
+		public float maxSpeed;
+		public float velocityBlendRate;
+		public bool targetLocationReached;
 	}
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 /**<summary>Information about a ground/etc. surface and detecting
  * touching game objects that have SurfaceIntaraction.</summary>
  */
-public class Surface : MonoBehaviour
+public class Surface : MonoBehaviour, ITimelineRecordable
 {
 	/**<summary>What type of ground/etc. covers this surface.</summary>*/
 	public SurfaceType surfaceType;
@@ -64,6 +64,19 @@ public class Surface : MonoBehaviour
 		return sum / surfaces.Count;
 	}
 
+	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	{
+		TimelineRecord_Surface record = new TimelineRecord_Surface();
+		record.surfaceType = surfaceType;
+		return record;
+	}
+
+	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+	{
+		TimelineRecord_Surface rec = (TimelineRecord_Surface)record;
+		surfaceType = rec.surfaceType;
+	}
+
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
 		if (ManipulableTime.ApplyingTimelineRecords)
@@ -96,5 +109,10 @@ public class Surface : MonoBehaviour
 		Water,
 		Floor,
 		Path
+	}
+
+	public class TimelineRecord_Surface : TimelineRecord
+	{
+		public SurfaceType surfaceType;
 	}
 }

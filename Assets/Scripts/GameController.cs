@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary>Manages high-level game operations.</summary>*/
-public class GameController : MonoBehaviour
+public class GameController : MonoBehaviour, ITimelineRecordable
 {
 	/**<summary>The player character.</summary>*/
 	public GameObject player;
@@ -35,6 +35,18 @@ public class GameController : MonoBehaviour
 	public GameObject pauseMenuPanelFirstSelected;
 	/**<summary>If the current level is finished loading or not.</summary>*/
 	public bool isLevelLoaded;
+
+	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	{
+		TimelineRecord_GameController record = new TimelineRecord_GameController();
+		record.player = player;
+		return record;
+	}
+
+	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+	{
+		player = ((TimelineRecord_GameController)record).player;
+	}
 
 	private void Update()
 	{
@@ -118,5 +130,10 @@ public class GameController : MonoBehaviour
 		pauseMenuPanel.SetActive(false);
 		menuBackgroundPanel.SetActive(false);
 		UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = null;
+	}
+
+	public class TimelineRecord_GameController : TimelineRecord
+	{
+		public GameObject player;
 	}
 }

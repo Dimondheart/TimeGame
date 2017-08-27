@@ -5,7 +5,7 @@ using UnityEngine;
 /**<summary>Base class for components that handle controlled motion
  * from the player or an AI.</summary>
  */
-public abstract class ControlledMovement : MonoBehaviour
+public abstract class ControlledMovement : MonoBehaviour, ITimelineRecordable
 {
 	public PhysicsMaterial2D stationaryMaterial;
 	public PhysicsMaterial2D applyingMotionMaterial;
@@ -20,6 +20,10 @@ public abstract class ControlledMovement : MonoBehaviour
 		}
 		protected set
 		{
+			if (ManipulableTime.ApplyingTimelineRecords)
+			{
+				return;
+			}
 			isApplyingMotion = value;
 			if (value)
 			{
@@ -30,5 +34,23 @@ public abstract class ControlledMovement : MonoBehaviour
 				GetComponent<Rigidbody2D>().sharedMaterial = stationaryMaterial;
 			}
 		}
+	}
+
+	public abstract TimelineRecord MakeTimelineRecord();
+	public abstract void ApplyTimelineRecord(TimelineRecord record);
+
+	protected void AddTimelineRecordValues(TimelineRecord_ControlledMovement record)
+	{
+		record.isApplyingMotion = isApplyingMotion;
+	}
+
+	protected void ApplyTimelineRecordValues(TimelineRecord_ControlledMovement record)
+	{
+		isApplyingMotion = record.isApplyingMotion;
+	}
+
+	public abstract class TimelineRecord_ControlledMovement : TimelineRecord
+	{
+		public bool isApplyingMotion;
 	}
 }
