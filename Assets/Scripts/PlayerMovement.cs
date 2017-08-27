@@ -34,23 +34,6 @@ public class PlayerMovement : ControlledMovement
 
 	private void Update()
 	{
-		///*
-		if (DynamicInput.GetButtonUp("Test Time Recording"))
-		{
-			if (ManipulableTime.RewindModeEnabled)
-			{
-				ManipulableTime.InitiateReplay();
-			}
-			else if (ManipulableTime.ReplayModeEnabled)
-			{
-				ManipulableTime.StopReplay();
-			}
-			else
-			{
-				ManipulableTime.InitiateRewind();
-			}
-		}
-		//*/
 		if (ManipulableTime.ApplyingTimelineRecords)
 		{
 			return;
