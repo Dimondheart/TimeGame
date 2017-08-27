@@ -7,26 +7,26 @@ using UnityEngine;
  */
 public class TimelineRecorderForceUpdate : MonoBehaviour
 {
-	private static readonly List<TimelineRecorder> disabledTimeRecorders =
+	private static readonly List<TimelineRecorder> disabledRecorders =
 		new List<TimelineRecorder>();
 
-	public static void AddDisabledTimeRecorder(TimelineRecorder recorder)
+	public static void AddDisabledRecorder(TimelineRecorder recorder)
 	{
-		if (!disabledTimeRecorders.Contains(recorder))
+		if (!disabledRecorders.Contains(recorder))
 		{
-			disabledTimeRecorders.Add(recorder);
+			disabledRecorders.Add(recorder);
 		}
 	}
 
 	private void Awake()
 	{
-		disabledTimeRecorders.Clear();
+		disabledRecorders.Clear();
 	}
 
 	private void Update()
 	{
 		List<TimelineRecorder> noLongerDisabled = new List<TimelineRecorder>();
-		foreach (TimelineRecorder tr in disabledTimeRecorders)
+		foreach (TimelineRecorder tr in disabledRecorders)
 		{
 			if (tr.gameObject.activeInHierarchy && tr.enabled)
 			{
@@ -39,7 +39,7 @@ public class TimelineRecorderForceUpdate : MonoBehaviour
 		}
 		foreach (TimelineRecorder tr in noLongerDisabled)
 		{
-			disabledTimeRecorders.Remove(tr);
+			disabledRecorders.Remove(tr);
 		}
 	}
 }
