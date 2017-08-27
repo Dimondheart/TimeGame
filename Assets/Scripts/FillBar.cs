@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**<summary>A sprite-based UI element for displaying values with a
- * maximum and a current value, such as character HP.</summary>
- */
-public class FillBarUI : MonoBehaviour, IMaxValue, ICurrentValue
+/**<summary></summary>*/
+public abstract class FillBar : MonoBehaviour, IMaxValue, ICurrentValue
 {
 	/**<summary>The color of the bar when current equals max (50%-100% when
 	 * not blending.)</summary>
@@ -21,10 +19,14 @@ public class FillBarUI : MonoBehaviour, IMaxValue, ICurrentValue
 	public Color lowColor;
 	/**<summary>If colors should be blended for intermediate values.</summary>*/
 	public bool blendColors;
+	/**<summary>Component with an implementation for IMaxValue to use for
+	 * the max value of this fill bar.</summary>
+	 */
 	public Component maxValueContainer;
+	/**<summary>Component with an implementation for ICurrentValue to use for
+	 * the current value of this fill bar.</summary>
+	 */
 	public Component currentValueContainer;
-	public GameObject bar;
-	public GameObject mask;
 
 	public float MaxValue
 	{
@@ -54,44 +56,41 @@ public class FillBarUI : MonoBehaviour, IMaxValue, ICurrentValue
 		}
 	}
 
+	protected abstract void SetBarColor(Color color);
+	protected abstract void SetBarLength(float length);
+
 	private void LateUpdate()
 	{
 		float fillRat = FillRatio;
-		mask.transform.localPosition = new Vector3(
-			-1.0f + fillRat,
-			mask.transform.localPosition.y,
-			mask.transform.localPosition.z
-			);
+		SetBarLength(fillRat);
 		if (blendColors)
 		{
 			if (fillRat >= 1.0f)
 			{
-				bar.GetComponent<SpriteRenderer>().color = fullColor;
+				SetBarColor(fullColor);
 			}
 			else if (fillRat >= 0.5f)
 			{
-				bar.GetComponent<SpriteRenderer>().color =
-					Color.Lerp(halfColor, fullColor, (fillRat - 0.5f) * 2.0f);
+				SetBarColor(Color.Lerp(halfColor, fullColor, (fillRat - 0.5f) * 2.0f));
 			}
 			else
 			{
-				bar.GetComponent<SpriteRenderer>().color =
-					Color.Lerp(lowColor, halfColor, fillRat * 2.0f);
+				SetBarColor(Color.Lerp(lowColor, halfColor, fillRat * 2.0f));
 			}
 		}
 		else
 		{
 			if (fillRat > 0.5f)
 			{
-				bar.GetComponent<SpriteRenderer>().color = fullColor;
+				SetBarColor(fullColor);
 			}
 			else if (fillRat > 0.25f)
 			{
-				bar.GetComponent<SpriteRenderer>().color = halfColor;
+				SetBarColor(halfColor);
 			}
 			else
 			{
-				bar.GetComponent<SpriteRenderer>().color = lowColor;
+				SetBarColor(lowColor);
 			}
 		}
 	}
