@@ -30,7 +30,7 @@ public class TimelineRecorder : MonoBehaviour, ITimelineRecordable
 
 	private void OnDisable()
 	{
-		TimeRecorderForceUpdate.AddDisabledTimeRecorder(this);
+		TimelineRecorderForceUpdate.AddDisabledTimeRecorder(this);
 	}
 
 	public void Update()

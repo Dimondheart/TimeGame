@@ -5,7 +5,7 @@ using UnityEngine;
 /**<summary>Allows update functions to be called on TimeRecorder scripts
  * that have been disabled because their game object was made inactive.</summary>
  */
-public class TimeRecorderForceUpdate : MonoBehaviour
+public class TimelineRecorderForceUpdate : MonoBehaviour
 {
 	private static readonly List<TimelineRecorder> disabledTimeRecorders =
 		new List<TimelineRecorder>();
