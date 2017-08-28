@@ -15,7 +15,7 @@ public abstract class TimelineRecordForComponent : TimelineRecord
 	 */
 	public static bool HasTimelineRecordMaker(Component component)
 	{
-		return component is Transform || component is SpriteRenderer;
+		return component is Transform || component is SpriteRenderer || component is Rigidbody2D;
 	}
 
 	public static TimelineRecordForComponent MakeTimelineRecord(Component component)
@@ -35,6 +35,15 @@ public abstract class TimelineRecordForComponent : TimelineRecord
 			TimelineRecord_SpriteRenderer record = new TimelineRecord_SpriteRenderer();
 			record.sprite = sr.sprite;
 			record.color = sr.color;
+			return record;
+		}
+		else if (component is Rigidbody2D)
+		{
+			Rigidbody2D rb2d = (Rigidbody2D)component;
+			TimelineRecord_Rigidbody2D record = new TimelineRecord_Rigidbody2D();
+			record.sharedMaterial = rb2d.sharedMaterial;
+			record.velocity = rb2d.velocity;
+			record.angularVelocity = rb2d.angularVelocity;
 			return record;
 		}
 		Debug.LogWarning(
@@ -62,6 +71,15 @@ public abstract class TimelineRecordForComponent : TimelineRecord
 			TimelineRecord_SpriteRenderer rec = (TimelineRecord_SpriteRenderer)record;
 			sr.sprite = rec.sprite;
 			sr.color = rec.color;
+			return;
+		}
+		else if (component is Rigidbody2D)
+		{
+			Rigidbody2D rb2d = (Rigidbody2D)component;
+			TimelineRecord_Rigidbody2D rec = (TimelineRecord_Rigidbody2D)record;
+			rb2d.sharedMaterial = rec.sharedMaterial;
+			rb2d.velocity = rec.velocity;
+			rb2d.angularVelocity = rec.angularVelocity;
 			return;
 		}
 		Debug.LogWarning(
@@ -101,5 +119,12 @@ public abstract class TimelineRecordForComponent : TimelineRecord
 	{
 		public Sprite sprite;
 		public Color color;
+	}
+
+	public class TimelineRecord_Rigidbody2D : TimelineRecordForComponent
+	{
+		public PhysicsMaterial2D sharedMaterial;
+		public Vector2 velocity;
+		public float angularVelocity;
 	}
 }
