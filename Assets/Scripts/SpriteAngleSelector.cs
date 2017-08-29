@@ -83,10 +83,6 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 		{
 			return;
 		}
-		if (GetComponent<PlayerMovement>() != null && GetComponent<PlayerMovement>().freezeMovement)
-		{
-			return;
-		}
 		float angle = GetComponent<DirectionLooking>().Angle;
 		float absAngle = Mathf.Abs(angle);
 		// Back

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary>Manages high-level game operations.</summary>*/
-public class GameController : MonoBehaviour, ITimelineRecordable
+public class GameController : MonoBehaviour
 {
 	/**<summary>The player character.</summary>*/
 	public GameObject player;
@@ -19,8 +19,6 @@ public class GameController : MonoBehaviour, ITimelineRecordable
 	 * open.</summary>
 	 */
 	public GameObject pauseMenuPanel;
-	/**<summary>The credits panel.</summary>*/
-	public GameObject creditsPanel;
 	/**<summary>Set active when displaying any menus that pause
 	 * the game.</summary>
 	 */
@@ -33,49 +31,31 @@ public class GameController : MonoBehaviour, ITimelineRecordable
 	 * gamepad menu navigation.)</summary>
 	 */
 	public GameObject pauseMenuPanelFirstSelected;
-	/**<summary>If the current level is finished loading or not.</summary>*/
-	public bool isLevelLoaded;
-
-	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
-	{
-		TimelineRecord_GameController record = new TimelineRecord_GameController();
-		record.player = player;
-		return record;
-	}
-
-	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
-	{
-		player = ((TimelineRecord_GameController)record).player;
-	}
 
 	private void Update()
 	{
-		if (isLevelLoaded)
+		// Temporary gamepad mode toggle
+		if (Input.GetKeyDown(KeyCode.G))
 		{
-			// Temporary gamepad mode toggle
-			if (Input.GetKeyDown(KeyCode.G))
+			DynamicInput.GamepadModeEnabled = !DynamicInput.GamepadModeEnabled;
+		}
+		if (GetComponent<CharacterTracker>().LivePlayerCount <= 0)
+		{
+			gameOverPanel.SetActive(true);
+		}
+		else if (GetComponent<CharacterTracker>().LiveEnemyCount <= 0)
+		{
+			victoryPanel.SetActive(true);
+		}
+		else if (DynamicInput.GetButtonDown("Toggle Pause Menu"))
+		{
+			if (pauseMenuPanel.activeSelf)
 			{
-				DynamicInput.GamepadModeEnabled = !DynamicInput.GamepadModeEnabled;
+				ClosePauseMenu();
 			}
-			if (GetComponent<CharacterTracker>().LivePlayerCount <= 0)
+			else
 			{
-				gameOverPanel.SetActive(true);
-				player.GetComponent<PlayerMovement>().freezeMovement = true;
-			}
-			else if (GetComponent<CharacterTracker>().LiveEnemyCount <= 0)
-			{
-				victoryPanel.SetActive(true);
-			}
-			else if (DynamicInput.GetButtonDown("Toggle Pause Menu"))
-			{
-				if (pauseMenuPanel.activeSelf)
-				{
-					ClosePauseMenu();
-				}
-				else
-				{
-					OpenPauseMenu();
-				}
+				OpenPauseMenu();
 			}
 		}
 	}
@@ -130,10 +110,5 @@ public class GameController : MonoBehaviour, ITimelineRecordable
 		pauseMenuPanel.SetActive(false);
 		menuBackgroundPanel.SetActive(false);
 		UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = null;
-	}
-
-	public class TimelineRecord_GameController : TimelineRecordForComponent
-	{
-		public GameObject player;
 	}
 }

@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerMovement : ControlledMovement
 {
 	public float movementSpeed = 6.0f;
-	public bool freezeMovement = false;
 	public float dashSpeed = 15.0f;
 	public float dashDuration = 0.2f;
 
@@ -32,7 +31,6 @@ public class PlayerMovement : ControlledMovement
 		TimelineRecord_PlayerMovement record = new TimelineRecord_PlayerMovement();
 		AddTimelineRecordValues(record);
 		record.movementSpeed = movementSpeed;
-		record.freezeMovement = freezeMovement;
 		record.dashSpeed = dashSpeed;
 		record.dashDuration = dashDuration;
 
@@ -48,7 +46,6 @@ public class PlayerMovement : ControlledMovement
 		TimelineRecord_PlayerMovement rec = (TimelineRecord_PlayerMovement)record;
 		ApplyTimelineRecordValues(rec);
 		movementSpeed = rec.movementSpeed;
-		freezeMovement = rec.freezeMovement;
 		dashSpeed = rec.dashSpeed;
 		dashDuration = rec.dashDuration;
 
@@ -77,52 +74,45 @@ public class PlayerMovement : ControlledMovement
 		Vector3 newVelocity =
 			new Vector3(DynamicInput.GetAxis("Move Horizontal"), DynamicInput.GetAxis("Move Vertical"), 0.0f).normalized
 			* movementSpeed;
-		if (freezeMovement)
+		GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
+		if (IsDashing)
 		{
-			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+			float currentTime = ManipulableTime.time;
+			float lastDashTime = lastDashStart.manipulableTime;
+			if (ManipulableTime.IsTimeFrozen)
+			{
+				currentTime = Time.time;
+				lastDashTime = lastDashStart.unityTime;
+			}
+			if (currentTime - lastDashTime >= dashDuration)
+			{
+				IsDashing = false;
+			}
+			else
+			{
+				newVelocity = dashVelocity;
+			}
 		}
 		else
 		{
-			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
-			if (IsDashing)
+			if (DynamicInput.GetButton("Dash"))
 			{
-				float currentTime = ManipulableTime.time;
-				float lastDashTime = lastDashStart.manipulableTime;
-				if (ManipulableTime.IsTimeFrozen)
+				SurfaceInteraction sf = GetComponent<SurfaceInteraction>();
+				if (sf.IsSwimming)
 				{
-					currentTime = Time.time;
-					lastDashTime = lastDashStart.unityTime;
+					dashReleasedAfterExitingWater = false;
+					newVelocity = newVelocity.normalized * ((movementSpeed + dashSpeed) / 2.0f);
 				}
-				if (currentTime - lastDashTime >= dashDuration)
+				else if (dashReleasedAfterExitingWater)
 				{
-					IsDashing = false;
-				}
-				else
-				{
-					newVelocity = dashVelocity;
+					IsDashing = true;
+					lastDashStart.SetToCurrent();
+					dashVelocity = newVelocity.normalized * dashSpeed;
 				}
 			}
 			else
 			{
-				if (DynamicInput.GetButton("Dash"))
-				{
-					SurfaceInteraction sf = GetComponent<SurfaceInteraction>();
-					if (sf.IsSwimming)
-					{
-						dashReleasedAfterExitingWater = false;
-						newVelocity = newVelocity.normalized * ((movementSpeed + dashSpeed) / 2.0f);
-					}
-					else if (dashReleasedAfterExitingWater)
-					{
-						IsDashing = true;
-						lastDashStart.SetToCurrent();
-						dashVelocity = newVelocity.normalized * dashSpeed;
-					}
-				}
-				else
-				{
-					dashReleasedAfterExitingWater = true;
-				}
+				dashReleasedAfterExitingWater = true;
 			}
 		}
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
@@ -138,7 +128,6 @@ public class PlayerMovement : ControlledMovement
 	public class TimelineRecord_PlayerMovement : ControlledMovement.TimelineRecord_ControlledMovement
 	{
 		public float movementSpeed;
-		public bool freezeMovement;
 		public float dashSpeed;
 		public float dashDuration;
 
