@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary>Chrono-Points for use by chrono-abilities.</summary>*/
-public class ChronoPoints : MonoBehaviour, IMaxValue, ICurrentValue
+public class ChronoPoints : MonoBehaviour, IPrimaryValue
 {
 	/**<summary>Max CP.</summary>*/
 	public float maxChronoPoints;
@@ -40,7 +40,7 @@ public class ChronoPoints : MonoBehaviour, IMaxValue, ICurrentValue
 		}
 	}
 
-	float IMaxValue.MaxValue
+	float IPrimaryValue.MaxValue
 	{
 		get
 		{
@@ -48,7 +48,7 @@ public class ChronoPoints : MonoBehaviour, IMaxValue, ICurrentValue
 		}
 	}
 
-	float ICurrentValue.CurrentValue
+	float IPrimaryValue.CurrentValue
 	{
 		get
 		{

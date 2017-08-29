@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary></summary>*/
-public abstract class FillBar : MonoBehaviour, IMaxValue, ICurrentValue
+public abstract class FillBar : MonoBehaviour, IPrimaryValue
 {
 	/**<summary>The color of the bar when current equals max (50%-100% when
 	 * not blending.)</summary>
@@ -22,17 +22,13 @@ public abstract class FillBar : MonoBehaviour, IMaxValue, ICurrentValue
 	/**<summary>Component with an implementation for IMaxValue to use for
 	 * the max value of this fill bar.</summary>
 	 */
-	public Component maxValueContainer;
-	/**<summary>Component with an implementation for ICurrentValue to use for
-	 * the current value of this fill bar.</summary>
-	 */
-	public Component currentValueContainer;
+	public Component primaryValueContainer;
 
 	public float MaxValue
 	{
 		get
 		{
-			return ((IMaxValue)maxValueContainer).MaxValue;
+			return ((IPrimaryValue)primaryValueContainer).MaxValue;
 		}
 	}
 
@@ -40,7 +36,7 @@ public abstract class FillBar : MonoBehaviour, IMaxValue, ICurrentValue
 	{
 		get
 		{
-			return ((ICurrentValue)currentValueContainer).CurrentValue;
+			return ((IPrimaryValue)primaryValueContainer).CurrentValue;
 		}
 	}
 

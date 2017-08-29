@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary>HP tracking and releated data/functionality.</summary>*/
-public class Health : MonoBehaviour, IMaxValue, ICurrentValue, ITimelineRecordable
+public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 {
 	/**<summary>Maximum HP.</summary>*/
 	public int maxHealth;
@@ -14,7 +14,7 @@ public class Health : MonoBehaviour, IMaxValue, ICurrentValue, ITimelineRecordab
 	/**<summary>If damage should be delt or ignored.</summary>*/
 	public bool takeDamage = true;
 
-	float IMaxValue.MaxValue
+	float IPrimaryValue.MaxValue
 	{
 		get
 		{
@@ -22,7 +22,7 @@ public class Health : MonoBehaviour, IMaxValue, ICurrentValue, ITimelineRecordab
 		}
 	}
 
-	float ICurrentValue.CurrentValue
+	float IPrimaryValue.CurrentValue
 	{
 		get
 		{

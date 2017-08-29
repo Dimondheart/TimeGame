@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary>Standard MP concept.</summary>*/
-public class MagicPoints : MonoBehaviour, IMaxValue, ICurrentValue, ITimelineRecordable
+public class MagicPoints : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 {
 	public float maxMP;
 	public float currentMP { get; private set; }
 
-	float IMaxValue.MaxValue
+	float IPrimaryValue.MaxValue
 	{
 		get
 		{
@@ -17,7 +17,7 @@ public class MagicPoints : MonoBehaviour, IMaxValue, ICurrentValue, ITimelineRec
 		}
 	}
 
-	float ICurrentValue.CurrentValue
+	float IPrimaryValue.CurrentValue
 	{
 		get
 		{
