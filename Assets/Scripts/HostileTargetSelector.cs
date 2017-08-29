@@ -134,7 +134,7 @@ public class HostileTargetSelector : MonoBehaviour, ITimelineRecordable
 		foreach (GameObject go in hostilesInLineOfSight)
 		{
 			dist = Vector3.Distance(go.transform.position, transform.position);
-			if (dist < closestDist)
+			if (go.GetComponent<Health>().health > 0 && dist < closestDist)
 			{
 				closestDist = dist;
 				closest = go;
@@ -143,7 +143,7 @@ public class HostileTargetSelector : MonoBehaviour, ITimelineRecordable
 		foreach (GameObject go in otherHostilesDetected)
 		{
 			dist = Vector3.Distance(go.transform.position, transform.position);
-			if (dist < closestDist)
+			if (go.GetComponent<Health>().health > 0 && dist < closestDist)
 			{
 				closestDist = dist;
 				closest = go;

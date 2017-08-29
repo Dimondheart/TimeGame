@@ -98,7 +98,8 @@ public class ManipulableTime : MonoBehaviour
 	{
 		get
 		{
-			return timelineState == TimelineState.Recording || timelineState == TimelineState.RecordingAndRewindInitiated;
+			return !IsTimeFrozen &&
+				(timelineState == TimelineState.Recording || timelineState == TimelineState.RecordingAndRewindInitiated);
 		}
 	}
 	public static bool RewindModeEnabled
@@ -180,7 +181,8 @@ public class ManipulableTime : MonoBehaviour
 			case TimelineState.RewindInitiated:
 				// Fall through
 			case TimelineState.Rewinding:
-				timelineState = TimelineState.Flowing;
+				//timelineState = TimelineState.Flowing;
+				timelineState = TimelineState.Recording;
 				break;
 			default:
 				break;
@@ -200,6 +202,8 @@ public class ManipulableTime : MonoBehaviour
 		}
 		switch (timelineState)
 		{
+			case TimelineState.Recording:
+				// Fall through
 			case TimelineState.Flowing:
 				if (IsTimeFrozen)
 				{
@@ -230,7 +234,8 @@ public class ManipulableTime : MonoBehaviour
 			case TimelineState.ReplayInitiated:
 				// Fall through
 			case TimelineState.Replaying:
-				timelineState = TimelineState.Flowing;
+				timelineState = TimelineState.Recording;
+				//timelineState = TimelineState.Flowing;
 				break;
 			default:
 				break;
@@ -288,7 +293,8 @@ public class ManipulableTime : MonoBehaviour
 		oldestRecordedCycle = 0;
 		newestRecordedCycle = 0;
 		oldestCycleWithinRewindLimit = oldestRecordedCycle;
-		timelineState = TimelineState.Flowing;
+		//timelineState = TimelineState.Flowing;
+		timelineState = TimelineState.Recording;
 		IsGameFrozen = false;
 		time = Time.time;
 		deltaTime = Time.deltaTime;
@@ -310,14 +316,15 @@ public class ManipulableTime : MonoBehaviour
 		{
 			case TimelineState.Flowing:
 				UpdateInternalTime();
-				if (!IsTimeFrozen && (cycleNumber % 2 == 0 || cycleNumber == 0))
+				timelineState = TimelineState.Recording;
+				/*if (!IsTimeFrozen && (cycleNumber % 2 == 0 || cycleNumber == 0))
 				{
 					timelineState = TimelineState.Recording;
-				}
+				}*/
 				break;
 			case TimelineState.Recording:
 				UpdateInternalTime();
-				timelineState = TimelineState.Flowing;
+				//timelineState = TimelineState.Flowing;
 				break;
 			case TimelineState.RecordingAndRewindInitiated:
 				// Fall through
@@ -329,7 +336,8 @@ public class ManipulableTime : MonoBehaviour
 				else
 				{
 					UpdateInternalTime();
-					timelineState = TimelineState.Flowing;
+					//timelineState = TimelineState.Flowing;
+					timelineState = TimelineState.Recording;
 				}
 				break;
 			case TimelineState.Rewinding:

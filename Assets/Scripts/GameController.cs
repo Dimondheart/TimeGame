@@ -5,8 +5,6 @@ using UnityEngine;
 /**<summary>Manages high-level game operations.</summary>*/
 public class GameController : MonoBehaviour
 {
-	/**<summary>The player character.</summary>*/
-	public GameObject player;
 	/**<summary>The panel to be displayed (set active) when
 	 * game over conditions are met.</summary>
 	 */
