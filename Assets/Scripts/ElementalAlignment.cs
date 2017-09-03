@@ -12,17 +12,17 @@ public class ElementalAlignment : MonoBehaviour, ITimelineRecordable
 	 */
 	public static readonly float minAlignmentValue = 0.08f;
 	/**<summary>Minimum value to set an element value to, so it is rounded
-	 * when it is near 0 (except when applying a gain rate.)</summary>
+	 * when it is set near 0 (except when applying a gain rate.)</summary>
 	 */
 	public static readonly float minElementValue = 0.008f;
 
+	/**<summary>The minimum rate at which an element value will increase.</summary>*/
 	public float minGainRate = 1.0f / 60.0f;
+	/**<summary>The max rate at which an element value will increase.</summary>*/
 	public float maxGainRate = 0.05f;
-	public float useToMaxGainRate = 1.0f;
+	public bool dynamicAlignment;
 
 	private Element gainFocus = Element.None;
-	private float temperatureUsed = 0.0f;
-	private float moistureUsed = 0.0f;
 	private float temperature;
 	private float moisture;
 
@@ -43,14 +43,6 @@ public class ElementalAlignment : MonoBehaviour, ITimelineRecordable
 			}
 			if ((value ^ gainFocus) != Element.None)
 			{
-				if ((value & Element.Hot) != Element.None || (value & Element.Cold) != Element.None)
-				{
-					temperatureUsed = 0.0f;
-				}
-				if ((value & Element.Wet) != Element.None || (value & Element.Dry) != Element.None)
-				{
-					moistureUsed = 0.0f;
-				}
 				gainFocus = value;
 				UpdateTempGainRate();
 				UpdateMoistureGainRate();
@@ -132,25 +124,31 @@ public class ElementalAlignment : MonoBehaviour, ITimelineRecordable
 	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 	{
 		TimelineRecord_ElementalAlignment record = new TimelineRecord_ElementalAlignment();
+		record.minGainRate = minGainRate;
+		record.maxGainRate = maxGainRate;
+		record.gainFocus = gainFocus;
+		record.temperature = temperature;
+		record.moisture = moisture;
+		record.temperatureGainRate = temperatureGainRate;
+		record.moistureGainRate = moistureGainRate;
 		return record;
 	}
 
 	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
 	{
-	}
-
-	private void Awake()
-	{
-		GainFocus = Element.Ice;
+		TimelineRecord_ElementalAlignment rec = (TimelineRecord_ElementalAlignment)record;
+		minGainRate = rec.minGainRate;
+		maxGainRate = rec.maxGainRate;
+		gainFocus = rec.gainFocus;
+		temperature = rec.temperature;
+		moisture = rec.moisture;
+		temperatureGainRate = rec.temperatureGainRate;
+		moistureGainRate = rec.moistureGainRate;
 	}
 
 	private void Update()
 	{
-		if (ManipulableTime.ApplyingTimelineRecords)
-		{
-			return;
-		}
-		if (ManipulableTime.IsTimeFrozen)
+		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || !dynamicAlignment)
 		{
 			return;
 		}
@@ -174,7 +172,6 @@ public class ElementalAlignment : MonoBehaviour, ITimelineRecordable
 		}
 		use = Mathf.Clamp(use, 0.0f, Mathf.Abs(temperature));
 		Temperature -= (temperature >= 0.0f) ? use : -use;
-		temperatureUsed += Mathf.Abs(use);
 		UpdateTempGainRate();
 	}
 
@@ -186,13 +183,16 @@ public class ElementalAlignment : MonoBehaviour, ITimelineRecordable
 		}
 		use = Mathf.Clamp(use, 0.0f, Mathf.Abs(moisture));
 		Moisture -= (moisture >= 0.0f) ? use : -use;
-		moistureUsed += Mathf.Abs(use);
 		UpdateMoistureGainRate();
 	}
 
-	public void ReleaseAll()
+	public void ReleaseTemperature()
 	{
 		Temperature = 0.0f;
+	}
+
+	public void ReleaseMoisture()
+	{
 		Moisture = 0.0f;
 	}
 
@@ -254,5 +254,14 @@ public class ElementalAlignment : MonoBehaviour, ITimelineRecordable
 
 	public class TimelineRecord_ElementalAlignment : TimelineRecordForComponent
 	{
+		public float minGainRate;
+		public float maxGainRate;
+
+		public Element gainFocus;
+		public float temperature;
+		public float moisture;
+
+		public float temperatureGainRate;
+		public float moistureGainRate;
 	}
 }

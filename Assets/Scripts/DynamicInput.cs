@@ -99,13 +99,21 @@ public class DynamicInput : MonoBehaviour
 			"Rewind/Replay",
 			new VirtualAxis("Horizontal look direction", "6th axis (Joysticks)", "<> axis")
 			);
+		virtualControls.Add(
+			"Temperature Element Adjust",
+			new VirtualAxisWithButton("Change the temperature elemental focus", "6th axis (Joysticks)", "AD axis", KeyCode.None, KeyCode.LeftAlt)
+			);
+		virtualControls.Add(
+			"Moisture Element Adjust",
+			new VirtualAxisWithButton("Change the moisture elemental focus", "7th axis (Joysticks)", "SW axis", KeyCode.None, KeyCode.LeftAlt)
+			);
 	}
 
 	/**<summary>Input.GetButtonDown equivalent.</summary>*/
 	public static bool GetButtonDown(string virtualName)
 	{
 		VirtualControl control = virtualControls[virtualName];
-		if (control.GetType() == typeof(VirtualButtonFromJoystick))
+		if (control is VirtualButtonFromJoystick)
 		{
 			return Input.GetKeyDown(((VirtualButtonFromJoystick)control).keyboardMouseKeyCode);
 		}
@@ -118,7 +126,7 @@ public class DynamicInput : MonoBehaviour
 	public static bool GetButton(string virtualName)
 	{
 		VirtualControl control = virtualControls[virtualName];
-		if (control.GetType() == typeof(VirtualButtonFromJoystick))
+		if (control is VirtualButtonFromJoystick)
 		{
 			return Mathf.Abs(Input.GetAxisRaw(((VirtualButtonFromJoystick)control).gamepadName)) >= ((VirtualButtonFromJoystick)control).cutoff
 				|| Input.GetKey(((VirtualButtonFromJoystick)control).keyboardMouseKeyCode);
@@ -132,7 +140,7 @@ public class DynamicInput : MonoBehaviour
 	public static bool GetButtonUp(string virtualName)
 	{
 		VirtualControl control = virtualControls[virtualName];
-		if (control.GetType() == typeof(VirtualButtonFromJoystick))
+		if (control is VirtualButtonFromJoystick)
 		{
 			return Input.GetKeyUp(((VirtualButtonFromJoystick)control).keyboardMouseKeyCode);
 		}
@@ -213,7 +221,7 @@ public class DynamicInput : MonoBehaviour
 				}
 			}
 		}
-		public float RawAxis
+		public virtual float RawAxis
 		{
 			get
 			{
@@ -242,7 +250,7 @@ public class DynamicInput : MonoBehaviour
 				return axisValue;
 			}
 		}
-		public float Axis
+		public virtual float Axis
 		{
 			get
 			{
@@ -290,6 +298,42 @@ public class DynamicInput : MonoBehaviour
 			this.gamepadName = gamepadName;
 			this.cutoff = cutoff;
 			this.keyboardMouseKeyCode = keyboardMouseKeyCode;
+		}
+	}
+
+	public class VirtualAxisWithButton : VirtualAxis
+	{
+		public KeyCode gamepadButton;
+		public KeyCode keyboardMouseButton;
+
+		public override float RawAxis
+		{
+			get
+			{
+				return (Input.GetKey(gamepadButton) || Input.GetKey(keyboardMouseButton)) ?
+					base.RawAxis
+					:
+					0.0f
+					;
+			}
+		}
+
+		public override float Axis
+		{
+			get
+			{
+				return (Input.GetKey(gamepadButton) || Input.GetKey(keyboardMouseButton)) ?
+					base.Axis
+					:
+					0.0f
+					;
+			}
+		}
+
+		public VirtualAxisWithButton(string description, string gamepadName, string keyboardMouseName, KeyCode gamepadButton, KeyCode keyboardMouseButton) : base (description, gamepadName, keyboardMouseName)
+		{
+			this.gamepadButton = gamepadButton;
+			this.keyboardMouseButton = keyboardMouseButton;
 		}
 	}
 }
