@@ -121,6 +121,18 @@ public class ElementalAlignment : MonoBehaviour, ITimelineRecordable
 		}
 	}
 
+	public bool IsStable
+	{
+		get
+		{
+			return !dynamicAlignment
+				|| (
+					(Mathf.Abs(temperature) < minElementValue || Mathf.Abs(temperature) > 1.0f - minElementValue)
+					&& (Mathf.Abs(moisture) < minElementValue || Mathf.Abs(moisture) > 1.0f - minElementValue)
+				);
+		}
+	}
+
 	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 	{
 		TimelineRecord_ElementalAlignment record = new TimelineRecord_ElementalAlignment();
@@ -154,12 +166,12 @@ public class ElementalAlignment : MonoBehaviour, ITimelineRecordable
 		}
 		if (temperatureGainRate != 0.0f)
 		{
-			temperature = Mathf.Clamp(temperature + temperatureGainRate * Time.deltaTime, -1.0f, 1.0f);
+			temperature = Mathf.Clamp(temperature + temperatureGainRate * ManipulableTime.deltaTime, -1.0f, 1.0f);
 			UpdateTempGainRate();
 		}
 		if (moistureGainRate != 0.0f)
 		{
-			moisture = Mathf.Clamp(moisture + moistureGainRate * Time.deltaTime, -1.0f, 1.0f);
+			moisture = Mathf.Clamp(moisture + moistureGainRate * ManipulableTime.deltaTime, -1.0f, 1.0f);
 			UpdateMoistureGainRate();
 		}
 	}
@@ -249,7 +261,11 @@ public class ElementalAlignment : MonoBehaviour, ITimelineRecordable
 		Fire = Hot | Dry,
 		Steam = Hot | Wet,
 		Wind = Cold | Dry,
-		Ice = Cold | Wet
+		Ice = Cold | Wet,
+		/**<summary>Never set an alignment value to this, only use as a shortcut for bit ops.</summary>*/
+		Temp = Hot | Cold,
+		/**<summary>Never set an alignment value to this, only use as a shortcut for bit ops.</summary>*/
+		Moist = Dry | Wet
 	}
 
 	public class TimelineRecord_ElementalAlignment : TimelineRecordForComponent

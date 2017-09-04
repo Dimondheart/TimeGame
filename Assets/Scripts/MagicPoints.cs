@@ -6,7 +6,8 @@ using UnityEngine;
 /**<summary>Standard MP concept.</summary>*/
 public class MagicPoints : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 {
-	public float maxMP;
+	public float maxMP = 100.0f;
+	public float regenRate = 20.0f;
 	public float currentMP { get; private set; }
 
 	float IPrimaryValue.MaxValue
@@ -29,6 +30,7 @@ public class MagicPoints : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	{
 		TimelineRecord_MagicPoints record = new TimelineRecord_MagicPoints();
 		record.maxMP = maxMP;
+		record.regenRate = regenRate;
 		record.currentMP = currentMP;
 		return record;
 	}
@@ -37,31 +39,33 @@ public class MagicPoints : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	{
 		TimelineRecord_MagicPoints rec = (TimelineRecord_MagicPoints)record;
 		maxMP = rec.maxMP;
+		regenRate = rec.regenRate;
 		currentMP = rec.currentMP;
 	}
 
 	private void Awake()
 	{
-		currentMP = maxMP;
+		currentMP = 0.0f;
 	}
 
 	private void Update()
 	{
-		if (ManipulableTime.ApplyingTimelineRecords)
+		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
 		{
 			return;
 		}
-		if (ManipulableTime.IsTimeFrozen)
+		float regenAmount = regenRate * ManipulableTime.deltaTime;
+		if (!GetComponent<ElementalAlignment>().IsStable)
 		{
-			return;
+			regenAmount *= 0.5f;
 		}
-		currentMP -= 20.0f * ManipulableTime.deltaTime;
-		currentMP = currentMP < 0.0f ? 0.0f : currentMP;
+		currentMP = Mathf.Clamp(currentMP + regenAmount, 0.0f, maxMP);
 	}
 
 	public class TimelineRecord_MagicPoints : TimelineRecordForComponent
 	{
 		public float maxMP;
+		public float regenRate;
 		public float currentMP;
 	}
 }

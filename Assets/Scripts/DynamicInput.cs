@@ -310,11 +310,24 @@ public class DynamicInput : MonoBehaviour
 		{
 			get
 			{
-				return (Input.GetKey(gamepadButton) || Input.GetKey(keyboardMouseButton)) ?
-					base.RawAxis
-					:
-					0.0f
-					;
+				float value = base.RawAxis;
+				if (gamepadButton == KeyCode.None && !Mathf.Approximately(0.0f, Input.GetAxisRaw(gamepadName)))
+				{
+					return value;
+				}
+				if (gamepadButton != KeyCode.None && Input.GetKey(gamepadButton))
+				{
+					return value;
+				}
+				if (keyboardMouseButton == KeyCode.None)
+				{
+					return value;
+				}
+				if (keyboardMouseButton != KeyCode.None && Input.GetKey(keyboardMouseButton))
+				{
+					return value;
+				}
+				return 0.0f;
 			}
 		}
 
@@ -322,11 +335,24 @@ public class DynamicInput : MonoBehaviour
 		{
 			get
 			{
-				return (Input.GetKey(gamepadButton) || Input.GetKey(keyboardMouseButton)) ?
-					base.Axis
-					:
-					0.0f
-					;
+				float value = base.Axis;
+				if (gamepadButton == KeyCode.None && !Mathf.Approximately(0.0f, Input.GetAxis(gamepadName)))
+				{
+					return value;
+				}
+				if (gamepadButton != KeyCode.None && Input.GetKey(gamepadButton))
+				{
+					return value;
+				}
+				if (keyboardMouseButton == KeyCode.None)
+				{
+					return value;
+				}
+				if (keyboardMouseButton != KeyCode.None && Input.GetKey(keyboardMouseButton))
+				{
+					return value;
+				}
+				return 0.0f;
 			}
 		}
 

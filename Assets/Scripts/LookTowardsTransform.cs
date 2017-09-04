@@ -27,11 +27,7 @@ public class LookTowardsTransform : MonoBehaviour, ITimelineRecordable
 
 	private void Update()
 	{
-		if (ManipulableTime.ApplyingTimelineRecords)
-		{
-			return;
-		}
-		if (ManipulableTime.IsTimeFrozen)
+		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || GetComponent<Health>().health <= 0)
 		{
 			return;
 		}
