@@ -91,20 +91,53 @@ public abstract class TimelineRecordForComponent : TimelineRecord
 
 	public override void AddCommonData(Component component)
 	{
-		enabled = true;
-		System.Reflection.PropertyInfo pInfo = component.GetType().GetProperty("enabled");
-		if (pInfo != null)
+		if (component is Collider)
 		{
-			enabled = (bool)pInfo.GetValue(component, null);
+			enabled = ((Collider)component).enabled;
+		}
+		else if (component is LODGroup)
+		{
+			enabled = ((LODGroup)component).enabled;
+		}
+		else if (component is Cloth)
+		{
+			enabled = ((Cloth)component).enabled;
+		}
+		else if (component is Renderer)
+		{
+			enabled = ((Renderer)component).enabled;
+		}
+		else if (component is Behaviour)
+		{
+			enabled = ((Behaviour)component).enabled;
+		}
+		else
+		{
+			enabled = true;
 		}
 	}
 
 	public override void ApplyCommonData(Component component)
 	{
-		System.Reflection.PropertyInfo pInfo = component.GetType().GetProperty("enabled");
-		if (pInfo != null)
+		if (component is Collider)
 		{
-			pInfo.SetValue(component, enabled, null);
+			((Collider)component).enabled = enabled;
+		}
+		else if (component is LODGroup)
+		{
+			((LODGroup)component).enabled = enabled;
+		}
+		else if (component is Cloth)
+		{
+			((Cloth)component).enabled = enabled;
+		}
+		else if (component is Renderer)
+		{
+			((Renderer)component).enabled = enabled;
+		}
+		else if (component is Behaviour)
+		{
+			((Behaviour)component).enabled = enabled;
 		}
 	}
 
