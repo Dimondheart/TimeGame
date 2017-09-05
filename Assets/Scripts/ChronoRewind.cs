@@ -13,7 +13,7 @@ public class ChronoRewind : MonoBehaviour
 
 	private void Update()
 	{
-		if (GetComponent<Health>().health <= 0)
+		if (!GetComponent<Health>().IsAlive)
 		{
 			return;
 		}

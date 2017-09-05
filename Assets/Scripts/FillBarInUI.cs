@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,11 +10,14 @@ using UnityEngine.UI;
 public class FillBarInUI : FillBar
 {
 	public Image bar;
+	public Image maxBar;
 	private float initialBarWidth;
+	private float initialMaxBarWidth;
 
 	private void Start()
 	{
 		initialBarWidth = bar.rectTransform.sizeDelta.x;
+		initialMaxBarWidth = maxBar.rectTransform.sizeDelta.x;
 	}
 
 	protected override void SetBarColor(Color color)
@@ -23,7 +27,13 @@ public class FillBarInUI : FillBar
 
 	protected override void SetBarLength(float length)
 	{
-		float newLength = Mathf.RoundToInt(length * initialBarWidth);
+		float newLength = length * initialBarWidth;
 		bar.rectTransform.sizeDelta = new Vector2(newLength, bar.rectTransform.sizeDelta.y);
+	}
+
+	protected override void SetMaxBarLength(float length)
+	{
+		float newLength = length * initialMaxBarWidth;
+		maxBar.rectTransform.sizeDelta = new Vector2(newLength, maxBar.rectTransform.sizeDelta.y);
 	}
 }

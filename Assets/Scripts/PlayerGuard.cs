@@ -34,8 +34,8 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable
 		}
 		if (DynamicInput.GetButton("Guard"))
 		{
-			GetComponent<SpriteColorChanger>().SpriteColor = colorDuringAction;
-			GetComponent<Health>().takeDamage = false;
+			//GetComponent<SpriteColorChanger>().SpriteColor = colorDuringAction;
+			//GetComponent<Health>().takeDamage = false;
 		}
 		else
 		{

@@ -40,7 +40,7 @@ public class DealDamageOnContact : MonoBehaviour, ITimelineRecordable
 		{
 			return;
 		}
-		if (GetComponent<Health>().health <= 0 || ManipulableTime.IsTimeFrozen)
+		if (!GetComponent<Health>().IsAlive || ManipulableTime.IsTimeFrozen)
 		{
 			return;
 		}
@@ -49,7 +49,7 @@ public class DealDamageOnContact : MonoBehaviour, ITimelineRecordable
 			other.isTrigger
 			|| otherHealth == null
 			|| ManipulableTime.time - lastAttackTime.manipulableTime < cooldown
-			|| otherHealth.health <= 0
+			|| !otherHealth.IsAlive
 			|| otherHealth.isAlignedWithPlayer == GetComponent<Health>().isAlignedWithPlayer
 		)
 		{

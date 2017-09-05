@@ -9,20 +9,29 @@ using UnityEngine;
  */
 public class FillBarInScene : FillBar
 {
-	public GameObject bar;
-	public GameObject mask;
+	public SpriteRenderer bar;
+	public SpriteRenderer maxBar;
 
 	protected override void SetBarColor(Color color)
 	{
-		bar.GetComponent<SpriteRenderer>().color = color;
+		bar.color = color;
 	}
 
 	protected override void SetBarLength(float length)
 	{
-		mask.transform.localPosition = new Vector3(
+		bar.transform.localPosition = new Vector3(
 			-1.0f + length,
-			mask.transform.localPosition.y,
-			mask.transform.localPosition.z
+			bar.transform.localPosition.y,
+			bar.transform.localPosition.z
+			);
+	}
+
+	protected override void SetMaxBarLength(float length)
+	{
+		maxBar.transform.localPosition = new Vector3(
+			-1.0f + length,
+			maxBar.transform.localPosition.y,
+			maxBar.transform.localPosition.z
 			);
 	}
 }

@@ -32,6 +32,14 @@ public abstract class FillBar : MonoBehaviour, IPrimaryValue
 		}
 	}
 
+	public float MaxCurrentValue
+	{
+		get
+		{
+			return ((IPrimaryValue)primaryValueContainer).MaxCurrentValue;
+		}
+	}
+
 	public float CurrentValue
 	{
 		get
@@ -44,21 +52,30 @@ public abstract class FillBar : MonoBehaviour, IPrimaryValue
 	{
 		get
 		{
-			if (CurrentValue <= 0.0f || Mathf.Approximately(0.0f, CurrentValue))
-			{
-				return 0.0f;
-			}
-			return Mathf.Clamp(CurrentValue / MaxValue, 0.02f, MaxValue);
+			return Mathf.Clamp01(CurrentValue / MaxValue);
+		}
+	}
+
+	public float FillRatioMax
+	{
+		get
+		{
+			return Mathf.Clamp01(MaxCurrentValue / MaxValue);
 		}
 	}
 
 	protected abstract void SetBarColor(Color color);
+	/**<summary>Set the bar length. The length passed in is the ratio
+	 * new_length/full_length.</summary>
+	 */
 	protected abstract void SetBarLength(float length);
+	protected abstract void SetMaxBarLength(float length);
 
 	private void LateUpdate()
 	{
 		float fillRat = FillRatio;
 		SetBarLength(fillRat);
+		SetMaxBarLength(FillRatioMax);
 		if (blendColors)
 		{
 			if (fillRat >= 1.0f)

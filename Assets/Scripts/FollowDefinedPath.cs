@@ -65,7 +65,7 @@ public class FollowDefinedPath : ControlledMovement
 		{
 			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 		}
-		if (GetComponent<Health>().health <= 0)
+		if (!GetComponent<Health>().IsAlive)
 		{
 			IsApplyingMotion = false;
 			return;

@@ -79,7 +79,7 @@ public class FollowTarget : ControlledMovement
 			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 		}
 		if ((TargetTransform == null && targetLocationReached)
-			|| GetComponent<Health>().health <= 0
+			|| !GetComponent<Health>().IsAlive
 			|| Vector3.Distance(TargetPositon, transform.position) < 0.3f
 			)
 		{

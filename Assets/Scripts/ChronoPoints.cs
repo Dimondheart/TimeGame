@@ -48,6 +48,14 @@ public class ChronoPoints : MonoBehaviour, IPrimaryValue
 		}
 	}
 
+	float IPrimaryValue.MaxCurrentValue
+	{
+		get
+		{
+			return maxChronoPoints;
+		}
+	}
+
 	float IPrimaryValue.CurrentValue
 	{
 		get
@@ -79,7 +87,31 @@ public class ChronoPoints : MonoBehaviour, IPrimaryValue
 		}
 		else
 		{
-			chronoPoints = Mathf.Clamp(chronoPoints + ManipulableTime.deltaTime * rechargeRate, 0.0f, maxChronoPoints);
+			if (chronoPoints >= maxChronoPoints)
+			{
+				return;
+			}
+			float regenAmount = ManipulableTime.deltaTime * rechargeRate;
+			float newCP = chronoPoints + regenAmount;
+			if (newCP > maxChronoPoints)
+			{
+				regenAmount = newCP - maxChronoPoints;
+				newCP = maxChronoPoints;
+			}
+			double powerAvailable = GetComponent<StoredPower>().CurrentPP;
+			if (regenAmount > powerAvailable)
+			{
+				regenAmount = (float)powerAvailable;
+				GetComponent<StoredPower>().UsePP(powerAvailable, false);
+				GetComponent<StoredPower>().RemoveMaxPP(powerAvailable * 0.25);
+				newCP = chronoPoints + regenAmount;
+			}
+			else
+			{
+				GetComponent<StoredPower>().UsePP(regenAmount, false);
+				GetComponent<StoredPower>().RemoveMaxPP(regenAmount * 0.25f);
+			}
+			chronoPoints = newCP;
 		}
 		if (chronoPoints >= rechargeRate)
 		{

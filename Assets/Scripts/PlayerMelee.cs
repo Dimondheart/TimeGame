@@ -54,8 +54,9 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 		{
 			return;
 		}
-		if (DynamicInput.GetButton("Melee") && GetComponent<Health>().health > 0)
+		if (DynamicInput.GetButton("Melee") && GetComponent<Health>().IsAlive)
 		{
+			return;
 			GetComponent<SpriteColorChanger>().SpriteColor = colorDuringAction;
 			if (ManipulableTime.time - lastAttackTime.manipulableTime >= cooldown)
 			{
@@ -65,7 +66,7 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 					Health otherHealth = col2D.GetComponent<Health>();
 
 					if (
-						otherHealth.health > 0
+						otherHealth.IsAlive
 						&& otherHealth.isAlignedWithPlayer != GetComponent<Health>().isAlignedWithPlayer
 					)
 					{

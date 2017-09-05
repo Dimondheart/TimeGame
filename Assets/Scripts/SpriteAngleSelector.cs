@@ -88,12 +88,12 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 		// Back
 		if (absAngle < 22.5f - angleBuffer)
 		{
-			SetSelectedRotation(0, GetComponent<Health>().health <= 0);
+			SetSelectedRotation(0, !GetComponent<Health>().IsAlive);
 		}
 		// Front
 		else if (absAngle > 157.5f + angleBuffer)
 		{
-			SetSelectedRotation(180, GetComponent<Health>().health <= 0);
+			SetSelectedRotation(180, !GetComponent<Health>().IsAlive);
 		}
 		// One of the left directions
 		else if (angle >= angleBuffer)
@@ -101,17 +101,17 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 			// Front left
 			if (absAngle > 112.5f + angleBuffer && absAngle < 157.5f - angleBuffer)
 			{
-				SetSelectedRotation(135, GetComponent<Health>().health <= 0);
+				SetSelectedRotation(135, !GetComponent<Health>().IsAlive);
 			}
 			// Left
 			else if (absAngle > 67.5f + angleBuffer && absAngle < 122.5f - angleBuffer)
 			{
-				SetSelectedRotation(90, GetComponent<Health>().health <= 0);
+				SetSelectedRotation(90, !GetComponent<Health>().IsAlive);
 			}
 			// Back left
 			else if (absAngle > 22.5f + angleBuffer && absAngle < 67.5f - angleBuffer)
 			{
-				SetSelectedRotation(45, GetComponent<Health>().health <= 0);
+				SetSelectedRotation(45, !GetComponent<Health>().IsAlive);
 			}
 		}
 		// One of the right directions
@@ -120,17 +120,17 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 			// Front right
 			if (absAngle > 112.5f + angleBuffer && absAngle < 157.5f - angleBuffer)
 			{
-				SetSelectedRotation(-135, GetComponent<Health>().health <= 0);
+				SetSelectedRotation(-135, !GetComponent<Health>().IsAlive);
 			}
 			// Right
 			else if (absAngle > 67.5f + angleBuffer && absAngle < 122.5f - angleBuffer)
 			{
-				SetSelectedRotation(-90, GetComponent<Health>().health <= 0);
+				SetSelectedRotation(-90, !GetComponent<Health>().IsAlive);
 			}
 			// Back right
 			else if (absAngle > 22.5f + angleBuffer && absAngle < 67.5f - angleBuffer)
 			{
-				SetSelectedRotation(-45, GetComponent<Health>().health <= 0);
+				SetSelectedRotation(-45, !GetComponent<Health>().IsAlive);
 			}
 		}
 	}

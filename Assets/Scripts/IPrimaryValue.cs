@@ -7,7 +7,17 @@ using UnityEngine;
  */
 public interface IPrimaryValue
 {
+	/**<summary>The highest value than MaxCurrentValue can be at. This will almost
+	 * never change, only possibly in situations like leveling up a character.</summary>
+	 */
 	float MaxValue
+	{
+		get;
+	}
+	/**<summary>CurrentValue will never be greater than this value at any given
+	 * moment.</summary>
+	 */
+	float MaxCurrentValue
 	{
 		get;
 	}

@@ -56,16 +56,12 @@ public class SurfaceInteraction : MonoBehaviour, ITimelineRecordable
 
 	private void Update()
 	{
-		if (ManipulableTime.ApplyingTimelineRecords)
-		{
-			return;
-		}
-		if (ManipulableTime.IsTimeFrozen)
+		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
 		{
 			return;
 		}
 		if (GetComponent<Health>() == null
-			|| GetComponent<Health>().health <= 0
+			|| !GetComponent<Health>().IsAlive
 			|| (GetComponent<ControlledMovement>() != null && !GetComponent<ControlledMovement>().IsApplyingMotion)
 			)
 		{
@@ -82,11 +78,7 @@ public class SurfaceInteraction : MonoBehaviour, ITimelineRecordable
 
 	private void FixedUpdate()
 	{
-		if (ManipulableTime.ApplyingTimelineRecords)
-		{
-			return;
-		}
-		if (ManipulableTime.IsTimeFrozen)
+		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
 		{
 			return;
 		}

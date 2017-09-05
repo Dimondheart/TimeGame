@@ -66,14 +66,14 @@ public class PlayerMovement : ControlledMovement
 		{
 			return;
 		}
-		if (GetComponent<Health>().health <= 0)
-		{
-			IsApplyingMotion = false;
-			return;
-		}
 		if (ManipulableTime.IsTimeFrozen)
 		{
 			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+			return;
+		}
+		if (!GetComponent<Health>().IsAlive)
+		{
+			IsApplyingMotion = false;
 			return;
 		}
 		Vector3 newVelocity =
