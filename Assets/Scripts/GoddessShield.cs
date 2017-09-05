@@ -10,7 +10,7 @@ public class GoddessShield : MonoBehaviour, IHitTaker
 	{
 		get
 		{
-			return 50;
+			return 200;
 		}
 	}
 
