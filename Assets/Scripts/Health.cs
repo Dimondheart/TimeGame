@@ -156,7 +156,6 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 		{
 			return;
 		}
-		Debug.Log("Doing damage:" + damage + " (to:" + gameObject.name);
 		CurrentHP -= damage;
 		if (damage / CurrentMaxHP >= percentForPerminentDamage)
 		{
@@ -164,11 +163,14 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 		}
 	}
 
-	public void Hit(HitInfo hit)
+	/**<summary>Hit this health and deal damage. Returns true if the hit
+	 * was successful (was not negated by something.)</summary>
+	 */
+	public bool Hit(HitInfo hit)
 	{
 		if (ManipulableTime.ApplyingTimelineRecords)
 		{
-			return;
+			return false;
 		}
 		List<IHitTaker> hitTakers = new List<IHitTaker>(GetComponents<IHitTaker>());
 		hitTakers.Sort(CompareIHitTakersByPriority);
@@ -188,7 +190,9 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 		{
 			DoDamage(hit.damage);
 			DoPerminentDamage(hit.permanentDamage);
+			return true;
 		}
+		return false;
 	}
 
 	private void DoPerminentDamage(float damage)
