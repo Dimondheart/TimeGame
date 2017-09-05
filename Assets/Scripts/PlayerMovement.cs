@@ -77,7 +77,10 @@ public class PlayerMovement : ControlledMovement
 			return;
 		}
 		Vector3 newVelocity =
-			new Vector3(DynamicInput.GetAxis("Move Horizontal"), DynamicInput.GetAxis("Move Vertical"), 0.0f).normalized
+			Vector3.ClampMagnitude(
+				new Vector3(DynamicInput.GetAxis("Move Horizontal"), DynamicInput.GetAxis("Move Vertical"), 0.0f),
+				1.0f
+				)
 			* movementSpeed;
 		GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 		if (IsDashing)

@@ -226,7 +226,7 @@ public class DynamicInput : MonoBehaviour
 			get
 			{
 				float axisValue = Input.GetAxisRaw(gamepadName);
-				if (Mathf.Approximately(0.0f, axisValue))
+				if (!gamepadModeEnabled && Mathf.Approximately(0.0f, axisValue))
 				{
 					if (isMouseAsJoy)
 					{
@@ -255,7 +255,7 @@ public class DynamicInput : MonoBehaviour
 			get
 			{
 				float axisValue = Input.GetAxis(gamepadName);
-				if (Mathf.Approximately(0.0f, axisValue))
+				if (!gamepadModeEnabled && Mathf.Approximately(0.0f, axisValue))
 				{
 					if (isMouseAsJoy)
 					{
