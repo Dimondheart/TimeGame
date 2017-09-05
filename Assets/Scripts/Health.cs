@@ -13,13 +13,15 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	 * health per normal damage hit.</summary>
 	 */
 	public static readonly float maxPerminentDamageHit = 1.0f;
+	private static int CompareIHitTakersByPriority(IHitTaker a, IHitTaker b)
+	{
+		return a.Priority.CompareTo(b.Priority);
+	}
 
 	/**<summary>Set the health values to this when starting a new game.</summary>*/
 	public float initialMaxHealth = 100.0f;
 	/**<summary>If the GameObject is friendly/neutral towards the player.</summary>*/
 	public bool isAlignedWithPlayer = false;
-	/**<summary>If damage should be delt or ignored.</summary>*/
-	public bool takeDamage = true;
 	/**<summary>The absolute max HP.</summary>*/
 	private float absoluteMaxHealth;
 	/**<summary>Maximum HP, accounting for perminent damage.</summary>*/
@@ -114,7 +116,6 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 		record.maxHealth = maxHealth;
 		record.health = health;
 		record.isAlignedWithPlayer = isAlignedWithPlayer;
-		record.takeDamage = takeDamage;
 		return record;
 	}
 
@@ -125,7 +126,6 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 		maxHealth = rec.maxHealth;
 		health = rec.health;
 		isAlignedWithPlayer = rec.isAlignedWithPlayer;
-		takeDamage = rec.takeDamage;
 	}
 
 	private void Awake()
@@ -150,12 +150,13 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	 * is false.</summary>
 	 * <param name="damage">The amount of damage to deal</param>
 	 */
-	public void DoDamage(float damage)
+	private void DoDamage(float damage)
 	{
-		if (ManipulableTime.ApplyingTimelineRecords || !takeDamage)
+		if (ManipulableTime.ApplyingTimelineRecords)
 		{
 			return;
 		}
+		Debug.Log("Doing damage:" + damage + " (to:" + gameObject.name);
 		CurrentHP -= damage;
 		if (damage / CurrentMaxHP >= percentForPerminentDamage)
 		{
@@ -163,9 +164,36 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 		}
 	}
 
-	public void DoPerminentDamage(float damage)
+	public void Hit(HitInfo hit)
 	{
-		if (ManipulableTime.ApplyingTimelineRecords || !takeDamage)
+		if (ManipulableTime.ApplyingTimelineRecords)
+		{
+			return;
+		}
+		List<IHitTaker> hitTakers = new List<IHitTaker>(GetComponents<IHitTaker>());
+		hitTakers.Sort(CompareIHitTakersByPriority);
+		bool hitNullified = false;
+		if (hitTakers.Count > 0)
+		{
+			foreach (IHitTaker ht in hitTakers)
+			{
+				if (ht.TakeHit(hit))
+				{
+					hitNullified = true;
+					break;
+				}
+			}
+		}
+		if (!hitNullified)
+		{
+			DoDamage(hit.damage);
+			DoPerminentDamage(hit.permanentDamage);
+		}
+	}
+
+	private void DoPerminentDamage(float damage)
+	{
+		if (ManipulableTime.ApplyingTimelineRecords)
 		{
 			return;
 		}
@@ -178,6 +206,5 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 		public float maxHealth;
 		public float health;
 		public bool isAlignedWithPlayer;
-		public bool takeDamage;
 	}
 }

@@ -2,53 +2,48 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerGuard : MonoBehaviour, ITimelineRecordable
+public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 {
-	/**<summary>Color to make the player sprite while guarding, a placeholder
-	 * for animations.</summary>
-	 */
-	public Color colorDuringAction;
+	public GameObject shield;
 
 	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 	{
 		TimelineRecord_PlayerGuard record = new TimelineRecord_PlayerGuard();
-		record.colorDuringAction = colorDuringAction;
 		return record;
 	}
 
 	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
 	{
 		TimelineRecord_PlayerGuard rec = (TimelineRecord_PlayerGuard)record;
-		colorDuringAction = rec.colorDuringAction;
+	}
+
+	bool IHitTaker.TakeHit(HitInfo hit)
+	{
+		if (!DynamicInput.GetButton("Guard") || hit.hitBy == null)
+		{
+			return false;
+		}
+		return hit.hitBy.IsTouching(shield.GetComponent<Collider2D>());
+	}
+
+	int IHitTaker.Priority
+	{
+		get
+		{
+			return 100;
+		}
 	}
 
 	private void Update()
 	{
-		if (ManipulableTime.ApplyingTimelineRecords)
+		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
 		{
 			return;
 		}
-		if (ManipulableTime.IsTimeFrozen)
-		{
-			return;
-		}
-		if (DynamicInput.GetButton("Guard"))
-		{
-			//GetComponent<SpriteColorChanger>().SpriteColor = colorDuringAction;
-			//GetComponent<Health>().takeDamage = false;
-		}
-		else
-		{
-			GetComponent<Health>().takeDamage = true;
-			if (!DynamicInput.GetButton("Melee"))
-			{
-				GetComponent<SpriteColorChanger>().SpriteColor = Color.white;
-			}
-		}
+		shield.GetComponent<SpriteRenderer>().enabled = DynamicInput.GetButton("Guard");
 	}
 
 	public class TimelineRecord_PlayerGuard : TimelineRecordForComponent
 	{
-		public Color colorDuringAction;
 	}
 }

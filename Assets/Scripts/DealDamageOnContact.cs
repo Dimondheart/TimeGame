@@ -55,7 +55,25 @@ public class DealDamageOnContact : MonoBehaviour, ITimelineRecordable
 		{
 			return;
 		}
-		otherHealth.DoDamage(damagePerHit);
+		HitInfo hit = new HitInfo();
+		//hit.moistureAlignment = GetComponent<ElementalAlignment>().Moisture;
+		//hit.temperatureAlignment = GetComponent<ElementalAlignment>().Temperature;
+		hit.damage = damagePerHit;
+		Collider2D[] colliders = GetComponents<Collider2D>();
+		if (colliders.Length > 2)
+		{
+			Debug.LogWarning("More than 3 colliders found");
+		}
+		foreach (Collider2D c in colliders)
+		{
+			if (c.isTrigger)
+			{
+				hit.hitBy = c;
+				break;
+			}
+		}
+		otherHealth.Hit(hit);
+		//otherHealth.DoDamage(damagePerHit);
 		lastAttackTime.SetToCurrent();
 	}
 

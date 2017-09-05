@@ -27,7 +27,9 @@ public class DealPerminentDamageOverTime : MonoBehaviour, ITimelineRecordable
 		{
 			return;
 		}
-		GetComponent<Health>().DoPerminentDamage(damageRate * ManipulableTime.deltaTime);
+		HitInfo hit = new HitInfo();
+		hit.permanentDamage = damageRate * ManipulableTime.deltaTime;
+		GetComponent<Health>().Hit(hit);
 	}
 
 	public class TimelineRecord_DealPerminentDamageOverTime : TimelineRecordForComponent
