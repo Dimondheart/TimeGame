@@ -44,33 +44,40 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 		{
 			return;
 		}
-		if (DynamicInput.GetButtonDown("Guard"))
+		if (GetComponent<SurfaceInteraction>().IsSwimming)
 		{
-			if (!GetComponent<PlayerMovement>().IsDashing)
-			{
-				GetComponent<PlayerMelee>().StopSwinging();
-				Enabled(true);
-			}
-			else
-			{
-				Enabled(false);
-			}
-		}
-		else if (DynamicInput.GetButton("Guard"))
-		{
-			if (!GetComponent<PlayerMovement>().IsDashing && GetComponent<PlayerMelee>().IsInCooldown)
-			{
-				GetComponent<PlayerMelee>().StopSwinging();
-				Enabled(true);
-			}
-			else
-			{
-				Enabled(false);
-			}
+			Enabled(false);
 		}
 		else
 		{
-			Enabled(false);
+			if (DynamicInput.GetButtonDown("Guard"))
+			{
+				if (!GetComponent<PlayerMovement>().IsDashing)
+				{
+					GetComponent<PlayerMelee>().StopSwinging();
+					Enabled(true);
+				}
+				else
+				{
+					Enabled(false);
+				}
+			}
+			else if (DynamicInput.GetButton("Guard"))
+			{
+				if (!GetComponent<PlayerMovement>().IsDashing && GetComponent<PlayerMelee>().IsInCooldown)
+				{
+					GetComponent<PlayerMelee>().StopSwinging();
+					Enabled(true);
+				}
+				else
+				{
+					Enabled(false);
+				}
+			}
+			else
+			{
+				Enabled(false);
+			}
 		}
 	}
 

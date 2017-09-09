@@ -29,12 +29,12 @@ public class SurfaceInteraction : MonoBehaviour, ITimelineRecordable
 			}
 			foreach (Surface s in touchingSurfaces)
 			{
-				if (s.IsLiquid)
+				if (!s.IsLiquid || s.surfaceType == Surface.SurfaceType.ShallowWater)
 				{
-					return true;
+					return false;
 				}
 			}
-			return false;
+			return true;
 		}
 	}
 

@@ -59,7 +59,11 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 		{
 			return;
 		}
-		if (DynamicInput.GetButtonDown("Melee") && !GetComponent<PlayerMovement>().IsDashing)
+		if (GetComponent<SurfaceInteraction>().IsSwimming)
+		{
+			StopSwinging();
+		}
+		else if (DynamicInput.GetButtonDown("Melee") && !GetComponent<PlayerMovement>().IsDashing)
 		{
 			if (ManipulableTime.time - lastAttackTime.manipulableTime >= swingDuration)
 			{

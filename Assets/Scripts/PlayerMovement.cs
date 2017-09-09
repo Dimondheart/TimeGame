@@ -114,10 +114,10 @@ public class PlayerMovement : ControlledMovement
 		}
 		else
 		{
-			if (DynamicInput.GetButtonDown("Dash"))
+			SurfaceInteraction sf = GetComponent<SurfaceInteraction>();
+			if (DynamicInput.GetButtonDown("Dash") || (DynamicInput.GetButton("Dash") && sf.IsSwimming))
 			{
 				GetComponent<PlayerMelee>().StopSwinging();
-				SurfaceInteraction sf = GetComponent<SurfaceInteraction>();
 				if (sf.IsSwimming)
 				{
 					dashReleasedAfterExitingWater = false;
@@ -141,10 +141,13 @@ public class PlayerMovement : ControlledMovement
 		}
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
 		IsApplyingMotion = IsDashing || !Mathf.Approximately(0.0f, newVelocity.x) || !Mathf.Approximately(0.0f, newVelocity.y);
-		if (GetComponent<PlayerMelee>().IsInCooldown && !IsDashing)
+		bool isSwimming = GetComponent<SurfaceInteraction>().IsSwimming;
+		if ((GetComponent<PlayerMelee>().IsInCooldown && !IsDashing) || isSwimming)
 		{
 			Vector2 lookDirection = new Vector2(DynamicInput.GetAxis("Look Horizontal"), DynamicInput.GetAxis("Look Vertical"));
-			if (Mathf.Approximately(0.0f, lookDirection.magnitude))
+			if (Mathf.Approximately(0.0f, lookDirection.magnitude)
+				|| (isSwimming && !(DynamicInput.GamepadModeEnabled || DynamicInput.GetButton("Melee") || DynamicInput.GetButton("Guard")))
+				)
 			{
 				lookDirection = newVelocity;
 			}
