@@ -85,6 +85,7 @@ public class Sword : MonoBehaviour
 			HitInfo hit = new HitInfo();
 			hit.damage = owner.GetComponent<PlayerMelee>().damagePerHit;
 			hit.hitBy = GetComponent<Collider2D>();
+			hit.hitCollider = collision;
 			otherHealth.Hit(hit);
 		}
 	}

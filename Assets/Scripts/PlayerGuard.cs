@@ -6,6 +6,14 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 {
 	public GameObject shield;
 
+	public bool IsGuarding
+	{
+		get
+		{
+			return shield.GetComponent<SpriteRenderer>().enabled;
+		}
+	}
+
 	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 	{
 		TimelineRecord_PlayerGuard record = new TimelineRecord_PlayerGuard();
@@ -19,11 +27,7 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 
 	bool IHitTaker.TakeHit(HitInfo hit)
 	{
-		if (!DynamicInput.GetButton("Guard") || hit.hitBy == null)
-		{
-			return false;
-		}
-		return hit.hitBy.IsTouching(shield.GetComponent<Collider2D>());
+		return !shield.GetComponent<Collider2D>().isTrigger && hit.hitCollider == shield.GetComponent<Collider2D>();
 	}
 
 	int IHitTaker.Priority
@@ -40,7 +44,40 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 		{
 			return;
 		}
-		shield.GetComponent<SpriteRenderer>().enabled = DynamicInput.GetButton("Guard");
+		if (DynamicInput.GetButtonDown("Guard"))
+		{
+			if (!GetComponent<PlayerMovement>().IsDashing)
+			{
+				GetComponent<PlayerMelee>().StopSwinging();
+				Enabled(true);
+			}
+			else
+			{
+				Enabled(false);
+			}
+		}
+		else if (DynamicInput.GetButton("Guard"))
+		{
+			if (!GetComponent<PlayerMovement>().IsDashing && GetComponent<PlayerMelee>().IsInCooldown)
+			{
+				GetComponent<PlayerMelee>().StopSwinging();
+				Enabled(true);
+			}
+			else
+			{
+				Enabled(false);
+			}
+		}
+		else
+		{
+			Enabled(false);
+		}
+	}
+
+	private void Enabled(bool enabled)
+	{
+		shield.GetComponent<SpriteRenderer>().enabled = enabled;
+		shield.GetComponent<Collider2D>().isTrigger = !enabled;
 	}
 
 	public class TimelineRecord_PlayerGuard : TimelineRecordForComponent

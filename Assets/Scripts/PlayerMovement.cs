@@ -133,7 +133,7 @@ public class PlayerMovement : ControlledMovement
 			else
 			{
 				dashReleasedAfterExitingWater = true;
-				if (GetComponent<PlayerMelee>().IsSwinging)
+				if (GetComponent<PlayerMelee>().IsSwinging || GetComponent<PlayerGuard>().IsGuarding)
 				{
 					newVelocity = Vector3.zero;
 				}
@@ -141,7 +141,7 @@ public class PlayerMovement : ControlledMovement
 		}
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
 		IsApplyingMotion = IsDashing || !Mathf.Approximately(0.0f, newVelocity.x) || !Mathf.Approximately(0.0f, newVelocity.y);
-		if (GetComponent<PlayerMelee>().CanRotate)
+		if (GetComponent<PlayerMelee>().IsInCooldown && !IsDashing)
 		{
 			Vector2 lookDirection = new Vector2(DynamicInput.GetAxis("Look Horizontal"), DynamicInput.GetAxis("Look Vertical"));
 			if (Mathf.Approximately(0.0f, lookDirection.magnitude))

@@ -8,6 +8,7 @@ public class HitInfo
 	public float temperatureAlignment;
 	public float moistureAlignment;
 	public Collider2D hitBy;
+	public Collider2D hitCollider;
 	public float damage;
 	public float permanentDamage;
 }

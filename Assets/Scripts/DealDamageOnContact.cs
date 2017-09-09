@@ -34,7 +34,7 @@ public class DealDamageOnContact : MonoBehaviour, ITimelineRecordable
 		lastAttackTime = ConvertableTimeRecord.GetTime();
 	}
 
-	private void OnTriggerStay2D(Collider2D other)
+	private void OnCollisionStay2D(Collision2D collision)
 	{
 		if (ManipulableTime.ApplyingTimelineRecords)
 		{
@@ -44,12 +44,12 @@ public class DealDamageOnContact : MonoBehaviour, ITimelineRecordable
 		{
 			return;
 		}
-		Health otherHealth = other.GetComponent<Health>();
+		Health otherHealth = collision.gameObject.GetComponent<Health>();
 		if (
-			other.isTrigger
-			|| otherHealth == null
-			|| ManipulableTime.time - lastAttackTime.manipulableTime < cooldown
+			otherHealth == null
 			|| !otherHealth.IsAlive
+			|| collision.gameObject.GetComponent<Collider2D>().isTrigger
+			|| ManipulableTime.time - lastAttackTime.manipulableTime < cooldown
 			|| otherHealth.isAlignedWithPlayer == GetComponent<Health>().isAlignedWithPlayer
 		)
 		{
@@ -60,20 +60,9 @@ public class DealDamageOnContact : MonoBehaviour, ITimelineRecordable
 		//hit.temperatureAlignment = GetComponent<ElementalAlignment>().Temperature;
 		hit.damage = damagePerHit;
 		Collider2D[] colliders = GetComponents<Collider2D>();
-		if (colliders.Length > 2)
-		{
-			Debug.LogWarning("More than 3 colliders found");
-		}
-		foreach (Collider2D c in colliders)
-		{
-			if (c.isTrigger)
-			{
-				hit.hitBy = c;
-				break;
-			}
-		}
+		hit.hitBy = collision.otherCollider;
+		hit.hitCollider = collision.collider;
 		otherHealth.Hit(hit);
-		//otherHealth.DoDamage(damagePerHit);
 		lastAttackTime.SetToCurrent();
 	}
 

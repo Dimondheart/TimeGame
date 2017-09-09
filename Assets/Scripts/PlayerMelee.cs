@@ -21,7 +21,7 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 		}
 	}
 
-	public bool CanRotate
+	public bool IsInCooldown
 	{
 		get
 		{
