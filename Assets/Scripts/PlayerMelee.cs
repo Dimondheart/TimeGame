@@ -4,19 +4,37 @@ using UnityEngine;
 
 public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 {
-	public GameObject swordAnimator;
+	public Sword sword;
 	/**<summary>Delay between attacks, in seconds.</summary>*/
-	public float cooldown = 0.25f;
+	public float cooldown = 0.3f;
 	/**<summary>HP damage per attack.</summary>*/
-	public int damagePerHit = 5;
+	public int damagePerHit = 10;
+	public float swingDuration = 0.25f;
 	/**<summary>Time the last attack was made.</summary>*/
 	private ConvertableTimeRecord lastAttackTime;
+
+	public bool IsSwinging
+	{
+		get
+		{
+			return sword.isSwinging || sword.isEndingSwing;
+		}
+	}
+
+	public bool CanRotate
+	{
+		get
+		{
+			return !sword.isSwinging;
+		}
+	}
 
 	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 	{
 		TimelineRecord_PlayerMelee record = new TimelineRecord_PlayerMelee();
 		record.cooldown = cooldown;
 		record.damagePerHit = damagePerHit;
+		record.swingDuration = swingDuration;
 		record.lastAttackTime = lastAttackTime;
 		return record;
 	}
@@ -26,6 +44,7 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 		TimelineRecord_PlayerMelee rec = (TimelineRecord_PlayerMelee)record;
 		cooldown = rec.cooldown;
 		damagePerHit = rec.damagePerHit;
+		swingDuration = rec.swingDuration;
 		lastAttackTime = rec.lastAttackTime;
 	}
 
@@ -36,21 +55,33 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 
 	private void Update()
 	{
-		if (ManipulableTime.ApplyingTimelineRecords)
+		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || !GetComponent<Health>().IsAlive)
 		{
 			return;
 		}
-		if (ManipulableTime.IsTimeFrozen)
+		if (DynamicInput.GetButtonDown("Melee") && !GetComponent<PlayerMovement>().IsDashing)
 		{
-			return;
-		}
-		if (DynamicInput.GetButton("Melee") && GetComponent<Health>().IsAlive)
-		{
-			if (ManipulableTime.time - lastAttackTime.manipulableTime >= cooldown)
+			if (ManipulableTime.time - lastAttackTime.manipulableTime >= swingDuration)
 			{
-				swordAnimator.GetComponent<Animator>().enabled = true;
+				sword.Swing(swingDuration, cooldown - swingDuration);
 				lastAttackTime.SetToCurrent();
 			}
+		}
+	}
+
+	public void StopSwinging()
+	{
+		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
+		{
+			return;
+		}
+		if (sword.isSwinging || sword.isEndingSwing)
+		{
+			if (!sword.isEndingSwing)
+			{
+				lastAttackTime = ConvertableTimeRecord.zeroTime;
+			}
+			sword.CancelSwing();
 		}
 	}
 
@@ -58,6 +89,7 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 	{
 		public float cooldown;
 		public int damagePerHit;
+		public float swingDuration;
 		public ConvertableTimeRecord lastAttackTime;
 	}
 }

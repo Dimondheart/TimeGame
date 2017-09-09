@@ -7,6 +7,7 @@ public class PlayerMovement : ControlledMovement
 	public float movementSpeed = 6.0f;
 	public float dashSpeed = 15.0f;
 	public float dashDuration = 0.2f;
+	private bool stopApplying = false;
 
 	private ConvertableTimeRecord lastDashStart;
 	private Vector3 dashVelocity;
@@ -26,6 +27,14 @@ public class PlayerMovement : ControlledMovement
 		}
 	}
 
+	public bool IsTryingToMove
+	{
+		get
+		{
+			return !Mathf.Approximately(0.0f, DynamicInput.GetAxis("Move Horizontal")) || !Mathf.Approximately(0.0f, DynamicInput.GetAxis("Move Vertical"));
+		}
+	}
+
 	public override TimelineRecord MakeTimelineRecord()
 	{
 		TimelineRecord_PlayerMovement record = new TimelineRecord_PlayerMovement();
@@ -33,6 +42,7 @@ public class PlayerMovement : ControlledMovement
 		record.movementSpeed = movementSpeed;
 		record.dashSpeed = dashSpeed;
 		record.dashDuration = dashDuration;
+		record.stopApplying = stopApplying;
 
 		record.lastDashStart = lastDashStart;
 		record.dashVelocity = dashVelocity;
@@ -48,6 +58,7 @@ public class PlayerMovement : ControlledMovement
 		movementSpeed = rec.movementSpeed;
 		dashSpeed = rec.dashSpeed;
 		dashDuration = rec.dashDuration;
+		stopApplying = rec.stopApplying;
 
 		lastDashStart = rec.lastDashStart;
 		dashVelocity = rec.dashVelocity;
@@ -103,8 +114,9 @@ public class PlayerMovement : ControlledMovement
 		}
 		else
 		{
-			if (DynamicInput.GetButton("Dash"))
+			if (DynamicInput.GetButtonDown("Dash"))
 			{
+				GetComponent<PlayerMelee>().StopSwinging();
 				SurfaceInteraction sf = GetComponent<SurfaceInteraction>();
 				if (sf.IsSwimming)
 				{
@@ -121,16 +133,23 @@ public class PlayerMovement : ControlledMovement
 			else
 			{
 				dashReleasedAfterExitingWater = true;
+				if (GetComponent<PlayerMelee>().IsSwinging)
+				{
+					newVelocity = Vector3.zero;
+				}
 			}
 		}
 		GetComponent<Rigidbody2D>().velocity = newVelocity;
 		IsApplyingMotion = IsDashing || !Mathf.Approximately(0.0f, newVelocity.x) || !Mathf.Approximately(0.0f, newVelocity.y);
-		Vector2 lookDirection = new Vector2(DynamicInput.GetAxis("Look Horizontal"), DynamicInput.GetAxis("Look Vertical"));
-		if (Mathf.Approximately(0.0f, lookDirection.magnitude))
+		if (GetComponent<PlayerMelee>().CanRotate)
 		{
-			lookDirection = newVelocity;
+			Vector2 lookDirection = new Vector2(DynamicInput.GetAxis("Look Horizontal"), DynamicInput.GetAxis("Look Vertical"));
+			if (Mathf.Approximately(0.0f, lookDirection.magnitude))
+			{
+				lookDirection = newVelocity;
+			}
+			GetComponent<DirectionLooking>().Direction = lookDirection;
 		}
-		GetComponent<DirectionLooking>().Direction = lookDirection;
 	}
 
 	public class TimelineRecord_PlayerMovement : ControlledMovement.TimelineRecord_ControlledMovement
@@ -138,6 +157,7 @@ public class PlayerMovement : ControlledMovement
 		public float movementSpeed;
 		public float dashSpeed;
 		public float dashDuration;
+		public bool stopApplying;
 
 		public ConvertableTimeRecord lastDashStart;
 		public Vector3 dashVelocity;

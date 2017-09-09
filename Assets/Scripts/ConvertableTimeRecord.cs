@@ -7,6 +7,8 @@ using UnityEngine;
  */
 public struct ConvertableTimeRecord
 {
+	public static readonly ConvertableTimeRecord zeroTime = new ConvertableTimeRecord(0.0f, 0.0f, false);
+	public static readonly ConvertableTimeRecord zeroFixedTime = new ConvertableTimeRecord(0.0f, 0.0f, true);
 	/**<summary>The time of this record in Unity time.</summary>*/
 	public float unityTime { get; private set; }
 	/**<summary>The time of this record in manipulable time.</summary>*/
