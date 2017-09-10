@@ -56,10 +56,7 @@ public class DealDamageOnContact : MonoBehaviour, ITimelineRecordable
 			return;
 		}
 		HitInfo hit = new HitInfo();
-		//hit.moistureAlignment = GetComponent<ElementalAlignment>().Moisture;
-		//hit.temperatureAlignment = GetComponent<ElementalAlignment>().Temperature;
 		hit.damage = damagePerHit;
-		Collider2D[] colliders = GetComponents<Collider2D>();
 		hit.hitBy = collision.otherCollider;
 		hit.hitCollider = collision.collider;
 		otherHealth.Hit(hit);

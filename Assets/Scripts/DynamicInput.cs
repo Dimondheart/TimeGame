@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,9 +11,11 @@ public class DynamicInput : MonoBehaviour
 {
 	/**<summary>Internal for GamepadModeEnabled.</summary>*/
 	private static bool gamepadModeEnabled = false;
+	private static Dictionary<string, DynamicControlButton> buttonControls =
+		new Dictionary<string, DynamicControlButton>();
 	/**<summary>The current virtual controls.</summary>*/
-	private static Dictionary<string, VirtualControl> virtualControls =
-		new Dictionary<string, VirtualControl>();
+	private static Dictionary<string, DynamicControl> virtualControls =
+		new Dictionary<string, DynamicControl>();
 
 	public static bool GamepadModeEnabled
 	{
@@ -55,138 +58,394 @@ public class DynamicInput : MonoBehaviour
 	private void Awake()
 	{
 		// Only setup once, since this is a 'static' component
-		if (virtualControls.Count > 0)
+		if (virtualControls.Count > 0 || buttonControls.Count > 0)
 		{
 			return;
 		}
-		virtualControls.Add(
-			"Move Horizontal",
-			new VirtualAxis("Horizontal movement", "X axis", "AD axis")
-			);
-		virtualControls.Add(
-			"Move Vertical",
-			new VirtualAxis("Vertical movement", "Y axis", "SW axis")
-			);
-		virtualControls.Add(
-			"Look Horizontal",
-			new VirtualAxis("Horizontal look direction", "4th axis (Joysticks)", VirtualAxis.mouseXAsJoystickName)
-			);
-		virtualControls.Add(
-			"Look Vertical",
-			new VirtualAxis("Vertical look direction", "5th axis (Joysticks)", VirtualAxis.mouseYAsJoystickName)
-			);
-		virtualControls.Add(
-			"Toggle Pause Menu",
-			new VirtualButton("Open/Close the pause menu", KeyCode.Joystick1Button6, KeyCode.Escape)
-			);
-		virtualControls.Add(
-			"Melee",
-			new VirtualButton("Melee", KeyCode.Joystick1Button4, KeyCode.Mouse0)
-			);
-		virtualControls.Add(
-			"Guard",
-			new VirtualButton("Guard", KeyCode.Joystick1Button5, KeyCode.Mouse1)
-			);
-		virtualControls.Add(
-			"Dash",
-			new VirtualButtonFromJoystick("Dash in a direction", 0.1f, "10th axis (Joysticks)", KeyCode.LeftShift)
-			);
-		virtualControls.Add(
-			"Toggle Time Freeze",
-			new VirtualButton("Toggle time freezing", KeyCode.Joystick1Button3, KeyCode.Q)
-			);
-		virtualControls.Add(
-			"Rewind/Replay",
-			new VirtualAxis("Horizontal look direction", "6th axis (Joysticks)", "<> axis")
-			);
-		virtualControls.Add(
-			"Temperature Element Adjust",
-			new VirtualAxisWithButton("Change the temperature elemental focus", "6th axis (Joysticks)", "AD axis", KeyCode.None, KeyCode.LeftAlt)
-			);
-		virtualControls.Add(
-			"Moisture Element Adjust",
-			new VirtualAxisWithButton("Change the moisture elemental focus", "7th axis (Joysticks)", "SW axis", KeyCode.None, KeyCode.LeftAlt)
-			);
+		DynamicInputConfiguration.ConfigureInput(buttonControls, virtualControls);
+	}
+
+	private void Update()
+	{
+		foreach (DynamicControl dc in buttonControls.Values)
+		{
+			dc.UpdateControlStates();
+		}
+		foreach (DynamicControl dc in virtualControls.Values)
+		{
+			dc.UpdateControlStates();
+		}
 	}
 
 	/**<summary>Input.GetButtonDown equivalent.</summary>*/
 	public static bool GetButtonDown(string virtualName)
 	{
-		VirtualControl control = virtualControls[virtualName];
-		if (control is VirtualButtonFromJoystick)
-		{
-			return Input.GetKeyDown(((VirtualButtonFromJoystick)control).keyboardMouseKeyCode);
-		}
-		return
-			Input.GetKeyDown(((VirtualButton)control).gamepadKeyCode)
-			|| Input.GetKeyDown(((VirtualButton)control).keyboardMouseKeyCode);
+		return buttonControls[virtualName].GetButtonDown();
 	}
 
 	/**<summary>Input.GetButton equivalent.</summary>*/
 	public static bool GetButton(string virtualName)
 	{
-		VirtualControl control = virtualControls[virtualName];
-		if (control is VirtualButtonFromJoystick)
-		{
-			return Mathf.Abs(Input.GetAxisRaw(((VirtualButtonFromJoystick)control).gamepadName)) >= ((VirtualButtonFromJoystick)control).cutoff
-				|| Input.GetKey(((VirtualButtonFromJoystick)control).keyboardMouseKeyCode);
-		}
-		return
-			Input.GetKey(((VirtualButton)control).gamepadKeyCode)
-			|| Input.GetKey(((VirtualButton)control).keyboardMouseKeyCode);
+		return buttonControls[virtualName].GetButton();
 	}
 
 	/**<summary>Input.GetButtonUp equivalent.</summary>*/
 	public static bool GetButtonUp(string virtualName)
 	{
-		VirtualControl control = virtualControls[virtualName];
-		if (control is VirtualButtonFromJoystick)
-		{
-			return Input.GetKeyUp(((VirtualButtonFromJoystick)control).keyboardMouseKeyCode);
-		}
-		return
-			Input.GetKeyUp(((VirtualButton)control).gamepadKeyCode)
-			|| Input.GetKeyUp(((VirtualButton)control).keyboardMouseKeyCode);
+		return buttonControls[virtualName].GetButtonUp();
 	}
 
 	/**<summary>Input.GetAxisRaw equivalent.</summary>*/
 	public static float GetAxisRaw(string virtualName)
 	{
-		return ((VirtualAxis)virtualControls[virtualName]).RawAxis;
+		return ((DynamicControlAxis)virtualControls[virtualName]).RawAxis;
 	}
 
 	/**<summary>Input.GetAxis equivalent.</summary>*/
 	public static float GetAxis(string virtualName)
 	{
-		return ((VirtualAxis)virtualControls[virtualName]).Axis;
+		return ((DynamicControlAxis)virtualControls[virtualName]).Axis;
 	}
 
 	/**<summary>Base for the different virtual control types.</summary>*/
-	public abstract class VirtualControl
+	public abstract class DynamicControl
 	{
 		public readonly string description;
 
-		public VirtualControl(string description)
+		public DynamicControl(string description)
 		{
 			this.description = description;
 		}
+
+		public abstract void UpdateControlStates();
 	}
 
-	/**<summary>A virtual button-type control.</summary>*/
-	public class VirtualButton : VirtualControl
+	public class DynamicControlButton : DynamicControl
 	{
-		public KeyCode gamepadKeyCode;
-		public KeyCode keyboardMouseKeyCode;
+		public VirtualButton gamepadButton { get; private set; }
+		public VirtualButton keyMouseButton { get; private set; }
+		public VirtualButton keyMouseButtonAlt;
 
-		public VirtualButton(string description, KeyCode gamepadKeyCode, KeyCode keyboardMouseKeyCode) : base(description)
+		public DynamicControlButton(string description, VirtualButton gamepadButton, VirtualButton keyMouseButton, VirtualButton keyMouseButtonAlt) : base(description)
 		{
-			this.gamepadKeyCode = gamepadKeyCode;
-			this.keyboardMouseKeyCode = keyboardMouseKeyCode;
+			SetGamepadButton(gamepadButton);
+			SetKeyMouseButton(keyMouseButton);
+			SetKeyMouseButtonAlt(keyMouseButtonAlt);
+		}
+
+		public override void UpdateControlStates()
+		{
+			gamepadButton.UpdateState();
+			keyMouseButton.UpdateState();
+			keyMouseButtonAlt.UpdateState();
+		}
+
+		public void SetGamepadButton(VirtualButton button)
+		{
+			gamepadButton = VirtualPlaceholderButton.GetPlaceholderIfNull(button);
+		}
+
+		public void SetKeyMouseButton(VirtualButton button)
+		{
+			keyMouseButton = VirtualPlaceholderButton.GetPlaceholderIfNull(button);
+		}
+
+		public void SetKeyMouseButtonAlt(VirtualButton button)
+		{
+			keyMouseButtonAlt = VirtualPlaceholderButton.GetPlaceholderIfNull(button);
+		}
+
+		public bool GetButtonDown()
+		{
+			return gamepadButton.GetButtonDown() || keyMouseButton.GetButtonDown() || keyMouseButtonAlt.GetButtonDown();
+		}
+
+		public bool GetButton()
+		{
+			return gamepadButton.GetButton() || keyMouseButton.GetButton() || keyMouseButtonAlt.GetButton();
+		}
+
+		public bool GetButtonUp()
+		{
+			return gamepadButton.GetButtonUp() || keyMouseButton.GetButtonUp() || keyMouseButtonAlt.GetButtonUp();
+		}
+	}
+
+	public abstract class VirtualControl
+	{
+		public virtual void UpdateState()
+		{
+		}
+	}
+
+	public abstract class VirtualButton : VirtualControl
+	{
+		public abstract bool GetButtonDown();
+		public abstract bool GetButton();
+		public abstract bool GetButtonUp();
+	}
+
+	public class VirtualPlaceholderButton : VirtualButton
+	{
+		public static readonly VirtualPlaceholderButton placeholder = new VirtualPlaceholderButton();
+
+		public static VirtualButton GetPlaceholderIfNull(VirtualButton button)
+		{
+			return (button == null) ? placeholder : button;
+		}
+
+		private VirtualPlaceholderButton()
+		{
+		}
+
+		public override bool GetButtonDown()
+		{
+			return false;
+		}
+
+		public override bool GetButton()
+		{
+			return false;
+		}
+
+		public override bool GetButtonUp()
+		{
+			return false;
+		}
+	}
+
+	public class VirtualSimpleButton : VirtualButton
+	{
+		public KeyCode keyCode;
+
+		public VirtualSimpleButton(KeyCode keyCode)
+		{
+			this.keyCode = keyCode;
+		}
+
+		public override bool GetButtonDown()
+		{
+			return Input.GetKeyDown(keyCode);
+		}
+
+		public override bool GetButton()
+		{
+			return Input.GetKey(keyCode);
+		}
+
+		public override bool GetButtonUp()
+		{
+			return Input.GetKeyUp(keyCode);
+		}
+	}
+
+	public abstract class VirtualButtonWithState : VirtualButton
+	{
+		private ButtonState currentState;
+
+		public override void UpdateState()
+		{
+			base.UpdateState();
+			switch (currentState)
+			{
+				case ButtonState.NotPressed:
+					if (GetButton())
+					{
+						currentState = ButtonState.ButtonDown;
+					}
+					break;
+				case ButtonState.ButtonDown:
+					if (GetButton())
+					{
+						currentState = ButtonState.ButtonHeld;
+					}
+					else
+					{
+						currentState = ButtonState.ButtonUp;
+					}
+					break;
+				case ButtonState.ButtonHeld:
+					if (!GetButton())
+					{
+						currentState = ButtonState.ButtonUp;
+					}
+					break;
+				case ButtonState.ButtonUp:
+					if (GetButton())
+					{
+						currentState = ButtonState.ButtonDown;
+					}
+					else
+					{
+						currentState = ButtonState.NotPressed;
+					}
+					break;
+				default:
+					Debug.LogWarning("Invalid button state (int):" + (int)currentState);
+					break;
+			}
+		}
+
+		public override bool GetButtonDown()
+		{
+			return currentState == ButtonState.ButtonDown;
+		}
+
+		public override bool GetButtonUp()
+		{
+			return currentState == ButtonState.ButtonUp;
+		}
+
+		private enum ButtonState : byte
+		{
+			NotPressed = 0,
+			ButtonDown,
+			ButtonHeld,
+			ButtonUp
+		}
+	}
+
+	public class VirtualButtonFromAxis : VirtualButtonWithState
+	{
+		public static readonly float minPressValue = 0.2f;
+
+		public string axisName { get; private set; }
+
+		public VirtualButtonFromAxis(string axisName)
+		{
+			this.axisName = axisName;
+		}
+
+		public override bool GetButton()
+		{
+			return Mathf.Abs(Input.GetAxisRaw(axisName)) >= minPressValue;
+		}
+	}
+
+	public class VirtualButtonFromAxisDirection : VirtualButtonWithState
+	{
+		public static readonly float minPressValue = 0.2f;
+		public static readonly float minPressValueNeg = -0.2f;
+
+		public string axisName { get; private set; }
+		public bool positiveDirection { get; private set; }
+
+		public VirtualButtonFromAxisDirection(string axisName, bool positiveDirection)
+		{
+			this.axisName = axisName;
+			this.positiveDirection = positiveDirection;
+		}
+
+		public override bool GetButton()
+		{
+			if (positiveDirection)
+			{
+				return Input.GetAxisRaw(axisName) >= minPressValue; 
+			}
+			else
+			{
+				return Input.GetAxisRaw(axisName) <= minPressValueNeg;
+			}
+		}
+	}
+
+	public static class ControllerDPad
+	{
+		public static DPadReadMode dPadReadMode;
+		public static string horizontalAxis;
+		public static string verticalAxis;
+		public static KeyCode dPadUp;
+		public static KeyCode dPadDown;
+		public static KeyCode dPadRight;
+		public static KeyCode dPadLeft;
+
+		public static bool UseButtons()
+		{
+			return (dPadReadMode & DPadReadMode.Button) == DPadReadMode.Button;
+		}
+
+		public static bool UseAxes()
+		{
+			return (dPadReadMode & DPadReadMode.Axis) == DPadReadMode.Axis;
+		}
+
+		public static int HorizontalAxis()
+		{
+			float value = 0.0f;
+			if (UseButtons())
+			{
+				if (Input.GetKey(dPadRight))
+				{
+					value = 1.0f;
+				}
+				else if (Input.GetKey(dPadLeft))
+				{
+					value = -1.0f;
+				}
+			}
+			if (UseAxes() && Mathf.Approximately(0.0f, value))
+			{
+				value = Input.GetAxis(horizontalAxis);
+			}
+			return Mathf.RoundToInt(value);
+		}
+
+		public static int VerticalAxis()
+		{
+			float value = 0.0f;
+			if (UseButtons())
+			{
+				if (Input.GetKey(dPadUp))
+				{
+					value = 1.0f;
+				}
+				else if (Input.GetKey(dPadDown))
+				{
+					value = -1.0f;
+				}
+			}
+			if (UseAxes() && Mathf.Approximately(0.0f, value))
+			{
+				value = Input.GetAxisRaw(verticalAxis);
+			}
+			return Mathf.RoundToInt(value);
+		}
+
+		public enum DPadReadMode : byte
+		{
+			NotConfigured = 0,
+			Axis = 1,
+			Button = 2,
+			Mixed = Axis | Button
+		}
+	}
+
+	public class VirtualButtonFromDPad : VirtualButtonWithState
+	{
+		public bool horizontalAxis { get; private set; }
+		public bool positiveDirection { get; private set; }
+
+		public VirtualButtonFromDPad(bool horizontalAxis, bool positiveDirection)
+		{
+			this.horizontalAxis = horizontalAxis;
+			this.positiveDirection = positiveDirection;
+		}
+		public override bool GetButton()
+		{
+			int axisValue = (horizontalAxis) ? ControllerDPad.HorizontalAxis() : ControllerDPad.VerticalAxis();
+			if (positiveDirection)
+			{
+				return axisValue > 0;
+			}
+			else
+			{
+				return axisValue < 0;
+			}
 		}
 	}
 
 	/**<summary>A virtual joystick-type control.</summary>*/
-	public class VirtualAxis : VirtualControl
+	public class DynamicControlAxis : DynamicControl
 	{
 		public static string mouseXAsJoystickName = "Mouse X As Joystick";
 		public static string mouseYAsJoystickName = "Mouse Y As Joystick";
@@ -280,28 +539,36 @@ public class DynamicInput : MonoBehaviour
 			}
 		}
 
-		public VirtualAxis(string description, string gamepadName, string keyboardMouseName) : base(description)
+		public DynamicControlAxis(string description, string gamepadName, string keyboardMouseName) : base(description)
 		{
 			this.gamepadName = gamepadName;
 			this.keyboardMouseName = keyboardMouseName;
 		}
+
+		public override void UpdateControlStates()
+		{
+		}
 	}
 
-	public class VirtualButtonFromJoystick : VirtualControl
+	public class DynamicControlButtonFromJoystick : DynamicControl
 	{
 		public string gamepadName;
 		public KeyCode keyboardMouseKeyCode;
 		public float cutoff;
 
-		public VirtualButtonFromJoystick(string description, float cutoff, string gamepadName, KeyCode keyboardMouseKeyCode) : base(description)
+		public DynamicControlButtonFromJoystick(string description, float cutoff, string gamepadName, KeyCode keyboardMouseKeyCode) : base(description)
 		{
 			this.gamepadName = gamepadName;
 			this.cutoff = cutoff;
 			this.keyboardMouseKeyCode = keyboardMouseKeyCode;
 		}
+
+		public override void UpdateControlStates()
+		{
+		}
 	}
 
-	public class VirtualAxisWithButton : VirtualAxis
+	public class VirtualAxisWithButton : DynamicControlAxis
 	{
 		public KeyCode gamepadButton;
 		public KeyCode keyboardMouseButton;
