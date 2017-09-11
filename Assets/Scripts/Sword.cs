@@ -5,6 +5,7 @@ using UnityEngine;
 /**<summary>Handles sword related stuff.</summary>*/
 public class Sword : MonoBehaviour
 {
+	public float idleAngle;
 	public float swingAngleStart;
 	public float swingAngleEnd;
 	public Transform swingTransform;
@@ -15,11 +16,11 @@ public class Sword : MonoBehaviour
 	private ConvertableTimeRecord swingStartTime;
 	private float swingDuration;
 	private float freezeDuration;
-	private bool reverseDirection;
 
 	private void Start()
 	{
 		swingStartTime = ConvertableTimeRecord.GetTime();
+		swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, -160.0f);
 	}
 
 	private void Update()
@@ -33,35 +34,18 @@ public class Sword : MonoBehaviour
 		{
 			if (swingTime <= swingDuration)
 			{
-				if (reverseDirection)
-				{
-					swingTransform.localRotation =
-						Quaternion.Lerp(
-							Quaternion.Euler(0.0f, 0.0f, swingAngleEnd),
-							Quaternion.Euler(0.0f, 0.0f, swingAngleStart),
+				swingTransform.localRotation =
+					Quaternion.Euler(
+						Vector3.Lerp(
+							new Vector3(0.0f, 0.0f, swingAngleStart),
+							new Vector3(0.0f, 0.0f, swingAngleEnd),
 							swingTime / swingDuration
-							);
-				}
-				else
-				{
-					swingTransform.localRotation =
-						Quaternion.Lerp(
-							Quaternion.Euler(0.0f, 0.0f, swingAngleStart),
-							Quaternion.Euler(0.0f, 0.0f, swingAngleEnd),
-							swingTime / swingDuration
-							);
-				}
+							)
+						);
 			}
 			else if (swingTime <= swingDuration + freezeDuration)
 			{
-				if (reverseDirection)
-				{
-					swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, swingAngleStart);
-				}
-				else
-				{
-					swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, swingAngleEnd);
-				}
+				swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, swingAngleEnd);
 				isEndingSwing = true;
 				isSwinging = false;
 				GetComponent<Collider2D>().enabled = false;
@@ -79,6 +63,11 @@ public class Sword : MonoBehaviour
 		{
 			return;
 		}
+		if (!GetComponent<Collider2D>().enabled)
+		{
+			Debug.Log("it is needed");
+			return;
+		}
 		Health otherHealth = collision.GetComponent<Health>();
 		if (otherHealth != null && otherHealth.isAlignedWithPlayer != owner.GetComponent<Health>().isAlignedWithPlayer)
 		{
@@ -90,30 +79,22 @@ public class Sword : MonoBehaviour
 		}
 	}
 
-	public void Swing(float duration, float freezeDuration)
+	public void Swing(float duration, float freezeDuration, float idleAngle, float startAngle, float endAngle)
 	{
 		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || isSwinging)
 		{
 			return;
 		}
-		if (isEndingSwing)
-		{
-			reverseDirection = !reverseDirection;
-		}
+		this.idleAngle = idleAngle;
+		this.swingAngleStart = startAngle;
+		this.swingAngleEnd = endAngle;
 		isSwinging = true;
 		isEndingSwing = false;
 		swingStartTime.SetToCurrent();
 		swingDuration = duration;
 		this.freezeDuration = freezeDuration;
-		if (reverseDirection)
-		{
-			swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, swingAngleEnd);
-		}
-		else
-		{
-			swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, swingAngleStart);
-		}
-		GetComponent<SpriteRenderer>().enabled = true;
+		swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, swingAngleStart);
+		//GetComponent<SpriteRenderer>().enabled = true;
 		GetComponent<Collider2D>().enabled = true;
 	}
 
@@ -121,8 +102,7 @@ public class Sword : MonoBehaviour
 	{
 		isSwinging = false;
 		isEndingSwing = false;
-		reverseDirection = false;
-		GetComponent<SpriteRenderer>().enabled = false;
+		swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, idleAngle);
 		GetComponent<Collider2D>().enabled = false;
 	}
 }

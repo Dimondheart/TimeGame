@@ -6,12 +6,14 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 {
 	public Sword sword;
 	/**<summary>Delay between attacks, in seconds.</summary>*/
-	public float cooldown = 0.3f;
+	public float cooldown = 0.5f;
 	/**<summary>HP damage per attack.</summary>*/
 	public int damagePerHit = 10;
-	public float swingDuration = 0.25f;
-	/**<summary>Time the last attack was made.</summary>*/
-	private ConvertableTimeRecord lastAttackTime;
+	public float swingDuration = 0.2f;
+	public float swordIdleAngle = -160.0f;
+	public float swordSwingArc = 160.0f;
+	public float comboLimit = 3;
+	private int currentSwingNumber;
 
 	public bool IsSwinging
 	{
@@ -35,7 +37,6 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 		record.cooldown = cooldown;
 		record.damagePerHit = damagePerHit;
 		record.swingDuration = swingDuration;
-		record.lastAttackTime = lastAttackTime;
 		return record;
 	}
 
@@ -45,12 +46,6 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 		cooldown = rec.cooldown;
 		damagePerHit = rec.damagePerHit;
 		swingDuration = rec.swingDuration;
-		lastAttackTime = rec.lastAttackTime;
-	}
-
-	private void Awake()
-	{
-		lastAttackTime = ConvertableTimeRecord.GetTime();
 	}
 
 	private void Update()
@@ -65,10 +60,27 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 		}
 		else if (DynamicInput.GetButtonDown("Melee") && !GetComponent<PlayerMovement>().IsDashing)
 		{
-			if (ManipulableTime.time - lastAttackTime.manipulableTime >= swingDuration)
+			if (!sword.isSwinging && !sword.isEndingSwing)
 			{
-				sword.Swing(swingDuration, cooldown - swingDuration);
-				lastAttackTime.SetToCurrent();
+				currentSwingNumber = 0;
+			}
+			if (sword.isEndingSwing || (!sword.isSwinging && !sword.isEndingSwing))
+			{
+				if (currentSwingNumber == 0)
+				{
+					sword.Swing(swingDuration, cooldown - swingDuration, swordIdleAngle, swordIdleAngle, swordSwingArc / 2.0f);
+					currentSwingNumber++;
+				}
+				else if (currentSwingNumber < comboLimit)
+				{
+					float angle = swordSwingArc / 2.0f;
+					if (currentSwingNumber % 2 != 0)
+					{
+						angle = -angle;
+					}
+					sword.Swing(swingDuration, cooldown - swingDuration, swordIdleAngle, -angle, angle);
+					currentSwingNumber++;
+				}
 			}
 		}
 	}
@@ -81,12 +93,9 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 		}
 		if (sword.isSwinging || sword.isEndingSwing)
 		{
-			if (!sword.isEndingSwing)
-			{
-				lastAttackTime = ConvertableTimeRecord.zeroTime;
-			}
 			sword.CancelSwing();
 		}
+		currentSwingNumber = 0;
 	}
 
 	public class TimelineRecord_PlayerMelee : TimelineRecordForComponent
@@ -94,6 +103,5 @@ public class PlayerMelee : MonoBehaviour, ITimelineRecordable
 		public float cooldown;
 		public int damagePerHit;
 		public float swingDuration;
-		public ConvertableTimeRecord lastAttackTime;
 	}
 }

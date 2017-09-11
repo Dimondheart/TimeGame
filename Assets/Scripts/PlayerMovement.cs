@@ -135,7 +135,7 @@ public class PlayerMovement : ControlledMovement
 				dashReleasedAfterExitingWater = true;
 				if (GetComponent<PlayerMelee>().IsSwinging || GetComponent<PlayerGuard>().IsGuarding)
 				{
-					newVelocity = Vector3.zero;
+					newVelocity = newVelocity * 0.1f;
 				}
 			}
 		}

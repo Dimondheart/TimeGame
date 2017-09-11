@@ -5,6 +5,9 @@ using UnityEngine;
 public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 {
 	public GameObject shield;
+	public GameObject sideShieldLeft;
+	public GameObject sideShieldRight;
+
 
 	public bool IsGuarding
 	{
@@ -27,7 +30,19 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 
 	bool IHitTaker.TakeHit(HitInfo hit)
 	{
-		return !shield.GetComponent<Collider2D>().isTrigger && hit.hitCollider == shield.GetComponent<Collider2D>();
+		if (hit.hitCollider == shield.GetComponent<Collider2D>())
+		{
+			return !shield.GetComponent<Collider2D>().isTrigger;
+		}
+		else if (hit.hitCollider == sideShieldLeft.GetComponent<Collider2D>())
+		{
+			return !sideShieldLeft.GetComponent<Collider2D>().isTrigger;
+		}
+		else if (hit.hitCollider == sideShieldRight.GetComponent<Collider2D>())
+		{
+			return !sideShieldRight.GetComponent<Collider2D>().isTrigger;
+		}
+		return false;
 	}
 
 	int IHitTaker.Priority
