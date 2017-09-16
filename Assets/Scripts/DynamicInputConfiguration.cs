@@ -8,10 +8,10 @@ public static class DynamicInputConfiguration
 	public static void ConfigureInput(Dictionary<string, DynamicInput.DynamicControlButton> buttonControls, Dictionary<string, DynamicInput.DynamicControl> virtualControls)
 	{
 		DynamicInput.ControllerDPad.dPadReadMode = DynamicInput.ControllerDPad.DPadReadMode.Axis;
-		DynamicInput.ControllerDPad.horizontalAxis = "6th axis (Joysticks)";
-		DynamicInput.ControllerDPad.verticalAxis = "7th axis (Joysticks)";
+		DynamicInput.ControllerDPad.horizontalAxisName = "6th axis (Joysticks)";
+		DynamicInput.ControllerDPad.verticalAxisName = "7th axis (Joysticks)";
 
-		virtualControls.Add(
+		/*virtualControls.Add(
 			"Move Horizontal",
 			new DynamicInput.DynamicControlAxis("Horizontal movement", "X axis", "AD axis")
 			);
@@ -26,13 +26,13 @@ public static class DynamicInputConfiguration
 		virtualControls.Add(
 			"Look Vertical",
 			new DynamicInput.DynamicControlAxis("Vertical look direction", "5th axis (Joysticks)", DynamicInput.DynamicControlAxis.mouseYAsJoystickName)
-			);
+			);*/
 		buttonControls.Add(
 			"Toggle Pause Menu",
 			new DynamicInput.DynamicControlButton(
 				"Open/Close the pause menu",
-				new DynamicInput.VirtualSimpleButton(KeyCode.Joystick1Button6),
-				new DynamicInput.VirtualSimpleButton(KeyCode.Escape),
+				new DynamicInput.VirtualButtonBasic(KeyCode.Joystick1Button6),
+				new DynamicInput.VirtualButtonBasic(KeyCode.Escape),
 				null
 				)
 			);
@@ -40,8 +40,8 @@ public static class DynamicInputConfiguration
 			"Melee",
 			new DynamicInput.DynamicControlButton(
 				"Melee",
-				new DynamicInput.VirtualSimpleButton(KeyCode.Joystick1Button4),
-				new DynamicInput.VirtualSimpleButton(KeyCode.Mouse0),
+				new DynamicInput.VirtualButtonBasic(KeyCode.Joystick1Button4),
+				new DynamicInput.VirtualButtonBasic(KeyCode.Mouse0),
 				null
 				)
 			);
@@ -49,8 +49,8 @@ public static class DynamicInputConfiguration
 			"Guard",
 			new DynamicInput.DynamicControlButton(
 				"Guard",
-				new DynamicInput.VirtualSimpleButton(KeyCode.Joystick1Button5),
-				new DynamicInput.VirtualSimpleButton(KeyCode.Mouse1),
+				new DynamicInput.VirtualButtonBasic(KeyCode.Joystick1Button5),
+				new DynamicInput.VirtualButtonBasic(KeyCode.Mouse1),
 				null
 				)
 			);
@@ -59,7 +59,7 @@ public static class DynamicInputConfiguration
 			new DynamicInput.DynamicControlButton(
 				"Dash in a direction",
 				new DynamicInput.VirtualButtonFromAxis("10th axis (Joysticks)"),
-				new DynamicInput.VirtualSimpleButton(KeyCode.LeftShift),
+				new DynamicInput.VirtualButtonBasic(KeyCode.LeftShift),
 				null
 				)
 			);
@@ -67,15 +67,15 @@ public static class DynamicInputConfiguration
 			"Toggle Time Freeze",
 			new DynamicInput.DynamicControlButton(
 				"Toggle time freezing",
-				new DynamicInput.VirtualSimpleButton(KeyCode.Joystick1Button3),
-				new DynamicInput.VirtualSimpleButton(KeyCode.Q),
+				new DynamicInput.VirtualButtonBasic(KeyCode.Joystick1Button3),
+				new DynamicInput.VirtualButtonBasic(KeyCode.Q),
 				null
 				)
 			);
-		virtualControls.Add(
+		/*virtualControls.Add(
 			"Rewind/Replay",
 			new DynamicInput.DynamicControlAxis("Horizontal look direction", "6th axis (Joysticks)", "<> axis")
-			);
+			);*/
 		virtualControls.Add(
 			"Temperature Element Adjust",
 			new DynamicInput.VirtualAxisWithButton("Change the temperature elemental focus", "6th axis (Joysticks)", "AD axis", KeyCode.None, KeyCode.LeftAlt)
