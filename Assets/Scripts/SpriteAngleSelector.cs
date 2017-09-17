@@ -73,7 +73,7 @@ namespace TechnoWolf.Project1
 			record.syncronizeRotations = syncronizeRotations.ToArray();
 			record.currentAngle = currentAngle;
 			record.usingDeadVersion = usingDeadVersion;
-			record.forceUpdateNextCycle = forceUpdateThisCycle;
+			record.forceUpdateThisCycle = forceUpdateThisCycle;
 			return record;
 		}
 
@@ -84,7 +84,7 @@ namespace TechnoWolf.Project1
 			syncronizeRotations.AddRange(rec.syncronizeRotations);
 			currentAngle = rec.currentAngle;
 			usingDeadVersion = rec.usingDeadVersion;
-			forceUpdateThisCycle = rec.forceUpdateNextCycle;
+			forceUpdateThisCycle = rec.forceUpdateThisCycle;
 		}
 
 		private void Update()
@@ -235,7 +235,7 @@ namespace TechnoWolf.Project1
 			public Transform[] syncronizeRotations;
 			public int currentAngle;
 			public bool usingDeadVersion;
-			public bool forceUpdateNextCycle;
+			public bool forceUpdateThisCycle;
 		}
 	}
 }

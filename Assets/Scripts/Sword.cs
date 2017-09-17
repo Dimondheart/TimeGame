@@ -22,11 +22,34 @@ namespace TechnoWolf.Project1
 
 		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
 		{
+			TimelineRecord_Sword rec = (TimelineRecord_Sword)record;
+			idleAngle = rec.idleAngle;
+			swingAngleStart = rec.swingAngleStart;
+			swingAngleEnd = rec.swingAngleEnd;
+			swingTransform = rec.swingTransform;
+			owner = rec.owner;
+			isSwinging = rec.isSwinging;
+			isEndingSwing = rec.isEndingSwing;
+
+			swingStartTime = rec.swingStartTime;
+			swingDuration = rec.swingDuration;
+			freezeDuration = rec.freezeDuration;
 		}
 
 		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 		{
 			TimelineRecord_Sword record = new TimelineRecord_Sword();
+			record.idleAngle = idleAngle;
+			record.swingAngleStart = swingAngleStart;
+			record.swingAngleEnd = swingAngleEnd;
+			record.swingTransform = swingTransform;
+			record.owner = owner;
+			record.isSwinging = isSwinging;
+			record.isEndingSwing = isEndingSwing;
+
+			record.swingStartTime = swingStartTime;
+			record.swingDuration = swingDuration;
+			record.freezeDuration = freezeDuration;
 			return record;
 		}
 
