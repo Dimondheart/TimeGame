@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.DynamicInputSystem;
 
 /**<summary>Manages high-level game operations.</summary>*/
 public class GameController : MonoBehaviour

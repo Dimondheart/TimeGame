@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.DynamicInputSystem;
 
 public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 {

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.DynamicInputSystem;
 
 /**<summary>Handles the players ability to rewind time.</summary>*/
 public class ChronoRewind : MonoBehaviour
