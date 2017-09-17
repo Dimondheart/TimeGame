@@ -23,21 +23,21 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	/**<summary>If the GameObject is friendly/neutral towards the player.</summary>*/
 	public bool isAlignedWithPlayer = false;
 	/**<summary>The absolute max HP.</summary>*/
-	private float absoluteMaxHealth;
+	private float absoluteMaxHP;
 	/**<summary>Maximum HP, accounting for perminent damage.</summary>*/
-	private float maxHealth = float.PositiveInfinity;
+	private float currentmaxHP = float.PositiveInfinity;
 	/**<summary>Current HP.</summary>*/
-	private float health = float.PositiveInfinity;
+	private float currentHP = float.PositiveInfinity;
 
 	public float AbsoluteMaxHP
 	{
 		get
 		{
-			return absoluteMaxHealth;
+			return absoluteMaxHP;
 		}
 		set
 		{
-			absoluteMaxHealth = value;
+			absoluteMaxHP = value;
 			// Easy auto adjust of the 2 dependent values
 			CurrentMaxHP = CurrentMaxHP;
 		}
@@ -47,11 +47,11 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	{
 		get
 		{
-			return maxHealth;
+			return currentmaxHP;
 		}
 		set
 		{
-			maxHealth = Mathf.Clamp(value, 0.0f, absoluteMaxHealth);
+			currentmaxHP = Mathf.Clamp(value, 0.0f, absoluteMaxHP);
 			// Easy auto adjust
 			CurrentHP = CurrentHP;
 		}
@@ -61,18 +61,18 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	{
 		get
 		{
-			return health;
+			return currentHP;
 		}
 		private set
 		{
-			float val = Mathf.Clamp(value, 0.0f, maxHealth);
+			float val = Mathf.Clamp(value, 0.0f, currentmaxHP);
 			if (val < 0.95f)
 			{
-				health = 0.0f;
+				currentHP = 0.0f;
 			}
 			else
 			{
-				health = val;
+				currentHP = val;
 			}
 		}
 	}
@@ -89,7 +89,7 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	{
 		get
 		{
-			return absoluteMaxHealth;
+			return absoluteMaxHP;
 		}
 	}
 
@@ -97,7 +97,7 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	{
 		get
 		{
-			return maxHealth;
+			return currentmaxHP;
 		}
 	}
 
@@ -105,16 +105,16 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	{
 		get
 		{
-			return health;
+			return currentHP;
 		}
 	}
 
 	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 	{
 		TimelineRecord_Health record = new TimelineRecord_Health();
-		record.absoluteMaxHealth = absoluteMaxHealth;
-		record.maxHealth = maxHealth;
-		record.health = health;
+		record.absoluteMaxHP = absoluteMaxHP;
+		record.currentMaxHP = currentmaxHP;
+		record.currentHP = currentHP;
 		record.isAlignedWithPlayer = isAlignedWithPlayer;
 		return record;
 	}
@@ -122,17 +122,17 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
 	{
 		TimelineRecord_Health rec = (TimelineRecord_Health)record;
-		absoluteMaxHealth = rec.absoluteMaxHealth;
-		maxHealth = rec.maxHealth;
-		health = rec.health;
+		absoluteMaxHP = rec.absoluteMaxHP;
+		currentmaxHP = rec.currentMaxHP;
+		currentHP = rec.currentHP;
 		isAlignedWithPlayer = rec.isAlignedWithPlayer;
 	}
 
 	private void Awake()
 	{
-		absoluteMaxHealth = initialMaxHealth;
-		CurrentMaxHP = maxHealth;
-		CurrentHP = maxHealth;
+		absoluteMaxHP = initialMaxHealth;
+		CurrentMaxHP = currentmaxHP;
+		CurrentHP = currentmaxHP;
 	}
 
 	private void Update()
@@ -206,9 +206,9 @@ public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
 
 	public class TimelineRecord_Health : TimelineRecordForComponent
 	{
-		public float absoluteMaxHealth;
-		public float maxHealth;
-		public float health;
+		public float absoluteMaxHP;
+		public float currentMaxHP;
+		public float currentHP;
 		public bool isAlignedWithPlayer;
 	}
 }

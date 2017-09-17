@@ -11,10 +11,13 @@ public class DynamicInput : MonoBehaviour
 {
 	/**<summary>Internal for GamepadModeEnabled.</summary>*/
 	private static bool gamepadModeEnabled = false;
+	/**<summary>Button-type controls</summary>*/
 	private static Dictionary<string, DynamicControlButton> buttonControls =
 		new Dictionary<string, DynamicControlButton>();
+	private static Dictionary<string, DynamicControlAxis> axisControls =
+		new Dictionary<string, DynamicControlAxis>();
 	/**<summary>The current virtual controls.</summary>*/
-	private static Dictionary<string, DynamicControl> virtualControls =
+	private static Dictionary<string, DynamicControl> specialControls =
 		new Dictionary<string, DynamicControl>();
 
 	public static bool GamepadModeEnabled
@@ -58,11 +61,11 @@ public class DynamicInput : MonoBehaviour
 	private void Awake()
 	{
 		// Only setup once, since this is a 'static' component
-		if (virtualControls.Count > 0 || buttonControls.Count > 0)
+		if (buttonControls.Count > 0 || axisControls.Count > 0 || specialControls.Count > 0)
 		{
 			return;
 		}
-		DynamicInputConfiguration.ConfigureInput(buttonControls, virtualControls);
+		DynamicInputConfiguration.ConfigureInput();
 	}
 
 	private void Update()
@@ -71,40 +74,87 @@ public class DynamicInput : MonoBehaviour
 		{
 			dc.UpdateControlStates();
 		}
-		foreach (DynamicControl dc in virtualControls.Values)
+		foreach (DynamicControl dc in axisControls.Values)
+		{
+			dc.UpdateControlStates();
+		}
+		foreach (DynamicControl dc in specialControls.Values)
 		{
 			dc.UpdateControlStates();
 		}
 	}
 
-	/**<summary>Input.GetButtonDown equivalent.</summary>*/
-	public static bool GetButtonDown(string virtualName)
+	/**<summary>Add the specified dynamic control as a standard button,
+	 * replacing any control under the same name that was also added as a 
+	 * standard button.</summary>
+	 */
+	public static void SetupButtonControl(string name, DynamicControlButton control)
 	{
-		return buttonControls[virtualName].GetButtonDown();
+		buttonControls[name] = control;
+	}
+
+	/**<summary>Add the specified dynamic control as a standard axis,
+	 * replacing any control under the same name that was also added as a 
+	 * standard axis.</summary>
+	 */
+	public static void SetupAxisControl(string name, DynamicControlAxis control)
+	{
+		axisControls[name] = control;
+	}
+
+	/**<summary>Add the specified dynamic control as a special control,
+	 * replacing any control under the same name that was also added as a 
+	 * special control.</summary>
+	 */
+	public static void SetupSpecialControl(string name, DynamicControl control)
+	{
+		specialControls[name] = control;
+	}
+
+	/**<summary>Remove all registered controls.</summary>*/
+	public static void RemoveAllControls()
+	{
+		buttonControls.Clear();
+		axisControls.Clear();
+		specialControls.Clear();
+	}
+
+	/**<summary>Input.GetButtonDown equivalent.</summary>*/
+	public static bool GetButtonDown(string name)
+	{
+		return buttonControls[name].GetButtonDown();
 	}
 
 	/**<summary>Input.GetButton equivalent.</summary>*/
-	public static bool GetButton(string virtualName)
+	public static bool GetButtonHeld(string controlName)
 	{
-		return buttonControls[virtualName].GetButton();
+		return buttonControls[controlName].GetButton();
 	}
 
 	/**<summary>Input.GetButtonUp equivalent.</summary>*/
-	public static bool GetButtonUp(string virtualName)
+	public static bool GetButtonUp(string controlName)
 	{
-		return buttonControls[virtualName].GetButtonUp();
+		return buttonControls[controlName].GetButtonUp();
 	}
 
 	/**<summary>Input.GetAxisRaw equivalent.</summary>*/
-	public static float GetAxisRaw(string virtualName)
+	public static float GetAxisRaw(string controlName)
 	{
-		return ((DynamicControlAxis2)virtualControls[virtualName]).RawAxis;
+		return axisControls[controlName].GetAxisRaw();
 	}
 
 	/**<summary>Input.GetAxis equivalent.</summary>*/
-	public static float GetAxis(string virtualName)
+	public static float GetAxis(string controlName)
 	{
-		return ((DynamicControlAxis2)virtualControls[virtualName]).Axis;
+		return axisControls[controlName].GetAxis();
+	}
+
+	/**<summary>Get a special/custom control that is not a standard button type or
+	 * axis type.</summary>
+	 */
+	public static T GetSpecialControl<T>(string controlName) where T : DynamicControl
+	{
+		return (T)specialControls[controlName];
 	}
 
 	/**<summary>Base class for for the different variants of dynamic control types.</summary>*/
@@ -135,44 +185,32 @@ public class DynamicInput : MonoBehaviour
 
 		public override void UpdateControlStates()
 		{
-			gamepadInput.UpdateState();
-			keyMouseInput.UpdateState();
-			keyMouseAltInput.UpdateState();
+			if (gamepadInput != null)
+			{
+				gamepadInput.UpdateState();
+			}
+			if (keyMouseInput != null)
+			{
+				keyMouseInput.UpdateState();
+			}
+			if (keyMouseAltInput != null)
+			{
+				keyMouseAltInput.UpdateState();
+			}
 		}
 
 		public virtual void SetGamepadInput(T newInput)
 		{
-			if (newInput == null)
-			{
-				Debug.LogError("Attempted to set a dynamic control input to null." +
-					" Use a designated placeholder instance instead of null."
-					);
-				return;
-			}
 			gamepadInput = newInput;
 		}
 
 		public virtual void SetKeyMouseInput(T newInput)
 		{
-			if (newInput == null)
-			{
-				Debug.LogError("Attempted to set a dynamic control input to null." +
-					" Use a designated placeholder instance instead of null."
-					);
-				return;
-			}
 			keyMouseInput = newInput;
 		}
 
 		public virtual void SetKeyMouseAltInput(T newInput)
 		{
-			if (newInput == null)
-			{
-				Debug.LogError("Attempted to set a dynamic control input to null." +
-					" Use a designated placeholder instance instead of null."
-					);
-				return;
-			}
 			keyMouseAltInput = newInput;
 		}
 	}
@@ -517,6 +555,7 @@ public class DynamicInput : MonoBehaviour
 		}
 	}
 
+	/**<summary>Standard dynamic control for a set of virtual axes.</summary>*/
 	public class DynamicControlAxis : DynamicControl<VirtualAxis>
 	{
 		public DynamicControlAxis(string description, VirtualAxis gamepadAxis, VirtualAxis keyMouseAxis) : base(description)
@@ -544,14 +583,14 @@ public class DynamicInput : MonoBehaviour
 		}
 	}
 
-	/**<summary></summary>*/
+	/**<summary>Base for any virtual input of an axis type, like a joystick axis.</summary>*/
 	public abstract class VirtualAxis : VirtualInput
 	{
 		public abstract float GetAxisRaw();
 		public abstract float GetAxis();
 	}
 
-	/**<summary></summary>*/
+	/**<summary>Basic virtual axis that reads from the Unity Input class.</summary>*/
 	public class VirtualAxisBasic : VirtualAxis
 	{
 		public string axisName;
@@ -572,6 +611,10 @@ public class DynamicInput : MonoBehaviour
 		}
 	}
 
+	/**<summary>A virtual axis that updates a stored axis value once each update,
+	 * and will also (eventually) support automatic smoothing for the non-raw axis value,
+	 * simmilar to the Unity Input axis smoothing.</summary>
+	 */
 	public abstract class VirtualAxisWithBuffer : VirtualAxis
 	{
 		protected float rawAxisValue;
@@ -594,7 +637,8 @@ public class DynamicInput : MonoBehaviour
 
 	/**<summary>Uses two virtual buttons to make an axis. The virtual buttons
 	 * given should not be used within other controls, as this would cause
-	 * them to be updated multiple times in one cycle.</summary>*/
+	 * them to be updated multiple times in one cycle.</summary>
+	 */
 	public class VirtualAxisFromButtons : VirtualAxisWithBuffer
 	{
 		public VirtualButton negative { get; private set; }
@@ -633,187 +677,36 @@ public class DynamicInput : MonoBehaviour
 		}
 	}
 
+	/**<summary>A virtual axis that calculates a value in the range [-1,1] using
+	 * the position of the mouse relative to the center of the window, with the bounds
+	 * being the edges of the player.</summary>
+	 */
 	public class VirtualAxisFromMouse : VirtualAxisWithBuffer
 	{
-		public bool useHorizontal { get; private set; }
+		public static readonly float deadzone = 0.05f;
 
-		public VirtualAxisFromMouse(bool useHorizontal)
+		public bool usingMouseX { get; private set; }
+
+		public VirtualAxisFromMouse(bool usingMouseX)
 		{
-			this.useHorizontal = useHorizontal;
+			this.usingMouseX = usingMouseX;
 		}
 
 		public override void UpdateState()
 		{
-			// TODO buffer state
+			if (usingMouseX)
+			{
+				rawAxisValue = Input.mousePosition.x / Screen.width * 2.0f - 1.0f;
+			}
+			else
+			{
+				rawAxisValue = Input.mousePosition.y / Screen.height * 2.0f - 1.0f;
+			}
+			if (Mathf.Abs(rawAxisValue) < deadzone)
+			{
+				rawAxisValue = 0.0f;
+			}
 			base.UpdateState();
-		}
-	}
-
-	/**<summary>A virtual joystick-type control.</summary>*/
-	public class DynamicControlAxis2 : DynamicControl
-	{
-		public static string mouseXAsJoystickName = "Mouse X As Joystick";
-		public static string mouseYAsJoystickName = "Mouse Y As Joystick";
-
-		public string gamepadName;
-		public bool isMouseAsJoy { get; private set; }
-		public bool isMouseXAsJoy { get; private set; }
-		public float mouseAsJoystickDeadzone = 0.05f;
-		private string keyboardMouseNameInternal;
-
-		/**<summary>The name of the axis in Input for the keyboard/mouse
-		 * controls.</summary>
-		 */
-		public string keyboardMouseName
-		{
-			get
-			{
-				return keyboardMouseNameInternal;
-			}
-			set
-			{
-				keyboardMouseNameInternal = value;
-				if (value == mouseXAsJoystickName)
-				{
-					isMouseAsJoy = true;
-					isMouseXAsJoy = true;
-				}
-				else if (value == mouseYAsJoystickName)
-				{
-					isMouseAsJoy = true;
-					isMouseXAsJoy = false;
-				}
-			}
-		}
-		public virtual float RawAxis
-		{
-			get
-			{
-				float axisValue = Input.GetAxisRaw(gamepadName);
-				if (!gamepadModeEnabled && Mathf.Approximately(0.0f, axisValue))
-				{
-					if (isMouseAsJoy)
-					{
-						float value = 0.0f;
-						if (isMouseXAsJoy)
-						{
-							value = Input.mousePosition.x / Screen.width * 2.0f - 1.0f;
-						}
-						else
-						{
-							value = Input.mousePosition.y / Screen.height * 2.0f - 1.0f;
-						}
-						if (value <= mouseAsJoystickDeadzone)
-						{
-							return 0.0f;
-						}
-						return value;
-					}
-					return Input.GetAxisRaw(keyboardMouseName);
-				}
-				return axisValue;
-			}
-		}
-		public virtual float Axis
-		{
-			get
-			{
-				float axisValue = Input.GetAxis(gamepadName);
-				if (!gamepadModeEnabled && Mathf.Approximately(0.0f, axisValue))
-				{
-					if (isMouseAsJoy)
-					{
-						float value = 0.0f;
-						if (isMouseXAsJoy)
-						{
-							value = Input.mousePosition.x / Screen.width * 2.0f - 1.0f;
-						}
-						else
-						{
-							value = Input.mousePosition.y / Screen.height * 2.0f - 1.0f;
-						}
-						if (Mathf.Abs(value) <= mouseAsJoystickDeadzone)
-						{
-							return 0.0f;
-						}
-						return value;
-					}
-					return Input.GetAxis(keyboardMouseName);
-				}
-				return axisValue;
-			}
-		}
-
-		public DynamicControlAxis2(string description, string gamepadName, string keyboardMouseName) : base(description)
-		{
-			this.gamepadName = gamepadName;
-			this.keyboardMouseName = keyboardMouseName;
-		}
-
-		public override void UpdateControlStates()
-		{
-		}
-	}
-
-	public class VirtualAxisWithButton : DynamicControlAxis2
-	{
-		public KeyCode gamepadButton;
-		public KeyCode keyboardMouseButton;
-
-		public override float RawAxis
-		{
-			get
-			{
-				float value = base.RawAxis;
-				if (gamepadButton == KeyCode.None && !Mathf.Approximately(0.0f, Input.GetAxisRaw(gamepadName)))
-				{
-					return value;
-				}
-				if (gamepadButton != KeyCode.None && Input.GetKey(gamepadButton))
-				{
-					return value;
-				}
-				if (keyboardMouseButton == KeyCode.None)
-				{
-					return value;
-				}
-				if (keyboardMouseButton != KeyCode.None && Input.GetKey(keyboardMouseButton))
-				{
-					return value;
-				}
-				return 0.0f;
-			}
-		}
-
-		public override float Axis
-		{
-			get
-			{
-				float value = base.Axis;
-				if (gamepadButton == KeyCode.None && !Mathf.Approximately(0.0f, Input.GetAxis(gamepadName)))
-				{
-					return value;
-				}
-				if (gamepadButton != KeyCode.None && Input.GetKey(gamepadButton))
-				{
-					return value;
-				}
-				if (keyboardMouseButton == KeyCode.None)
-				{
-					return value;
-				}
-				if (keyboardMouseButton != KeyCode.None && Input.GetKey(keyboardMouseButton))
-				{
-					return value;
-				}
-				return 0.0f;
-			}
-		}
-
-		public VirtualAxisWithButton(string description, string gamepadName, string keyboardMouseName, KeyCode gamepadButton, KeyCode keyboardMouseButton) : base (description, gamepadName, keyboardMouseName)
-		{
-			this.gamepadButton = gamepadButton;
-			this.keyboardMouseButton = keyboardMouseButton;
 		}
 	}
 }

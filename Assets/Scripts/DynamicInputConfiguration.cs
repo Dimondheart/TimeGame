@@ -5,29 +5,51 @@ using UnityEngine;
 /**<summary></summary>*/
 public static class DynamicInputConfiguration
 {
-	public static void ConfigureInput(Dictionary<string, DynamicInput.DynamicControlButton> buttonControls, Dictionary<string, DynamicInput.DynamicControl> virtualControls)
+	public static void ConfigureInput()
 	{
 		DynamicInput.ControllerDPad.dPadReadMode = DynamicInput.ControllerDPad.DPadReadMode.Axis;
 		DynamicInput.ControllerDPad.horizontalAxisName = "6th axis (Joysticks)";
 		DynamicInput.ControllerDPad.verticalAxisName = "7th axis (Joysticks)";
 
-		/*virtualControls.Add(
+		DynamicInput.SetupAxisControl(
 			"Move Horizontal",
-			new DynamicInput.DynamicControlAxis("Horizontal movement", "X axis", "AD axis")
+			new DynamicInput.DynamicControlAxis(
+				"Horizontal movement",
+				new DynamicInput.VirtualAxisBasic("X axis"),
+				new DynamicInput.VirtualAxisFromButtons(
+					new DynamicInput.VirtualButtonBasic(KeyCode.A),
+					new DynamicInput.VirtualButtonBasic(KeyCode.D)
+					)
+				)
 			);
-		virtualControls.Add(
+		DynamicInput.SetupAxisControl(
 			"Move Vertical",
-			new DynamicInput.DynamicControlAxis("Vertical movement", "Y axis", "SW axis")
+			new DynamicInput.DynamicControlAxis(
+				"Vertical movement",
+				new DynamicInput.VirtualAxisBasic("Y axis"),
+				new DynamicInput.VirtualAxisFromButtons(
+					new DynamicInput.VirtualButtonBasic(KeyCode.S),
+					new DynamicInput.VirtualButtonBasic(KeyCode.W)
+					)
+				)
 			);
-		virtualControls.Add(
+		DynamicInput.SetupAxisControl(
 			"Look Horizontal",
-			new DynamicInput.DynamicControlAxis("Horizontal look direction", "4th axis (Joysticks)", DynamicInput.DynamicControlAxis.mouseXAsJoystickName)
+			new DynamicInput.DynamicControlAxis(
+				"Horizontal look direction",
+				new DynamicInput.VirtualAxisBasic("4th axis (Joysticks)"),
+				new DynamicInput.VirtualAxisFromMouse(true)
+				)
 			);
-		virtualControls.Add(
+		DynamicInput.SetupAxisControl(
 			"Look Vertical",
-			new DynamicInput.DynamicControlAxis("Vertical look direction", "5th axis (Joysticks)", DynamicInput.DynamicControlAxis.mouseYAsJoystickName)
-			);*/
-		buttonControls.Add(
+			new DynamicInput.DynamicControlAxis(
+				"Vertical look direction",
+				new DynamicInput.VirtualAxisBasic("5th axis (Joysticks)"),
+				new DynamicInput.VirtualAxisFromMouse(false)
+				)
+			);
+		DynamicInput.SetupButtonControl(
 			"Toggle Pause Menu",
 			new DynamicInput.DynamicControlButton(
 				"Open/Close the pause menu",
@@ -36,7 +58,7 @@ public static class DynamicInputConfiguration
 				null
 				)
 			);
-		buttonControls.Add(
+		DynamicInput.SetupButtonControl(
 			"Melee",
 			new DynamicInput.DynamicControlButton(
 				"Melee",
@@ -45,7 +67,7 @@ public static class DynamicInputConfiguration
 				null
 				)
 			);
-		buttonControls.Add(
+		DynamicInput.SetupButtonControl(
 			"Guard",
 			new DynamicInput.DynamicControlButton(
 				"Guard",
@@ -54,7 +76,7 @@ public static class DynamicInputConfiguration
 				null
 				)
 			);
-		buttonControls.Add(
+		DynamicInput.SetupButtonControl(
 			"Dash",
 			new DynamicInput.DynamicControlButton(
 				"Dash in a direction",
@@ -63,7 +85,7 @@ public static class DynamicInputConfiguration
 				null
 				)
 			);
-		buttonControls.Add(
+		DynamicInput.SetupButtonControl(
 			"Toggle Time Freeze",
 			new DynamicInput.DynamicControlButton(
 				"Toggle time freezing",
@@ -72,17 +94,16 @@ public static class DynamicInputConfiguration
 				null
 				)
 			);
-		/*virtualControls.Add(
+		DynamicInput.SetupAxisControl(
 			"Rewind/Replay",
-			new DynamicInput.DynamicControlAxis("Horizontal look direction", "6th axis (Joysticks)", "<> axis")
-			);*/
-		virtualControls.Add(
-			"Temperature Element Adjust",
-			new DynamicInput.VirtualAxisWithButton("Change the temperature elemental focus", "6th axis (Joysticks)", "AD axis", KeyCode.None, KeyCode.LeftAlt)
-			);
-		virtualControls.Add(
-			"Moisture Element Adjust",
-			new DynamicInput.VirtualAxisWithButton("Change the moisture elemental focus", "7th axis (Joysticks)", "SW axis", KeyCode.None, KeyCode.LeftAlt)
+			new DynamicInput.DynamicControlAxis(
+				"Horizontal look direction",
+				new DynamicInput.VirtualAxisBasic("6th axis (Joysticks)"),
+				new DynamicInput.VirtualAxisFromButtons(
+					new DynamicInput.VirtualButtonBasic(KeyCode.LeftArrow),
+					new DynamicInput.VirtualButtonBasic(KeyCode.RightArrow)
+					)
+				)
 			);
 	}
 }

@@ -8,7 +8,9 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 	public GameObject sideShieldLeft;
 	public GameObject sideShieldRight;
 
-
+	/**<summary>If the player has the front guard ability active (does not include passive
+	 * shields like the side shields.)</summary>
+	 */
 	public bool IsGuarding
 	{
 		get
@@ -20,12 +22,18 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 	{
 		TimelineRecord_PlayerGuard record = new TimelineRecord_PlayerGuard();
+		record.shield = shield;
+		record.sideShieldLeft = sideShieldLeft;
+		record.sideShieldRight = sideShieldRight;
 		return record;
 	}
 
 	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
 	{
 		TimelineRecord_PlayerGuard rec = (TimelineRecord_PlayerGuard)record;
+		shield = rec.shield;
+		sideShieldLeft = rec.sideShieldLeft;
+		sideShieldRight = rec.sideShieldRight;
 	}
 
 	bool IHitTaker.TakeHit(HitInfo hit)
@@ -77,7 +85,7 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 					Enabled(false);
 				}
 			}
-			else if (DynamicInput.GetButton("Guard"))
+			else if (DynamicInput.GetButtonHeld("Guard"))
 			{
 				if (!GetComponent<PlayerMovement>().IsDashing && GetComponent<PlayerMelee>().IsInCooldown)
 				{
@@ -104,5 +112,8 @@ public class PlayerGuard : MonoBehaviour, ITimelineRecordable, IHitTaker
 
 	public class TimelineRecord_PlayerGuard : TimelineRecordForComponent
 	{
+		public GameObject shield;
+		public GameObject sideShieldLeft;
+		public GameObject sideShieldRight;
 	}
 }

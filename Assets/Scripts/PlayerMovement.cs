@@ -89,7 +89,7 @@ public class PlayerMovement : ControlledMovement
 		}
 		Vector3 newVelocity =
 			Vector3.ClampMagnitude(
-				new Vector3(DynamicInput.GetAxis("Move Horizontal"), DynamicInput.GetAxis("Move Vertical"), 0.0f),
+				new Vector3(DynamicInput.GetAxisRaw("Move Horizontal"), DynamicInput.GetAxisRaw("Move Vertical"), 0.0f),
 				1.0f
 				)
 			* movementSpeed;
@@ -115,7 +115,7 @@ public class PlayerMovement : ControlledMovement
 		else
 		{
 			SurfaceInteraction sf = GetComponent<SurfaceInteraction>();
-			if (DynamicInput.GetButtonDown("Dash") || (DynamicInput.GetButton("Dash") && sf.IsSwimming))
+			if (DynamicInput.GetButtonDown("Dash") || (DynamicInput.GetButtonHeld("Dash") && sf.IsSwimming))
 			{
 				GetComponent<PlayerMelee>().StopSwinging();
 				if (sf.IsSwimming)
@@ -144,9 +144,9 @@ public class PlayerMovement : ControlledMovement
 		bool isSwimming = GetComponent<SurfaceInteraction>().IsSwimming;
 		if ((GetComponent<PlayerMelee>().IsInCooldown && !IsDashing) || isSwimming)
 		{
-			Vector2 lookDirection = new Vector2(DynamicInput.GetAxis("Look Horizontal"), DynamicInput.GetAxis("Look Vertical"));
+			Vector2 lookDirection = new Vector2(DynamicInput.GetAxisRaw("Look Horizontal"), DynamicInput.GetAxisRaw("Look Vertical"));
 			if (Mathf.Approximately(0.0f, lookDirection.magnitude)
-				|| (isSwimming && !(DynamicInput.GamepadModeEnabled || DynamicInput.GetButton("Melee") || DynamicInput.GetButton("Guard")))
+				|| (isSwimming && !(DynamicInput.GamepadModeEnabled || DynamicInput.GetButtonHeld("Melee") || DynamicInput.GetButtonHeld("Guard")))
 				)
 			{
 				lookDirection = newVelocity;

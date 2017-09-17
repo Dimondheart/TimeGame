@@ -18,6 +18,10 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 	private static readonly Quaternion downRightRotation = Quaternion.Euler(0.0f, 0.0f, -135.0f);
 	private static readonly Quaternion downLeftRotation = Quaternion.Euler(0.0f, 0.0f, 135.0f);
 	private static readonly float angleBuffer = 2.0f;
+	/**<summary>Angle guarenteed to not be used as a sprite angle, for doing things like
+	 * forcing the selector to update.</summary>
+	 */
+	private static readonly int unusedAngle = 1000;
 	/**<summary>Sprite facing the camera.</summary>*/
 	public Sprite frontSprite;
 	/**<summary>Sprite facing away from the camera.</summary>*/
@@ -51,17 +55,20 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 	/**<summary>Dead version of backRightSprite.</summary>*/
 	public Sprite backRightDeadSprite;
 	/**<summary>Transforms that should be rotated to match
-	 * the current sprite direction. A rotation of 0 is
-	 * when the back sprite is being shown.</summary>
+	 * the current sprite direction. A rotation of 0 corresponds to when the
+	 * back sprite is shown. Do not directly modify this list after script start,
+	 * use one of the ___SyncTransformRuntime(...) methods instead.</summary>
 	 */
 	public List<Transform> syncronizeRotations = new List<Transform>();
-	public Vector2 forward { get; private set; }
+	private int currentAngle;
+	private bool usingDeadVersion;
 
 	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 	{
 		TimelineRecord_SpriteAngleSelector record = new TimelineRecord_SpriteAngleSelector();
 		record.syncronizeRotations = syncronizeRotations.ToArray();
-		record.forward = forward;
+		record.currentAngle = currentAngle;
+		record.usingDeadVersion = usingDeadVersion;
 		return record;
 	}
 
@@ -70,16 +77,13 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 		TimelineRecord_SpriteAngleSelector rec = (TimelineRecord_SpriteAngleSelector)record;
 		syncronizeRotations.Clear();
 		syncronizeRotations.AddRange(rec.syncronizeRotations);
-		forward = rec.forward;
+		currentAngle = rec.currentAngle;
+		usingDeadVersion = rec.usingDeadVersion;
 	}
 
 	private void Update()
 	{
-		if (ManipulableTime.ApplyingTimelineRecords)
-		{
-			return;
-		}
-		if (ManipulableTime.IsTimeFrozen)
+		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
 		{
 			return;
 		}
@@ -133,10 +137,39 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 				SetSelectedRotation(-45, !GetComponent<Health>().IsAlive);
 			}
 		}
+		// Within a buffer arc, make sure to change to the dead version if needed
+		else if (!GetComponent<Health>().IsAlive)
+		{
+			SetSelectedRotation(currentAngle, true);
+			return;
+		}
+	}
+
+	public void AddSyncTransformRuntime(Transform toSync)
+	{
+		if (!syncronizeRotations.Contains(toSync))
+		{
+			syncronizeRotations.Add(toSync);
+			currentAngle = unusedAngle;
+		}
+	}
+
+	public void RemoveSyncTransformRuntime(Transform toDesync)
+	{
+		if (syncronizeRotations.Remove(toDesync))
+		{
+			currentAngle = unusedAngle;
+		}
 	}
 
 	private void SetSelectedRotation(int angle, bool useDeadVersion)
 	{
+		if (angle == currentAngle && useDeadVersion == usingDeadVersion)
+		{
+			return;
+		}
+		currentAngle = angle;
+		usingDeadVersion = useDeadVersion;
 		Quaternion synchRotation;
 		Sprite selSprite;
 		switch (angle)
@@ -185,15 +218,6 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 				Debug.LogWarning("Attempted to select a sprite with an unsupported angle:" + angle);
 				return;
 		}
-		if (angle == 180)
-		{
-			forward = Vector2.down;
-		}
-		else
-		{
-			forward = synchRotation * Vector2.up;
-			forward.Normalize();
-		}
 		GetComponent<SpriteRenderer>().sprite = selSprite;
 		foreach (Transform t in syncronizeRotations)
 		{
@@ -204,6 +228,7 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 	public class TimelineRecord_SpriteAngleSelector : TimelineRecordForComponent
 	{
 		public Transform[] syncronizeRotations;
-		public Vector2 forward;
+		public int currentAngle;
+		public bool usingDeadVersion;
 	}
 }

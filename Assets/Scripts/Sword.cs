@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**<summary>Handles sword related stuff.</summary>*/
-public class Sword : MonoBehaviour
+public class Sword : MonoBehaviour, ITimelineRecordable
 {
 	public float idleAngle;
 	public float swingAngleStart;
@@ -16,6 +16,16 @@ public class Sword : MonoBehaviour
 	private ConvertableTimeRecord swingStartTime;
 	private float swingDuration;
 	private float freezeDuration;
+
+	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+	{
+	}
+
+	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	{
+		TimelineRecord_Sword record = new TimelineRecord_Sword();
+		return record;
+	}
 
 	private void Start()
 	{
@@ -63,11 +73,6 @@ public class Sword : MonoBehaviour
 		{
 			return;
 		}
-		if (!GetComponent<Collider2D>().enabled)
-		{
-			Debug.Log("it is needed");
-			return;
-		}
 		Health otherHealth = collision.GetComponent<Health>();
 		if (otherHealth != null && otherHealth.isAlignedWithPlayer != owner.GetComponent<Health>().isAlignedWithPlayer)
 		{
@@ -94,15 +99,33 @@ public class Sword : MonoBehaviour
 		swingDuration = duration;
 		this.freezeDuration = freezeDuration;
 		swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, swingAngleStart);
-		//GetComponent<SpriteRenderer>().enabled = true;
 		GetComponent<Collider2D>().enabled = true;
 	}
 
 	public void CancelSwing()
 	{
+		if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
+		{
+			return;
+		}
 		isSwinging = false;
 		isEndingSwing = false;
 		swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, idleAngle);
 		GetComponent<Collider2D>().enabled = false;
+	}
+
+	public class TimelineRecord_Sword : TimelineRecordForComponent
+	{
+		public float idleAngle;
+		public float swingAngleStart;
+		public float swingAngleEnd;
+		public Transform swingTransform;
+		public GameObject owner;
+		public bool isSwinging;
+		public bool isEndingSwing;
+
+		public ConvertableTimeRecord swingStartTime;
+		public float swingDuration;
+		public float freezeDuration;
 	}
 }

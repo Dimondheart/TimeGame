@@ -7,8 +7,8 @@ public class PlayerElementControl : MonoBehaviour
 {
 	private void Update()
 	{
-		float newTemp = DynamicInput.GetAxis("Temperature Element Adjust");
-		float newMoist = DynamicInput.GetAxis("Moisture Element Adjust");
+		float newTemp = 0.0f;
+		float newMoist = 0.0f;
 		ElementalAlignment.Element newFocus = ElementalAlignment.Element.None;
 		ElementalAlignment.Element currentFocus = GetComponent<ElementalAlignment>().GainFocus;
 		if (!Mathf.Approximately(0.0f, newTemp))
