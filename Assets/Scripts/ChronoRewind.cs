@@ -4,38 +4,41 @@ using UnityEngine;
 using TechnoWolf.DynamicInputSystem;
 using TechnoWolf.TimeManipulation;
 
-/**<summary>Handles the players ability to rewind time.</summary>*/
-public class ChronoRewind : MonoBehaviour
+namespace TechnoWolf.Project1
 {
-	/**<summary>If the player is currently trying to rewind/replay.
-	 * This will be true when the player is trying to use the ability,
-	 * so it does not always mean it is actually active.</summary>
-	 */
-	public bool isAbilityActive { get; private set; }
-
-	private void Update()
+	/**<summary>Handles the players ability to rewind time.</summary>*/
+	public class ChronoRewind : MonoBehaviour
 	{
-		if (!GetComponent<Health>().IsAlive)
+		/**<summary>If the player is currently trying to rewind/replay.
+		 * This will be true when the player is trying to use the ability,
+		 * so it does not always mean it is actually active.</summary>
+		 */
+		public bool isAbilityActive { get; private set; }
+
+		private void Update()
 		{
-			return;
-		}
-		float controlValue = DynamicInput.GetAxisRaw("Rewind/Replay");
-		isAbilityActive = !Mathf.Approximately(0.0f, controlValue);
-		if (isAbilityActive)
-		{
-			if (controlValue < 0.0f)
+			if (!GetComponent<Health>().IsAlive)
 			{
-				ManipulableTime.InitiateRewind();
+				return;
+			}
+			float controlValue = DynamicInput.GetAxisRaw("Rewind/Replay");
+			isAbilityActive = !Mathf.Approximately(0.0f, controlValue);
+			if (isAbilityActive)
+			{
+				if (controlValue < 0.0f)
+				{
+					ManipulableTime.InitiateRewind();
+				}
+				else
+				{
+					ManipulableTime.InitiateReplay();
+				}
 			}
 			else
 			{
-				ManipulableTime.InitiateReplay();
+				ManipulableTime.StopRewind();
+				ManipulableTime.StopReplay();
 			}
-		}
-		else
-		{
-			ManipulableTime.StopRewind();
-			ManipulableTime.StopReplay();
 		}
 	}
 }

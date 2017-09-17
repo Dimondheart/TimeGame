@@ -4,26 +4,29 @@ using UnityEngine;
 using TechnoWolf.DynamicInputSystem;
 using TechnoWolf.TimeManipulation;
 
-/**<summary>Controls the time freezing ability of the player.</summary>*/
-public class ChronoFreeze : MonoBehaviour
+namespace TechnoWolf.Project1
 {
-	private void Update()
+	/**<summary>Controls the time freezing ability of the player.</summary>*/
+	public class ChronoFreeze : MonoBehaviour
 	{
-		if (!GetComponent<Health>().IsAlive)
+		private void Update()
 		{
-			return;
-		}
-		if (DynamicInput.GetButtonDown("Toggle Time Freeze") && !ManipulableTime.IsGameFrozen)
-		{
-			if (GetComponent<ChronoPoints>().isCharacterFreezingTime)
+			if (!GetComponent<Health>().IsAlive)
 			{
-				ManipulableTime.IsTimeFrozen = false;
-				GetComponent<ChronoPoints>().isCharacterFreezingTime = false;
+				return;
 			}
-			else if (!ManipulableTime.IsTimeFrozen && GetComponent<ChronoPoints>().CanActivateChronoFreeze)
+			if (DynamicInput.GetButtonDown("Toggle Time Freeze") && !ManipulableTime.IsGameFrozen)
 			{
-				ManipulableTime.IsTimeFrozen = true;
-				GetComponent<ChronoPoints>().isCharacterFreezingTime = true;
+				if (GetComponent<ChronoPoints>().isCharacterFreezingTime)
+				{
+					ManipulableTime.IsTimeFrozen = false;
+					GetComponent<ChronoPoints>().isCharacterFreezingTime = false;
+				}
+				else if (!ManipulableTime.IsTimeFrozen && GetComponent<ChronoPoints>().CanActivateChronoFreeze)
+				{
+					ManipulableTime.IsTimeFrozen = true;
+					GetComponent<ChronoPoints>().isCharacterFreezingTime = true;
+				}
 			}
 		}
 	}

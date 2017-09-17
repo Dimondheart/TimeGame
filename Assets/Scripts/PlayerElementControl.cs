@@ -2,73 +2,76 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**<summary>Player control of the elemental alignment.</summary>*/
-public class PlayerElementControl : MonoBehaviour
+namespace TechnoWolf.Project1
 {
-	private void Update()
+	/**<summary>Player control of the elemental alignment.</summary>*/
+	public class PlayerElementControl : MonoBehaviour
 	{
-		float newTemp = 0.0f;
-		float newMoist = 0.0f;
-		ElementalAlignment.Element newFocus = ElementalAlignment.Element.None;
-		ElementalAlignment.Element currentFocus = GetComponent<ElementalAlignment>().GainFocus;
-		if (!Mathf.Approximately(0.0f, newTemp))
+		private void Update()
 		{
-			if (newTemp < 0.0f)
+			float newTemp = 0.0f;
+			float newMoist = 0.0f;
+			ElementalAlignment.Element newFocus = ElementalAlignment.Element.None;
+			ElementalAlignment.Element currentFocus = GetComponent<ElementalAlignment>().GainFocus;
+			if (!Mathf.Approximately(0.0f, newTemp))
 			{
-				// Cold bit is 0
-				if ((currentFocus & ElementalAlignment.Element.Cold) == ElementalAlignment.Element.None)
+				if (newTemp < 0.0f)
 				{
-					newFocus = (currentFocus | ElementalAlignment.Element.Hot) ^ ElementalAlignment.Element.Temp;
+					// Cold bit is 0
+					if ((currentFocus & ElementalAlignment.Element.Cold) == ElementalAlignment.Element.None)
+					{
+						newFocus = (currentFocus | ElementalAlignment.Element.Hot) ^ ElementalAlignment.Element.Temp;
+					}
+					// Cold bit is 1
+					else
+					{
+						newFocus = currentFocus ^ ElementalAlignment.Element.Cold;
+					}
 				}
-				// Cold bit is 1
 				else
 				{
-					newFocus = currentFocus ^ ElementalAlignment.Element.Cold;
+					// Hot bit is 0
+					if ((currentFocus & ElementalAlignment.Element.Hot) == ElementalAlignment.Element.None)
+					{
+						newFocus = (currentFocus | ElementalAlignment.Element.Cold) ^ ElementalAlignment.Element.Temp;
+					}
+					// Hot bit is 1
+					else
+					{
+						newFocus = currentFocus ^ ElementalAlignment.Element.Hot;
+					}
 				}
 			}
-			else
+			if (!Mathf.Approximately(0.0f, newMoist))
 			{
-				// Hot bit is 0
-				if ((currentFocus & ElementalAlignment.Element.Hot) == ElementalAlignment.Element.None)
+				if (newMoist < 0.0f)
 				{
-					newFocus = (currentFocus | ElementalAlignment.Element.Cold) ^ ElementalAlignment.Element.Temp;
+					// Dry bit is 0
+					if ((currentFocus & ElementalAlignment.Element.Dry) == ElementalAlignment.Element.None)
+					{
+						newFocus = (currentFocus | ElementalAlignment.Element.Wet) ^ ElementalAlignment.Element.Moist;
+					}
+					// Dry bit is 1
+					else
+					{
+						newFocus = currentFocus ^ ElementalAlignment.Element.Dry;
+					}
 				}
-				// Hot bit is 1
 				else
 				{
-					newFocus = currentFocus ^ ElementalAlignment.Element.Hot;
+					// Wet bit is 0
+					if ((currentFocus & ElementalAlignment.Element.Wet) == ElementalAlignment.Element.None)
+					{
+						newFocus = (currentFocus | ElementalAlignment.Element.Dry) ^ ElementalAlignment.Element.Moist;
+					}
+					// Wet bit is 1
+					else
+					{
+						newFocus = currentFocus ^ ElementalAlignment.Element.Wet;
+					}
 				}
 			}
+			GetComponent<ElementalAlignment>().GainFocus = newFocus;
 		}
-		if (!Mathf.Approximately(0.0f, newMoist))
-		{
-			if (newMoist < 0.0f)
-			{
-				// Dry bit is 0
-				if ((currentFocus & ElementalAlignment.Element.Dry) == ElementalAlignment.Element.None)
-				{
-					newFocus = (currentFocus | ElementalAlignment.Element.Wet) ^ ElementalAlignment.Element.Moist;
-				}
-				// Dry bit is 1
-				else
-				{
-					newFocus = currentFocus ^ ElementalAlignment.Element.Dry;
-				}
-			}
-			else
-			{
-				// Wet bit is 0
-				if ((currentFocus & ElementalAlignment.Element.Wet) == ElementalAlignment.Element.None)
-				{
-					newFocus = (currentFocus | ElementalAlignment.Element.Dry) ^ ElementalAlignment.Element.Moist;
-				}
-				// Wet bit is 1
-				else
-				{
-					newFocus = currentFocus ^ ElementalAlignment.Element.Wet;
-				}
-			}
-		}
-		GetComponent<ElementalAlignment>().GainFocus = newFocus;
 	}
 }

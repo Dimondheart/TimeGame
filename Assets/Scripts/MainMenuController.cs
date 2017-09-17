@@ -3,51 +3,55 @@ using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.TimeManipulation;
 
-public class MainMenuController : MonoBehaviour
+namespace TechnoWolf.Project1
 {
-	public GameObject mainMenuPanel;
-	public GameObject creditsPanel;
-	public GameObject activateOnQuit;
-	public GameObject activateWhileLoading;
-
-	private void Awake()
+	/**<summary>High level tasks and functionality for the main menu.</summary>*/
+	public class MainMenuController : MonoBehaviour
 	{
-		ManipulableTime.IsGameFrozen = false;
-		ManipulableTime.IsTimeFrozen = false;
-	}
+		public GameObject mainMenuPanel;
+		public GameObject creditsPanel;
+		public GameObject activateOnQuit;
+		public GameObject activateWhileLoading;
 
-	public void StartGame()
-	{
-		mainMenuPanel.SetActive(false);
-		activateWhileLoading.SetActive(true);
-		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(1);
-	}
-
-	public void QuitToDesktop()
-	{
-		mainMenuPanel.SetActive(false);
-		creditsPanel.SetActive(false);
-		activateOnQuit.SetActive(true);
-		Application.Quit();
-	}
-
-	public void OpenCreditsMenu()
-	{
-		if (creditsPanel.activeSelf)
+		private void Awake()
 		{
-			return;
+			ManipulableTime.IsGameFrozen = false;
+			ManipulableTime.IsTimeFrozen = false;
 		}
-		mainMenuPanel.SetActive(false);
-		creditsPanel.SetActive(true);
-	}
 
-	public void ReturnToMainMenuPanel()
-	{
-		if (mainMenuPanel.activeSelf)
+		public void StartGame()
 		{
-			return;
+			mainMenuPanel.SetActive(false);
+			activateWhileLoading.SetActive(true);
+			UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(1);
 		}
-		mainMenuPanel.SetActive(true);
-		creditsPanel.SetActive(false);
+
+		public void QuitToDesktop()
+		{
+			mainMenuPanel.SetActive(false);
+			creditsPanel.SetActive(false);
+			activateOnQuit.SetActive(true);
+			Application.Quit();
+		}
+
+		public void OpenCreditsMenu()
+		{
+			if (creditsPanel.activeSelf)
+			{
+				return;
+			}
+			mainMenuPanel.SetActive(false);
+			creditsPanel.SetActive(true);
+		}
+
+		public void ReturnToMainMenuPanel()
+		{
+			if (mainMenuPanel.activeSelf)
+			{
+				return;
+			}
+			mainMenuPanel.SetActive(true);
+			creditsPanel.SetActive(false);
+		}
 	}
 }

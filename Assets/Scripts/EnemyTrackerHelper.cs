@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**<summary>Helps a character tracker by attaching to each enemy and
- * relaying useful information.</summary>
- */
-public class EnemyTrackerHelper : CharacterTrackerHelper
+namespace TechnoWolf.Project1
 {
-	protected override void Awake()
+	/**<summary>Helps a character tracker by attaching to each enemy and
+	 * relaying useful information.</summary>
+	 */
+	public class EnemyTrackerHelper : CharacterTrackerHelper
 	{
-		base.Awake();
-		tracker.AddEnemy(this);
+		protected override void Awake()
+		{
+			base.Awake();
+			tracker.AddEnemy(this);
+		}
 	}
 }

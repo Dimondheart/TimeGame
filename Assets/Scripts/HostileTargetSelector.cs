@@ -3,161 +3,164 @@ using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.TimeManipulation;
 
-/**<summary>Selects a target for hostile actions.</summary>*/
-[RequireComponent(typeof(Health))]
-public class HostileTargetSelector : MonoBehaviour, ITimelineRecordable
+namespace TechnoWolf.Project1
 {
-	public GameObject target { get; private set; }
-	public List<GameObject> hostilesInLineOfSight = new List<GameObject>();
-	public List<GameObject> otherHostilesDetected = new List<GameObject>();
-	public Vector3 targetLastSpotted { get; private set; }
-
-	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+	/**<summary>Selects a target for hostile actions.</summary>*/
+	[RequireComponent(typeof(Health))]
+	public class HostileTargetSelector : MonoBehaviour, ITimelineRecordable
 	{
-		TimelineRecord_HostileTargetSelector record = new TimelineRecord_HostileTargetSelector();
-		record.target = target;
-		record.hostilesInLineOfSight = hostilesInLineOfSight.ToArray();
-		record.otherHostilesDetected = otherHostilesDetected.ToArray();
-		record.targetLastSpotted = targetLastSpotted;
-		return record;
-	}
+		public GameObject target { get; private set; }
+		public List<GameObject> hostilesInLineOfSight = new List<GameObject>();
+		public List<GameObject> otherHostilesDetected = new List<GameObject>();
+		public Vector3 targetLastSpotted { get; private set; }
 
-	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
-	{
-		TimelineRecord_HostileTargetSelector rec = (TimelineRecord_HostileTargetSelector)record;
-		target = rec.target;
-		hostilesInLineOfSight.Clear();
-		hostilesInLineOfSight.AddRange(rec.hostilesInLineOfSight);
-		otherHostilesDetected.Clear();
-		otherHostilesDetected.AddRange(rec.otherHostilesDetected);
-		targetLastSpotted = rec.targetLastSpotted;
-	}
+		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		{
+			TimelineRecord_HostileTargetSelector record = new TimelineRecord_HostileTargetSelector();
+			record.target = target;
+			record.hostilesInLineOfSight = hostilesInLineOfSight.ToArray();
+			record.otherHostilesDetected = otherHostilesDetected.ToArray();
+			record.targetLastSpotted = targetLastSpotted;
+			return record;
+		}
 
-	public void OnLineOfSightEnter(GameObject entered)
-	{
-		if (ManipulableTime.ApplyingTimelineRecords)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
 		{
-			return;
+			TimelineRecord_HostileTargetSelector rec = (TimelineRecord_HostileTargetSelector)record;
+			target = rec.target;
+			hostilesInLineOfSight.Clear();
+			hostilesInLineOfSight.AddRange(rec.hostilesInLineOfSight);
+			otherHostilesDetected.Clear();
+			otherHostilesDetected.AddRange(rec.otherHostilesDetected);
+			targetLastSpotted = rec.targetLastSpotted;
 		}
-		if (!hostilesInLineOfSight.Contains(entered) && IsHostile(entered))
-		{
-			hostilesInLineOfSight.Add(entered);
-		}
-	}
 
-	public void OnLineOfSightExit(GameObject exited)
-	{
-		if (ManipulableTime.ApplyingTimelineRecords)
+		public void OnLineOfSightEnter(GameObject entered)
 		{
-			return;
-		}
-		hostilesInLineOfSight.Remove(exited);
-	}
-
-	public void OnLineOfSightPersist(GameObject seen)
-	{
-		if (ManipulableTime.ApplyingTimelineRecords)
-		{
-			return;
-		}
-		//Debug.Log("In line of sight:" + seen.name);
-		if (!hostilesInLineOfSight.Contains(seen) && IsHostile(seen))
-		{
-			hostilesInLineOfSight.Add(seen);
-		}
-	}
-
-	private void OnCollisionEnter2D(Collision2D collision)
-	{
-		if (ManipulableTime.ApplyingTimelineRecords)
-		{
-			return;
-		}
-		if (!otherHostilesDetected.Contains(collision.gameObject) && IsHostile(collision.gameObject))
-		{
-			otherHostilesDetected.Add(collision.gameObject);
-		}
-	}
-
-	private void OnCollisionExit2D(Collision2D collision)
-	{
-		if (ManipulableTime.ApplyingTimelineRecords)
-		{
-			return;
-		}
-		otherHostilesDetected.Remove(collision.gameObject);
-	}
-
-	private void Start()
-	{
-		targetLastSpotted = transform.position;
-	}
-
-	private void Update()
-	{
-		if (ManipulableTime.ApplyingTimelineRecords)
-		{
-			return;
-		}
-		if (ManipulableTime.IsTimeFrozen)
-		{
-			return;
-		}
-		if (!hostilesInLineOfSight.Contains(target))
-		{
-			target = null;
-		}
-		if (target != null)
-		{
-			targetLastSpotted = target.transform.position;
-		}
-		target = ClosestDetectedHostile();
-	}
-
-	/**<summary>Checks if this thing considers the specified other thing
-	 * hostile.</summary>
-	 */
-	public bool IsHostile(GameObject otherThing)
-	{
-		return otherThing.GetComponent<Health>() != null
-			&& otherThing.GetComponent<Health>().isAlignedWithPlayer != GetComponent<Health>().isAlignedWithPlayer;
-	}
-
-	public GameObject ClosestDetectedHostile()
-	{
-		if (hostilesInLineOfSight.Count <= 0 && otherHostilesDetected.Count <= 0)
-		{
-			return null;
-		}
-		GameObject closest = null;
-		float closestDist = float.PositiveInfinity;
-		float dist;
-		foreach (GameObject go in hostilesInLineOfSight)
-		{
-			dist = Vector3.Distance(go.transform.position, transform.position);
-			if (go.GetComponent<Health>().IsAlive && dist < closestDist)
+			if (ManipulableTime.ApplyingTimelineRecords)
 			{
-				closestDist = dist;
-				closest = go;
+				return;
+			}
+			if (!hostilesInLineOfSight.Contains(entered) && IsHostile(entered))
+			{
+				hostilesInLineOfSight.Add(entered);
 			}
 		}
-		foreach (GameObject go in otherHostilesDetected)
+
+		public void OnLineOfSightExit(GameObject exited)
 		{
-			dist = Vector3.Distance(go.transform.position, transform.position);
-			if (go.GetComponent<Health>().IsAlive && dist < closestDist)
+			if (ManipulableTime.ApplyingTimelineRecords)
 			{
-				closestDist = dist;
-				closest = go;
+				return;
+			}
+			hostilesInLineOfSight.Remove(exited);
+		}
+
+		public void OnLineOfSightPersist(GameObject seen)
+		{
+			if (ManipulableTime.ApplyingTimelineRecords)
+			{
+				return;
+			}
+			//Debug.Log("In line of sight:" + seen.name);
+			if (!hostilesInLineOfSight.Contains(seen) && IsHostile(seen))
+			{
+				hostilesInLineOfSight.Add(seen);
 			}
 		}
-		return closest;
-	}
 
-	public class TimelineRecord_HostileTargetSelector : TimelineRecordForComponent
-	{
-		public GameObject target;
-		public GameObject[] hostilesInLineOfSight;
-		public GameObject[] otherHostilesDetected;
-		public Vector3 targetLastSpotted;
+		private void OnCollisionEnter2D(Collision2D collision)
+		{
+			if (ManipulableTime.ApplyingTimelineRecords)
+			{
+				return;
+			}
+			if (!otherHostilesDetected.Contains(collision.gameObject) && IsHostile(collision.gameObject))
+			{
+				otherHostilesDetected.Add(collision.gameObject);
+			}
+		}
+
+		private void OnCollisionExit2D(Collision2D collision)
+		{
+			if (ManipulableTime.ApplyingTimelineRecords)
+			{
+				return;
+			}
+			otherHostilesDetected.Remove(collision.gameObject);
+		}
+
+		private void Start()
+		{
+			targetLastSpotted = transform.position;
+		}
+
+		private void Update()
+		{
+			if (ManipulableTime.ApplyingTimelineRecords)
+			{
+				return;
+			}
+			if (ManipulableTime.IsTimeFrozen)
+			{
+				return;
+			}
+			if (!hostilesInLineOfSight.Contains(target))
+			{
+				target = null;
+			}
+			if (target != null)
+			{
+				targetLastSpotted = target.transform.position;
+			}
+			target = ClosestDetectedHostile();
+		}
+
+		/**<summary>Checks if this thing considers the specified other thing
+		 * hostile.</summary>
+		 */
+		public bool IsHostile(GameObject otherThing)
+		{
+			return otherThing.GetComponent<Health>() != null
+				&& otherThing.GetComponent<Health>().isAlignedWithPlayer != GetComponent<Health>().isAlignedWithPlayer;
+		}
+
+		public GameObject ClosestDetectedHostile()
+		{
+			if (hostilesInLineOfSight.Count <= 0 && otherHostilesDetected.Count <= 0)
+			{
+				return null;
+			}
+			GameObject closest = null;
+			float closestDist = float.PositiveInfinity;
+			float dist;
+			foreach (GameObject go in hostilesInLineOfSight)
+			{
+				dist = Vector3.Distance(go.transform.position, transform.position);
+				if (go.GetComponent<Health>().IsAlive && dist < closestDist)
+				{
+					closestDist = dist;
+					closest = go;
+				}
+			}
+			foreach (GameObject go in otherHostilesDetected)
+			{
+				dist = Vector3.Distance(go.transform.position, transform.position);
+				if (go.GetComponent<Health>().IsAlive && dist < closestDist)
+				{
+					closestDist = dist;
+					closest = go;
+				}
+			}
+			return closest;
+		}
+
+		public class TimelineRecord_HostileTargetSelector : TimelineRecordForComponent
+		{
+			public GameObject target;
+			public GameObject[] hostilesInLineOfSight;
+			public GameObject[] otherHostilesDetected;
+			public Vector3 targetLastSpotted;
+		}
 	}
 }

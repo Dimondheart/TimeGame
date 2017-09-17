@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**<summary>Base class for classes that help relay information to
- * the character tracking system.</summary>
- */
-public abstract class CharacterTrackerHelper : MonoBehaviour
+namespace TechnoWolf.Project1
 {
-	public CharacterTracker tracker { get; private set; }
-
-	protected virtual void Awake()
+	/**<summary>Base class for classes that help relay information to
+	 * the character tracking system.</summary>
+	 */
+	public abstract class CharacterTrackerHelper : MonoBehaviour
 	{
-		tracker = GameObject.FindGameObjectWithTag("GameController").GetComponent<CharacterTracker>();
+		public CharacterTracker tracker { get; private set; }
+
+		protected virtual void Awake()
+		{
+			tracker = GameObject.FindGameObjectWithTag("GameController").GetComponent<CharacterTracker>();
+		}
 	}
 }

@@ -3,117 +3,120 @@ using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.TimeManipulation;
 
-/**<summary>Information about a ground/etc. surface and detecting
- * touching game objects that have SurfaceIntaraction.</summary>
- */
-public class Surface : MonoBehaviour, ITimelineRecordable
+namespace TechnoWolf.Project1
 {
-	/**<summary>What type of ground/etc. covers this surface.</summary>*/
-	public SurfaceType surfaceType;
-
-	/**<summary>True if this surface is a liquid such as water.</summary>*/
-	public bool IsLiquid
-	{
-		get
-		{
-			return surfaceType == SurfaceType.ShallowWater || surfaceType == SurfaceType.Water;
-		}
-	}
-
-	/**<summary>Velocity multiplier on this surface due to effects like
-	 * friction.</summary>
+	/**<summary>Information about a ground/etc. surface and detecting
+	 * touching game objects that have SurfaceIntaraction.</summary>
 	 */
-	public float velocityMultiplier
+	public class Surface : MonoBehaviour, ITimelineRecordable
 	{
-		get
+		/**<summary>What type of ground/etc. covers this surface.</summary>*/
+		public SurfaceType surfaceType;
+
+		/**<summary>True if this surface is a liquid such as water.</summary>*/
+		public bool IsLiquid
 		{
-			switch (surfaceType)
+			get
 			{
-				case SurfaceType.LowGrass:
-					return 0.5f;
-				case SurfaceType.Sand:
-					return 0.4f;
-				case SurfaceType.ShallowWater:
-					return 0.35f;
-				case SurfaceType.Water:
-					return 0.2f;
-				case SurfaceType.Floor:
-					return 0.95f;
-				case SurfaceType.Path:
-					return 0.8f;
-				default:
-					Debug.Log("Unknown SurfaceWithFriction.SurfaceType:" + (int)surfaceType);
-					return 0.95f;
+				return surfaceType == SurfaceType.ShallowWater || surfaceType == SurfaceType.Water;
 			}
 		}
-	}
 
-	/**<summary>Resulting velocity multiplier when something is equally
-	 * touching all of the specified surfaces.</summary>
-	 */
-	public static float ResultingVelocityMultiplier(List<Surface> surfaces)
-	{
-		if (surfaces.Count <= 0)
+		/**<summary>Velocity multiplier on this surface due to effects like
+		 * friction.</summary>
+		 */
+		public float velocityMultiplier
 		{
-			return 1.0f;
+			get
+			{
+				switch (surfaceType)
+				{
+					case SurfaceType.LowGrass:
+						return 0.5f;
+					case SurfaceType.Sand:
+						return 0.4f;
+					case SurfaceType.ShallowWater:
+						return 0.35f;
+					case SurfaceType.Water:
+						return 0.2f;
+					case SurfaceType.Floor:
+						return 0.95f;
+					case SurfaceType.Path:
+						return 0.8f;
+					default:
+						Debug.Log("Unknown SurfaceWithFriction.SurfaceType:" + (int)surfaceType);
+						return 0.95f;
+				}
+			}
 		}
-		float sum = 0.0f;
-		foreach (Surface s in surfaces)
+
+		/**<summary>Resulting velocity multiplier when something is equally
+		 * touching all of the specified surfaces.</summary>
+		 */
+		public static float ResultingVelocityMultiplier(List<Surface> surfaces)
 		{
-			sum += s.velocityMultiplier;
+			if (surfaces.Count <= 0)
+			{
+				return 1.0f;
+			}
+			float sum = 0.0f;
+			foreach (Surface s in surfaces)
+			{
+				sum += s.velocityMultiplier;
+			}
+			return sum / surfaces.Count;
 		}
-		return sum / surfaces.Count;
-	}
 
-	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
-	{
-		TimelineRecord_Surface record = new TimelineRecord_Surface();
-		record.surfaceType = surfaceType;
-		return record;
-	}
-
-	void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
-	{
-		TimelineRecord_Surface rec = (TimelineRecord_Surface)record;
-		surfaceType = rec.surfaceType;
-	}
-
-	private void OnTriggerEnter2D(Collider2D collision)
-	{
-		if (ManipulableTime.ApplyingTimelineRecords)
+		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 		{
-			return;
+			TimelineRecord_Surface record = new TimelineRecord_Surface();
+			record.surfaceType = surfaceType;
+			return record;
 		}
-		if (collision.GetComponent<SurfaceInteraction>() != null)
-		{
-			collision.GetComponent<SurfaceInteraction>().AddSurface(this);
-		}
-	}
 
-	private void OnTriggerExit2D(Collider2D collision)
-	{
-		if (ManipulableTime.ApplyingTimelineRecords)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
 		{
-			return;
+			TimelineRecord_Surface rec = (TimelineRecord_Surface)record;
+			surfaceType = rec.surfaceType;
 		}
-		if (collision.GetComponent<SurfaceInteraction>() != null)
+
+		private void OnTriggerEnter2D(Collider2D collision)
 		{
-			collision.GetComponent<SurfaceInteraction>().RemoveSurface(this);
+			if (ManipulableTime.ApplyingTimelineRecords)
+			{
+				return;
+			}
+			if (collision.GetComponent<SurfaceInteraction>() != null)
+			{
+				collision.GetComponent<SurfaceInteraction>().AddSurface(this);
+			}
 		}
-	}
 
-	public enum SurfaceType
-	{
-		LowGrass = 0,
-		Sand,
-		ShallowWater,
-		Water,
-		Floor,
-		Path
-	}
+		private void OnTriggerExit2D(Collider2D collision)
+		{
+			if (ManipulableTime.ApplyingTimelineRecords)
+			{
+				return;
+			}
+			if (collision.GetComponent<SurfaceInteraction>() != null)
+			{
+				collision.GetComponent<SurfaceInteraction>().RemoveSurface(this);
+			}
+		}
 
-	public class TimelineRecord_Surface : TimelineRecordForComponent
-	{
-		public SurfaceType surfaceType;
+		public enum SurfaceType
+		{
+			LowGrass = 0,
+			Sand,
+			ShallowWater,
+			Water,
+			Floor,
+			Path
+		}
+
+		public class TimelineRecord_Surface : TimelineRecordForComponent
+		{
+			public SurfaceType surfaceType;
+		}
 	}
 }

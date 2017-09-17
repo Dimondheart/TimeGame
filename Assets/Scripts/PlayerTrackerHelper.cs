@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**<summary>Helps the chracter tracker by relaying data for the attached
- * player character.</summary>
- */
-public class PlayerTrackerHelper : CharacterTrackerHelper
+namespace TechnoWolf.Project1
 {
-	protected override void Awake()
+	/**<summary>Helps the chracter tracker by relaying data for the attached
+	 * player character.</summary>
+	 */
+	public class PlayerTrackerHelper : CharacterTrackerHelper
 	{
-		base.Awake();
-		tracker.AddPlayer(this);
+		protected override void Awake()
+		{
+			base.Awake();
+			tracker.AddPlayer(this);
+		}
 	}
 }
