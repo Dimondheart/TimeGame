@@ -37,11 +37,11 @@ namespace TechnoWolf.TimeManipulation
 		{
 			if (ManipulableTime.ClearingExcessTimelineData)
 			{
-				timeline.ClearSnapshotsOutsideRange(ManipulableTime.oldestRecordedCycle, ManipulableTime.newestRecordedCycle);
+				timeline.RemoveSnapshotsOutsideRange(ManipulableTime.oldestRecordedCycle, ManipulableTime.newestRecordedCycle);
 			}
 			if (ManipulableTime.RecordModeEnabled)
 			{
-				TimelineSnapshot snapshot = new TimelineSnapshot();
+				TimelineSnapshot snapshot = timeline.GetSnapshotForRecording();
 				Component[] components = gameObject.GetComponents(typeof(Component));
 				foreach (Component c in components)
 				{

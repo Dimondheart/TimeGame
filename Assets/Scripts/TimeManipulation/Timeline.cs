@@ -10,6 +10,7 @@ namespace TechnoWolf.TimeManipulation
 	public class Timeline
 	{
 		private Dictionary<int, TimelineSnapshot> snapshots = new Dictionary<int, TimelineSnapshot>();
+		private Stack<TimelineSnapshot> snapshotPool = new Stack<TimelineSnapshot>();
 
 		public int oldestSnapshot { get; private set; }
 		public int newestSnapshot { get; private set; }
@@ -25,6 +26,15 @@ namespace TechnoWolf.TimeManipulation
 		{
 			oldestSnapshot = -1;
 			newestSnapshot = -1;
+		}
+
+		public TimelineSnapshot GetSnapshotForRecording()
+		{
+			if (snapshotPool.Count > 0)
+			{
+				return snapshotPool.Pop();
+			}
+			return new TimelineSnapshot();
 		}
 
 		public bool HasSnapshot(int cycleNumber)
@@ -59,10 +69,10 @@ namespace TechnoWolf.TimeManipulation
 			}
 		}
 
-		/**<summary>Clear/Remove all snapshots outside the specified range. The
+		/**<summary>Return all snapshots outside the specified range to the pool. The
 		 * two snapshots that fall on the specifed bounds will be kept.</summary>
 		 */
-		public void ClearSnapshotsOutsideRange(int oldestInclusive, int newestInclusive)
+		public void RemoveSnapshotsOutsideRange(int oldestInclusive, int newestInclusive)
 		{
 			/*
 			if (debugThing != null && debugThing.name == "Player")
@@ -76,8 +86,7 @@ namespace TechnoWolf.TimeManipulation
 				{
 					continue;
 				}
-				snapshots[cn].ClearRecords();
-				snapshots.Remove(cn);
+				MoveSnapshotToPool(cn);
 			}
 			oldestSnapshot = oldestInclusive;
 			for (int cn = newestInclusive + 1; cn <= newestSnapshot; cn++)
@@ -86,8 +95,7 @@ namespace TechnoWolf.TimeManipulation
 				{
 					continue;
 				}
-				snapshots[cn].ClearRecords();
-				snapshots.Remove(cn);
+				MoveSnapshotToPool(cn);
 			}
 			newestSnapshot = newestInclusive;
 			/*
@@ -96,6 +104,12 @@ namespace TechnoWolf.TimeManipulation
 				Debug.Log("After2:" + snapshots.Count);
 			}
 			*/
+		}
+
+		private void MoveSnapshotToPool(int cycleNumber)
+		{
+			snapshotPool.Push(snapshots[cycleNumber]);
+			snapshots.Remove(cycleNumber);
 		}
 	}
 }

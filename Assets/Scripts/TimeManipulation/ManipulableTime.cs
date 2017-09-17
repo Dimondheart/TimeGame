@@ -263,7 +263,6 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		private static void ClearExcessData()
 		{
-			//Debug.Log("Before:" + timeAtCycle.Count);
 			for (int cn = oldestCycleWithinRewindLimit - 1; cn >= oldestRecordedCycle; cn--)
 			{
 				if (!timeAtCycle.Remove(cn))
@@ -286,7 +285,6 @@ namespace TechnoWolf.TimeManipulation
 				fixedDeltaTimeAtCycle.Remove(cn);
 			}
 			newestRecordedCycle = cycleNumber;
-			//Debug.Log("After:" + timeAtCycle.Count);
 		}
 
 		private void Awake()

@@ -31,10 +31,5 @@ namespace TechnoWolf.TimeManipulation
 				kvp.Value.ApplyCommonData(kvp.Key);
 			}
 		}
-
-		public void ClearRecords()
-		{
-			records.Clear();
-		}
 	}
 }
