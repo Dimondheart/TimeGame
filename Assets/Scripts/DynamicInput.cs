@@ -149,12 +149,36 @@ public class DynamicInput : MonoBehaviour
 		return axisControls[controlName].GetAxis();
 	}
 
+	/**<summary>Get the class for a button control in order to change it.</summary>*/
+	public static DynamicControlButton GetButtonControl(string controlName)
+	{
+		if (buttonControls.ContainsKey(controlName))
+		{
+			return buttonControls[controlName];
+		}
+		return null;
+	}
+
+	/**<summary>Get the class for an axis control in order to change it.</summary>*/
+	public static DynamicControlAxis GetAxisControl(string controlName)
+	{
+		if (axisControls.ContainsKey(controlName))
+		{
+			return axisControls[controlName];
+		}
+		return null;
+	}
+
 	/**<summary>Get a special/custom control that is not a standard button type or
 	 * axis type.</summary>
 	 */
 	public static T GetSpecialControl<T>(string controlName) where T : DynamicControl
 	{
-		return (T)specialControls[controlName];
+		if (specialControls.ContainsKey(controlName))
+		{
+			return (T)specialControls[controlName];
+		}
+		return null;
 	}
 
 	/**<summary>Base class for for the different variants of dynamic control types.</summary>*/

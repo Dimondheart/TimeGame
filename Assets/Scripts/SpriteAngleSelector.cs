@@ -18,10 +18,6 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 	private static readonly Quaternion downRightRotation = Quaternion.Euler(0.0f, 0.0f, -135.0f);
 	private static readonly Quaternion downLeftRotation = Quaternion.Euler(0.0f, 0.0f, 135.0f);
 	private static readonly float angleBuffer = 2.0f;
-	/**<summary>Angle guarenteed to not be used as a sprite angle, for doing things like
-	 * forcing the selector to update.</summary>
-	 */
-	private static readonly int unusedAngle = 1000;
 	/**<summary>Sprite facing the camera.</summary>*/
 	public Sprite frontSprite;
 	/**<summary>Sprite facing away from the camera.</summary>*/
@@ -62,6 +58,11 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 	public List<Transform> syncronizeRotations = new List<Transform>();
 	private int currentAngle;
 	private bool usingDeadVersion;
+	/**<summary>If the sprite and sync transforms should be updated this cycle,
+	 * regardless of various optimizations, etc. that would prevent it from
+	 * trying to update.</summary>
+	 */
+	private bool forceUpdateThisCycle;
 
 	TimelineRecord ITimelineRecordable.MakeTimelineRecord()
 	{
@@ -69,6 +70,7 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 		record.syncronizeRotations = syncronizeRotations.ToArray();
 		record.currentAngle = currentAngle;
 		record.usingDeadVersion = usingDeadVersion;
+		record.forceUpdateNextCycle = forceUpdateThisCycle;
 		return record;
 	}
 
@@ -79,6 +81,7 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 		syncronizeRotations.AddRange(rec.syncronizeRotations);
 		currentAngle = rec.currentAngle;
 		usingDeadVersion = rec.usingDeadVersion;
+		forceUpdateThisCycle = rec.forceUpdateNextCycle;
 	}
 
 	private void Update()
@@ -89,15 +92,17 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 		}
 		float angle = GetComponent<DirectionLooking>().Angle;
 		float absAngle = Mathf.Abs(angle);
+		int newAngle = currentAngle;
+		bool useDeadVersion = !GetComponent<Health>().IsAlive;
 		// Back
 		if (absAngle < 22.5f - angleBuffer)
 		{
-			SetSelectedRotation(0, !GetComponent<Health>().IsAlive);
+			newAngle = 0;
 		}
 		// Front
 		else if (absAngle > 157.5f + angleBuffer)
 		{
-			SetSelectedRotation(180, !GetComponent<Health>().IsAlive);
+			newAngle = 180;
 		}
 		// One of the left directions
 		else if (angle >= angleBuffer)
@@ -105,17 +110,17 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 			// Front left
 			if (absAngle > 112.5f + angleBuffer && absAngle < 157.5f - angleBuffer)
 			{
-				SetSelectedRotation(135, !GetComponent<Health>().IsAlive);
+				newAngle = 135;
 			}
 			// Left
 			else if (absAngle > 67.5f + angleBuffer && absAngle < 122.5f - angleBuffer)
 			{
-				SetSelectedRotation(90, !GetComponent<Health>().IsAlive);
+				newAngle = 90;
 			}
 			// Back left
 			else if (absAngle > 22.5f + angleBuffer && absAngle < 67.5f - angleBuffer)
 			{
-				SetSelectedRotation(45, !GetComponent<Health>().IsAlive);
+				newAngle = 45;
 			}
 		}
 		// One of the right directions
@@ -124,25 +129,21 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 			// Front right
 			if (absAngle > 112.5f + angleBuffer && absAngle < 157.5f - angleBuffer)
 			{
-				SetSelectedRotation(-135, !GetComponent<Health>().IsAlive);
+				newAngle = -135;
 			}
 			// Right
 			else if (absAngle > 67.5f + angleBuffer && absAngle < 122.5f - angleBuffer)
 			{
-				SetSelectedRotation(-90, !GetComponent<Health>().IsAlive);
+				newAngle = -90;
 			}
 			// Back right
 			else if (absAngle > 22.5f + angleBuffer && absAngle < 67.5f - angleBuffer)
 			{
-				SetSelectedRotation(-45, !GetComponent<Health>().IsAlive);
+				newAngle = -45;
 			}
 		}
-		// Within a buffer arc, make sure to change to the dead version if needed
-		else if (!GetComponent<Health>().IsAlive)
-		{
-			SetSelectedRotation(currentAngle, true);
-			return;
-		}
+		forceUpdateThisCycle = useDeadVersion;
+		SetSelectedRotation(newAngle, useDeadVersion);
 	}
 
 	public void AddSyncTransformRuntime(Transform toSync)
@@ -150,7 +151,7 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 		if (!syncronizeRotations.Contains(toSync))
 		{
 			syncronizeRotations.Add(toSync);
-			currentAngle = unusedAngle;
+			forceUpdateThisCycle = true;
 		}
 	}
 
@@ -158,16 +159,17 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 	{
 		if (syncronizeRotations.Remove(toDesync))
 		{
-			currentAngle = unusedAngle;
+			forceUpdateThisCycle = true;
 		}
 	}
 
 	private void SetSelectedRotation(int angle, bool useDeadVersion)
 	{
-		if (angle == currentAngle && useDeadVersion == usingDeadVersion)
+		if (!forceUpdateThisCycle && angle == currentAngle && useDeadVersion == usingDeadVersion)
 		{
 			return;
 		}
+		forceUpdateThisCycle = false;
 		currentAngle = angle;
 		usingDeadVersion = useDeadVersion;
 		Quaternion synchRotation;
@@ -230,5 +232,6 @@ public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
 		public Transform[] syncronizeRotations;
 		public int currentAngle;
 		public bool usingDeadVersion;
+		public bool forceUpdateNextCycle;
 	}
 }
