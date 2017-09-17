@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Defines the direction something is facing without
  * applying a transform rotation.</summary>

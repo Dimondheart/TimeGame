@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Constaintly deals max HP damage to itself.</summary>*/
 public class DealPerminentDamageOverTime : MonoBehaviour, ITimelineRecordable

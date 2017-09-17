@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Track statistics and other data on all characters currently in
  * the scene.</summary>

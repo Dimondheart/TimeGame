@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Move towards a target.</summary>*/
 public class FollowTarget : ControlledMovement

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Follow a path using a predefined set of points, which
  * loop back to the first point.</summary>

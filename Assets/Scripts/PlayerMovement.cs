@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.DynamicInputSystem;
+using TechnoWolf.TimeManipulation;
 
 public class PlayerMovement : ControlledMovement
 {

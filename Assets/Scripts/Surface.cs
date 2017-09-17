@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Information about a ground/etc. surface and detecting
  * touching game objects that have SurfaceIntaraction.</summary>

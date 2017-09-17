@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Handles sword related stuff.</summary>*/
 public class Sword : MonoBehaviour, ITimelineRecordable

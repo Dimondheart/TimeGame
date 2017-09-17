@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.DynamicInputSystem;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Controls the time freezing ability of the player.</summary>*/
 public class ChronoFreeze : MonoBehaviour

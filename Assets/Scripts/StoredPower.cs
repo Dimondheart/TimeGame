@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Finite stored power available for use.</summary>*/
 public class StoredPower : MonoBehaviour, IPrimaryValue, ITimelineRecordable

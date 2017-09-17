@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Chrono-Points for use by chrono-abilities.</summary>*/
 public class ChronoPoints : MonoBehaviour, IPrimaryValue

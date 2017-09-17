@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Deal damage to opponents on contact.</summary>*/
 public class DealDamageOnContact : MonoBehaviour, ITimelineRecordable

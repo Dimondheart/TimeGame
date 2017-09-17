@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>HP tracking and releated data/functionality.</summary>*/
 public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable

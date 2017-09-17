@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Selcts which sprite to display based on which direction this thing
  * is currently facing, and other factors. ITimelineRecordable implementation

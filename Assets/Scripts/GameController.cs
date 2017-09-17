@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.DynamicInputSystem;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Manages high-level game operations.</summary>*/
 public class GameController : MonoBehaviour

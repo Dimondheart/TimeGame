@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Standard MP concept.</summary>*/
 public class MagicPoints : MonoBehaviour, IPrimaryValue, ITimelineRecordable

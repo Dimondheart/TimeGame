@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Look towards a specified transform.</summary>*/
 public class LookTowardsTransform : MonoBehaviour, ITimelineRecordable

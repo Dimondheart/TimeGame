@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class MainMenuController : MonoBehaviour
 	private void Awake()
 	{
 		ManipulableTime.IsGameFrozen = false;
+		ManipulableTime.IsTimeFrozen = false;
 	}
 
 	public void StartGame()

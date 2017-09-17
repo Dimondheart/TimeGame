@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.TimeManipulation;
 
 /**<summary>Selects a target for hostile actions.</summary>*/
 [RequireComponent(typeof(Health))]
