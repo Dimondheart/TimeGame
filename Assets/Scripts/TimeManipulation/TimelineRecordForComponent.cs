@@ -84,6 +84,11 @@ namespace TechnoWolf.TimeManipulation
 				rb2d.angularVelocity = rec.angularVelocity;
 				return;
 			}
+			else if (component is Behaviour)
+			{
+				// Generic Behaviour records only have common data
+				return;
+			}
 			Debug.LogWarning(
 				"Attempted to apply a timeline record to a " +
 				"component that doesn't support it:" +
@@ -161,6 +166,10 @@ namespace TechnoWolf.TimeManipulation
 			public PhysicsMaterial2D sharedMaterial;
 			public Vector2 velocity;
 			public float angularVelocity;
+		}
+
+		public class TimelineRecord_Behaviour : TimelineRecordForComponent
+		{
 		}
 	}
 }

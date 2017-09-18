@@ -57,6 +57,12 @@ namespace TechnoWolf.TimeManipulation
 						rec.AddCommonData(c);
 						snapshot.AddRecord(c, rec);
 					}
+					else if (c is Behaviour)
+					{
+						TimelineRecord rec = new TimelineRecordForComponent.TimelineRecord_Behaviour();
+						rec.AddCommonData(c);
+						snapshot.AddRecord(c, rec);
+					}
 				}
 				timeline.AddSnapshot(ManipulableTime.cycleNumber, snapshot);
 			}
