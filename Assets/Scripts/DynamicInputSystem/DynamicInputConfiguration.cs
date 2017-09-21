@@ -55,7 +55,7 @@ namespace TechnoWolf.DynamicInputSystem
 				"Toggle Pause Menu",
 				new DynamicControlButton(
 					"Open/Close the pause menu",
-					new VirtualButtonBasic(KeyCode.Joystick1Button6),
+					new VirtualButtonBasic(KeyCode.Joystick1Button7),
 					new VirtualButtonBasic(KeyCode.Escape),
 					null
 					)
@@ -82,7 +82,7 @@ namespace TechnoWolf.DynamicInputSystem
 				"Dash",
 				new DynamicControlButton(
 					"Dash in a direction",
-					new VirtualButtonFromAxis("10th axis (Joysticks)"),
+					new VirtualButtonBasic(KeyCode.Joystick1Button0),
 					new VirtualButtonBasic(KeyCode.LeftShift),
 					null
 					)
@@ -91,7 +91,7 @@ namespace TechnoWolf.DynamicInputSystem
 				"Toggle Time Freeze",
 				new DynamicControlButton(
 					"Toggle time freezing",
-					new VirtualButtonBasic(KeyCode.Joystick1Button3),
+					new VirtualButtonBasic(KeyCode.Joystick1Button2),
 					new VirtualButtonBasic(KeyCode.Q),
 					null
 					)
@@ -105,6 +105,24 @@ namespace TechnoWolf.DynamicInputSystem
 						new VirtualButtonBasic(KeyCode.LeftArrow),
 						new VirtualButtonBasic(KeyCode.RightArrow)
 						)
+					)
+				);
+			DynamicInput.SetupButtonControl(
+				"Use Quick Slot",
+				new DynamicControlButton(
+					"Hold to use something asigned to a quick slot",
+					new VirtualButtonFromAxis("9th axis (Joysticks)"),
+					new VirtualButtonBasic(KeyCode.Space),
+					 null
+					)
+				);
+			DynamicInput.SetupButtonControl(
+				"Change Combat Mode",
+				new DynamicControlButton(
+					"Hold to change the current combat mode",
+					new VirtualButtonFromAxis("10th axis (Joysticks)"),
+					new VirtualButtonBasic(KeyCode.LeftAlt),
+					null
 					)
 				);
 		}
