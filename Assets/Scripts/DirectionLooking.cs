@@ -34,14 +34,18 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_DirectionLooking record = new TimelineRecord_DirectionLooking();
-			record.direction = direction;
-			return record;
+			return new TimelineRecord_DirectionLooking();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_DirectionLooking rec = (TimelineRecord_DirectionLooking)record;
+			rec.direction = direction;
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_DirectionLooking r = (TimelineRecord_DirectionLooking)record;
 			direction = r.direction;

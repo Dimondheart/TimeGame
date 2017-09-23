@@ -67,17 +67,21 @@ namespace TechnoWolf.Project1
 		 */
 		private bool forceUpdateThisCycle;
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_SpriteAngleSelector record = new TimelineRecord_SpriteAngleSelector();
-			record.syncronizeRotations = syncronizeRotations.ToArray();
-			record.currentAngle = currentAngle;
-			record.usingDeadVersion = usingDeadVersion;
-			record.forceUpdateThisCycle = forceUpdateThisCycle;
-			return record;
+			return new TimelineRecord_SpriteAngleSelector();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_SpriteAngleSelector rec = (TimelineRecord_SpriteAngleSelector)record;
+			rec.syncronizeRotations = syncronizeRotations.ToArray();
+			rec.currentAngle = currentAngle;
+			rec.usingDeadVersion = usingDeadVersion;
+			rec.forceUpdateThisCycle = forceUpdateThisCycle;
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_SpriteAngleSelector rec = (TimelineRecord_SpriteAngleSelector)record;
 			syncronizeRotations.Clear();

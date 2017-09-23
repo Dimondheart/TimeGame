@@ -8,24 +8,13 @@ namespace TechnoWolf.TimeManipulation
 	 * also handles playback of recorded data. Also implements ITimelineRecordable
 	 * itself to record data for the GameObject itself.</summary>
 	 */
-	public class TimelineRecorder : MonoBehaviour, ITimelineRecordable
+	public class TimelineRecorder : MonoBehaviour
 	{
 		public Timeline timeline { get; private set; }
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
-		{
-			return new TimelineRecordForGameObject();
-		}
-
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
-		{
-			TimelineRecordForGameObject tr = (TimelineRecordForGameObject)record;
-			gameObject.SetActive(tr.activeSelf);
-		}
-
 		private void Awake()
 		{
-			timeline = new Timeline();
+			timeline = new Timeline(gameObject);
 		}
 
 		private void OnDisable()
@@ -42,26 +31,37 @@ namespace TechnoWolf.TimeManipulation
 			if (ManipulableTime.RecordModeEnabled)
 			{
 				TimelineSnapshot snapshot = timeline.GetSnapshotForRecording();
+				if (snapshot.gameObjectRecord == null)
+				{
+					snapshot.gameObjectRecord = new TimelineRecordForGameObject(gameObject);
+				}
+				else
+				{
+					snapshot.gameObjectRecord.AddCommonData(gameObject);
+				}
 				Component[] components = gameObject.GetComponents(typeof(Component));
 				foreach (Component c in components)
 				{
-					if (c is ITimelineRecordable)
+					if (snapshot.HasRecord(c))
 					{
-						TimelineRecord rec = ((ITimelineRecordable)c).MakeTimelineRecord();
-						rec.AddCommonData(c);
-						snapshot.AddRecord(c, rec);
+						snapshot.GetRecord(c).RecordState();
 					}
-					else if (TimelineRecordForComponent.HasTimelineRecordMaker(c))
+					else
 					{
-						TimelineRecord rec = TimelineRecordForComponent.MakeTimelineRecord(c);
-						rec.AddCommonData(c);
-						snapshot.AddRecord(c, rec);
-					}
-					else if (c is Behaviour)
-					{
-						TimelineRecord rec = new TimelineRecordForComponent.TimelineRecord_Behaviour();
-						rec.AddCommonData(c);
-						snapshot.AddRecord(c, rec);
+						if (c is ITimelineRecordable)
+						{
+							TimelineRecordForComponent rec = ((ITimelineRecordable)c).MakeTimelineRecord();
+							rec.SetupRecord(c);
+							rec.RecordState();
+							snapshot.AddRecord(c, rec);
+						}
+						else if (TimelineRecordForComponent.HasTimelineRecordMaker(c))
+						{
+							TimelineRecordForComponent rec = TimelineRecordForComponent.MakeTimelineRecord(c);
+							rec.SetupRecord(c);
+							rec.RecordState();
+							snapshot.AddRecord(c, rec);
+						}
 					}
 				}
 				timeline.AddSnapshot(ManipulableTime.cycleNumber, snapshot);

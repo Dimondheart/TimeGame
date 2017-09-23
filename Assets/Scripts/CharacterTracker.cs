@@ -78,15 +78,19 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_CharacterTracker record = new TimelineRecord_CharacterTracker();
-			record.players = players.ToArray();
-			record.enemies = enemies.ToArray();
-			return record;
+			return new TimelineRecord_CharacterTracker();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_CharacterTracker rec = (TimelineRecord_CharacterTracker)record;
+			rec.players = players.ToArray();
+			rec.enemies = enemies.ToArray();
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_CharacterTracker rec = (TimelineRecord_CharacterTracker)record;
 			players.Clear();

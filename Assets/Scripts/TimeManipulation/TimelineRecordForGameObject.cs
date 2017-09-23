@@ -5,18 +5,23 @@ using UnityEngine;
 namespace TechnoWolf.TimeManipulation
 {
 	/**<summary>A timeline record for a game object.</summary>*/
-	public class TimelineRecordForGameObject : TimelineRecord
+	public class TimelineRecordForGameObject : TimelineRecord<GameObject>
 	{
 		public bool activeSelf;
 
-		public override void AddCommonData(Component component)
+		public TimelineRecordForGameObject(GameObject gameObject)
 		{
-			activeSelf = component.gameObject.activeSelf;
+			AddCommonData(gameObject);
 		}
 
-		public override void ApplyCommonData(Component component)
+		public override void AddCommonData(GameObject gameObject)
 		{
-			component.gameObject.SetActive(activeSelf);
+			activeSelf = gameObject.activeSelf;
+		}
+
+		public override void ApplyCommonData(GameObject gameObject)
+		{
+			gameObject.SetActive(activeSelf);
 		}
 	}
 }

@@ -7,9 +7,10 @@ namespace TechnoWolf.TimeManipulation
 	/**<summary>Base class for all timeline record classes created for
  * components.</summary>
  */
-	public abstract class TimelineRecordForComponent : TimelineRecord
+	public abstract class TimelineRecordForComponent : TimelineRecord<Component>
 	{
 		public bool enabled { get; private set; }
+		public Component component { get; private set; }
 
 		/**<summary>Check if the specified component has a record maker
 		 * implemented by this class. Returns false for components that
@@ -17,43 +18,56 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		public static bool HasTimelineRecordMaker(Component component)
 		{
-			return component is Transform || component is SpriteRenderer || component is Rigidbody2D;
+			return component is Transform || component is SpriteRenderer || component is Rigidbody2D || component is Behaviour;
 		}
 
 		public static TimelineRecordForComponent MakeTimelineRecord(Component component)
 		{
+			TimelineRecordForComponent record = null;
+			if (component is Transform)
+			{
+				record = new TimelineRecord_Transform();
+			}
+			else if (component is SpriteRenderer)
+			{
+				record = new TimelineRecord_SpriteRenderer();
+			}
+			else if (component is Rigidbody2D)
+			{
+				record = new TimelineRecord_Rigidbody2D();
+			}
+			else if (component is Behaviour)
+			{
+				record = new TimelineRecord_Behaviour();
+			}
+			return record;
+		}
+
+		public static void RecordCurrentState(Component component, TimelineRecordForComponent record)
+		{
 			if (component is Transform)
 			{
 				Transform t = (Transform)component;
-				TimelineRecord_Transform record = new TimelineRecord_Transform();
-				record.localPosition = t.localPosition;
-				record.localRotation = t.localRotation;
-				record.localScale = t.localScale;
-				return record;
+				TimelineRecord_Transform rec = (TimelineRecord_Transform)record;
+				rec.localPosition = t.localPosition;
+				rec.localRotation = t.localRotation;
+				rec.localScale = t.localScale;
 			}
 			else if (component is SpriteRenderer)
 			{
 				SpriteRenderer sr = (SpriteRenderer)component;
-				TimelineRecord_SpriteRenderer record = new TimelineRecord_SpriteRenderer();
-				record.sprite = sr.sprite;
-				record.color = sr.color;
-				return record;
+				TimelineRecord_SpriteRenderer rec = (TimelineRecord_SpriteRenderer)record;
+				rec.sprite = sr.sprite;
+				rec.color = sr.color;
 			}
 			else if (component is Rigidbody2D)
 			{
 				Rigidbody2D rb2d = (Rigidbody2D)component;
-				TimelineRecord_Rigidbody2D record = new TimelineRecord_Rigidbody2D();
-				record.sharedMaterial = rb2d.sharedMaterial;
-				record.velocity = rb2d.velocity;
-				record.angularVelocity = rb2d.angularVelocity;
-				return record;
+				TimelineRecord_Rigidbody2D rec = (TimelineRecord_Rigidbody2D)record;
+				rec.sharedMaterial = rb2d.sharedMaterial;
+				rec.velocity = rb2d.velocity;
+				rec.angularVelocity = rb2d.angularVelocity;
 			}
-			Debug.LogWarning(
-				"Attempted to make a timeline record for a " +
-				"component that doesn't support it:" +
-				component.GetType()
-				);
-			return null;
 		}
 
 		public static void ApplyTimelineRecord(Component component, TimelineRecordForComponent record)
@@ -94,6 +108,37 @@ namespace TechnoWolf.TimeManipulation
 				"component that doesn't support it:" +
 				component.GetType()
 				);
+		}
+
+		public void SetupRecord(Component component)
+		{
+			this.component = component;
+		}
+
+		public void RecordState()
+		{
+			if (component is ITimelineRecordable)
+			{
+				((ITimelineRecordable)component).RecordCurrentState(this);
+			}
+			else if (HasTimelineRecordMaker(component))
+			{
+				RecordCurrentState(component, this);
+			}
+			AddCommonData(component);
+		}
+
+		public void ApplyRecord()
+		{
+			if (component is ITimelineRecordable)
+			{
+				((ITimelineRecordable)component).ApplyTimelineRecord(this);
+			}
+			else if (HasTimelineRecordMaker(component))
+			{
+				ApplyTimelineRecord(component, this);
+			}
+			ApplyCommonData(component);
 		}
 
 		public override void AddCommonData(Component component)

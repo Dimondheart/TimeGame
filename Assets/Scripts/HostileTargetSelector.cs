@@ -14,17 +14,21 @@ namespace TechnoWolf.Project1
 		public List<GameObject> otherHostilesDetected = new List<GameObject>();
 		public Vector3 targetLastSpotted { get; private set; }
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_HostileTargetSelector record = new TimelineRecord_HostileTargetSelector();
-			record.target = target;
-			record.hostilesInLineOfSight = hostilesInLineOfSight.ToArray();
-			record.otherHostilesDetected = otherHostilesDetected.ToArray();
-			record.targetLastSpotted = targetLastSpotted;
-			return record;
+			return new TimelineRecord_HostileTargetSelector();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_HostileTargetSelector rec = (TimelineRecord_HostileTargetSelector)record;
+			rec.target = target;
+			rec.hostilesInLineOfSight = hostilesInLineOfSight.ToArray();
+			rec.otherHostilesDetected = otherHostilesDetected.ToArray();
+			rec.targetLastSpotted = targetLastSpotted;
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_HostileTargetSelector rec = (TimelineRecord_HostileTargetSelector)record;
 			target = rec.target;
@@ -62,7 +66,6 @@ namespace TechnoWolf.Project1
 			{
 				return;
 			}
-			//Debug.Log("In line of sight:" + seen.name);
 			if (!hostilesInLineOfSight.Contains(seen) && IsHostile(seen))
 			{
 				hostilesInLineOfSight.Add(seen);

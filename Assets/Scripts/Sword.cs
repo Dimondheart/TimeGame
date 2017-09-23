@@ -20,7 +20,7 @@ namespace TechnoWolf.Project1
 		private float swingDuration;
 		private float freezeDuration;
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_Sword rec = (TimelineRecord_Sword)record;
 			idleAngle = rec.idleAngle;
@@ -36,21 +36,25 @@ namespace TechnoWolf.Project1
 			freezeDuration = rec.freezeDuration;
 		}
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
 		{
-			TimelineRecord_Sword record = new TimelineRecord_Sword();
-			record.idleAngle = idleAngle;
-			record.swingAngleStart = swingAngleStart;
-			record.swingAngleEnd = swingAngleEnd;
-			record.swingTransform = swingTransform;
-			record.owner = owner;
-			record.isSwinging = isSwinging;
-			record.isEndingSwing = isEndingSwing;
+			TimelineRecord_Sword rec = (TimelineRecord_Sword)record;
+			rec.idleAngle = idleAngle;
+			rec.swingAngleStart = swingAngleStart;
+			rec.swingAngleEnd = swingAngleEnd;
+			rec.swingTransform = swingTransform;
+			rec.owner = owner;
+			rec.isSwinging = isSwinging;
+			rec.isEndingSwing = isEndingSwing;
 
-			record.swingStartTime = swingStartTime;
-			record.swingDuration = swingDuration;
-			record.freezeDuration = freezeDuration;
-			return record;
+			rec.swingStartTime = swingStartTime;
+			rec.swingDuration = swingDuration;
+			rec.freezeDuration = freezeDuration;
+		}
+
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		{
+			return new TimelineRecord_Sword();
 		}
 
 		private void Start()

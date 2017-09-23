@@ -39,8 +39,9 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public abstract TimelineRecord MakeTimelineRecord();
-		public abstract void ApplyTimelineRecord(TimelineRecord record);
+		public abstract TimelineRecordForComponent MakeTimelineRecord();
+		public abstract void RecordCurrentState(TimelineRecordForComponent record);
+		public abstract void ApplyTimelineRecord(TimelineRecordForComponent record);
 
 		protected void AddTimelineRecordValues(TimelineRecord_ControlledMovement record)
 		{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.TimeManipulation;
+using System;
 
 namespace TechnoWolf.Project1
 {
@@ -14,17 +15,21 @@ namespace TechnoWolf.Project1
 		public float maxSpeed = 4.0f;
 		public int targetIndex = 0;
 
-		public override TimelineRecord MakeTimelineRecord()
+		public override TimelineRecordForComponent MakeTimelineRecord()
 		{
-			TimelineRecord_FollowDefinedPath record = new TimelineRecord_FollowDefinedPath();
-			AddTimelineRecordValues(record);
-			record.targets = (Transform[])targets.Clone();
-			record.maxSpeed = maxSpeed;
-			record.targetIndex = targetIndex;
-			return record;
+			return new TimelineRecord_FollowDefinedPath();
 		}
 
-		public override void ApplyTimelineRecord(TimelineRecord record)
+		public override void RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_FollowDefinedPath rec = (TimelineRecord_FollowDefinedPath)record;
+			AddTimelineRecordValues(rec);
+			rec.targets = (Transform[])targets.Clone();
+			rec.maxSpeed = maxSpeed;
+			rec.targetIndex = targetIndex;
+		}
+
+		public override void ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_FollowDefinedPath rec = (TimelineRecord_FollowDefinedPath)record;
 			ApplyTimelineRecordValues(rec);

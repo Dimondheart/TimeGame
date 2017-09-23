@@ -136,20 +136,24 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_ElementalAlignment record = new TimelineRecord_ElementalAlignment();
-			record.minGainRate = minGainRate;
-			record.maxGainRate = maxGainRate;
-			record.gainFocus = gainFocus;
-			record.temperature = temperature;
-			record.moisture = moisture;
-			record.temperatureGainRate = temperatureGainRate;
-			record.moistureGainRate = moistureGainRate;
-			return record;
+			return new TimelineRecord_ElementalAlignment();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_ElementalAlignment rec = (TimelineRecord_ElementalAlignment)record;
+			rec.minGainRate = minGainRate;
+			rec.maxGainRate = maxGainRate;
+			rec.gainFocus = gainFocus;
+			rec.temperature = temperature;
+			rec.moisture = moisture;
+			rec.temperatureGainRate = temperatureGainRate;
+			rec.moistureGainRate = moistureGainRate;
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_ElementalAlignment rec = (TimelineRecord_ElementalAlignment)record;
 			minGainRate = rec.minGainRate;

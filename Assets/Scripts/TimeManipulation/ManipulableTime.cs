@@ -18,10 +18,8 @@ namespace TechnoWolf.TimeManipulation
 		private static TimeFreezeChangeState timeFreezeState;
 		private static TimelineState timelineState;
 		private static ExcessDataClearingState excessDataClearingState;
-		private static Dictionary<int, float> timeAtCycle;
-		private static Dictionary<int, float> deltaTimeAtCycle;
-		private static Dictionary<int, float> fixedTimeAtCycle;
-		private static Dictionary<int, float> fixedDeltaTimeAtCycle;
+		private static Dictionary<int, TimeDataForCycle> timeDataForCycles;
+		private static Stack<TimeDataForCycle> timeDataForCyclePool;
 
 		/**<summary>The time when the current Update cycle started.</summary>*/
 		public static float time { get; private set; }
@@ -265,24 +263,20 @@ namespace TechnoWolf.TimeManipulation
 		{
 			for (int cn = oldestCycleWithinRewindLimit - 1; cn >= oldestRecordedCycle; cn--)
 			{
-				if (!timeAtCycle.Remove(cn))
+				if (timeDataForCycles.ContainsKey(cn))
 				{
-					Debug.LogWarning("failed to remove");
+					timeDataForCyclePool.Push(timeDataForCycles[cn]);
+					timeDataForCycles.Remove(cn);
 				}
-				deltaTimeAtCycle.Remove(cn);
-				fixedTimeAtCycle.Remove(cn);
-				fixedDeltaTimeAtCycle.Remove(cn);
 			}
 			oldestRecordedCycle = oldestCycleWithinRewindLimit;
 			for (int cn = cycleNumber + 1; cn <= newestRecordedCycle; cn++)
 			{
-				if (!timeAtCycle.Remove(cn))
+				if (timeDataForCycles.ContainsKey(cn))
 				{
-					Debug.LogWarning("failed to remove 2");
+					timeDataForCyclePool.Push(timeDataForCycles[cn]);
+					timeDataForCycles.Remove(cn);
 				}
-				deltaTimeAtCycle.Remove(cn);
-				fixedTimeAtCycle.Remove(cn);
-				fixedDeltaTimeAtCycle.Remove(cn);
 			}
 			newestRecordedCycle = cycleNumber;
 		}
@@ -295,15 +289,14 @@ namespace TechnoWolf.TimeManipulation
 			oldestCycleWithinRewindLimit = oldestRecordedCycle;
 			//timelineState = TimelineState.Flowing;
 			timelineState = TimelineState.Recording;
+			//excessDataClearingState = ExcessDataClearingState.Clearing;
 			IsGameFrozen = false;
 			time = Time.time;
 			deltaTime = Time.deltaTime;
 			fixedTime = Time.fixedTime;
 			fixedDeltaTime = Time.fixedDeltaTime;
-			timeAtCycle = new Dictionary<int, float>();
-			deltaTimeAtCycle = new Dictionary<int, float>();
-			fixedTimeAtCycle = new Dictionary<int, float>();
-			fixedDeltaTimeAtCycle = new Dictionary<int, float>();
+			timeDataForCycles = new Dictionary<int, TimeDataForCycle>();
+			timeDataForCyclePool = new Stack<TimeDataForCycle>();
 		}
 
 		private void Update()
@@ -407,7 +400,7 @@ namespace TechnoWolf.TimeManipulation
 				default:
 					break;
 			}
-			if (timeAtCycle.Count > 400)
+			if (timeDataForCycles.Count > 400)
 			{
 				InitiateExcessDataClearing();
 			}
@@ -418,22 +411,25 @@ namespace TechnoWolf.TimeManipulation
 				fixedDeltaTime = 0.0f;
 				return;
 			}
+			//ClearExcessData();
 			deltaTime = Time.deltaTime;
 			time += deltaTime;
 			cycleNumber++;
 			newestRecordedCycle = cycleNumber;
-			timeAtCycle[cycleNumber] = time;
-			deltaTimeAtCycle[cycleNumber] = deltaTime;
-			fixedTimeAtCycle[cycleNumber] = fixedTime;
-			fixedDeltaTimeAtCycle[cycleNumber] = fixedDeltaTime;
+			TimeDataForCycle td = timeDataForCyclePool.Count > 0 ? timeDataForCyclePool.Pop() : new TimeDataForCycle();
+			td.time = time;
+			td.deltaTime = deltaTime;
+			td.fixedTime = fixedTime;
+			td.fixedDeltaTime = fixedDeltaTime;
+			timeDataForCycles[cycleNumber] = td;
 			for (int cn = newestRecordedCycle; cn >= 0; cn--)
 			{
 				// When older timeline data has been cleared
-				if (!timeAtCycle.ContainsKey(cn))
+				if (!timeDataForCycles.ContainsKey(cn))
 				{
 					break;
 				}
-				if (timeAtCycle[newestRecordedCycle] - timeAtCycle[cn] <= rewindTimeLimit)
+				if (timeDataForCycles[newestRecordedCycle].time - timeDataForCycles[cn].time <= rewindTimeLimit)
 				{
 					oldestCycleWithinRewindLimit = cn;
 				}
@@ -442,17 +438,17 @@ namespace TechnoWolf.TimeManipulation
 					break;
 				}
 			}
-			//Debug.Log((timeAtCycle[newestRecordedCycle] - timeAtCycle[oldestCycleWithinRewindLimit]));
 		}
 
 		private void SetCurrentCycle(int newCycleNumber)
 		{
 			timeFreezeState = TimeFreezeChangeState.NotChangedRecently;
 			cycleNumber = newCycleNumber;
-			time = timeAtCycle[cycleNumber];
-			deltaTime = deltaTimeAtCycle[cycleNumber];
-			fixedTime = fixedTimeAtCycle[cycleNumber];
-			fixedDeltaTime = fixedDeltaTimeAtCycle[cycleNumber];
+			TimeDataForCycle td = timeDataForCycles[cycleNumber];
+			time = td.time;
+			deltaTime = td.deltaTime;
+			fixedTime = td.fixedTime;
+			fixedDeltaTime = td.fixedDeltaTime;
 		}
 
 		/**<summary>The states of time freeze relating to how recently it has
@@ -494,6 +490,14 @@ namespace TechnoWolf.TimeManipulation
 			/**<summary>Recorded time will be replaying starting next cycle.</summary>*/
 			ReplayInitiated,
 			Replaying
+		}
+
+		private class TimeDataForCycle
+		{
+			public float time;
+			public float deltaTime;
+			public float fixedTime;
+			public float fixedDeltaTime;
 		}
 	}
 }

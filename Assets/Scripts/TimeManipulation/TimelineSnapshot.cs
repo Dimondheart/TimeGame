@@ -9,26 +9,37 @@ namespace TechnoWolf.TimeManipulation
 	 */
 	public class TimelineSnapshot
 	{
-		private Dictionary<Component, TimelineRecord> records = new Dictionary<Component, TimelineRecord>();
+		public readonly GameObject gameObject;
+		public TimelineRecordForGameObject gameObjectRecord;
+		private Dictionary<Component, TimelineRecordForComponent> records =
+			new Dictionary<Component, TimelineRecordForComponent>();
 
-		public void AddRecord(Component component, TimelineRecord record)
+		public TimelineSnapshot(GameObject gameObject)
+		{
+			this.gameObject = gameObject;
+		}
+
+		public bool HasRecord(Component component)
+		{
+			return records.ContainsKey(component);
+		}
+
+		public TimelineRecordForComponent GetRecord(Component component)
+		{
+			return records[component];
+		}
+
+		public void AddRecord(Component component, TimelineRecordForComponent record)
 		{
 			records[component] = record;
 		}
 
 		public void ApplyRecords()
 		{
-			foreach (KeyValuePair<Component, TimelineRecord> kvp in records)
+			gameObjectRecord.ApplyCommonData(gameObject);
+			foreach (KeyValuePair<Component, TimelineRecordForComponent> kvp in records)
 			{
-				if (kvp.Key is ITimelineRecordable)
-				{
-					((ITimelineRecordable)kvp.Key).ApplyTimelineRecord(kvp.Value);
-				}
-				else
-				{
-					TimelineRecordForComponent.ApplyTimelineRecord(kvp.Key, (TimelineRecordForComponent)kvp.Value);
-				}
-				kvp.Value.ApplyCommonData(kvp.Key);
+				kvp.Value.ApplyRecord();
 			}
 		}
 	}

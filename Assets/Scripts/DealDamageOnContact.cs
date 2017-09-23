@@ -15,16 +15,20 @@ namespace TechnoWolf.Project1
 		/**<summary>Time the last attack was made.</summary>*/
 		private ConvertableTimeRecord lastAttackTime;
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_DealDamageOnContact record = new TimelineRecord_DealDamageOnContact();
-			record.cooldown = cooldown;
-			record.damagePerHit = damagePerHit;
-			record.lastAttackTime = lastAttackTime;
-			return record;
+			return new TimelineRecord_DealDamageOnContact();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_DealDamageOnContact rec = (TimelineRecord_DealDamageOnContact)record;
+			rec.cooldown = cooldown;
+			rec.damagePerHit = damagePerHit;
+			rec.lastAttackTime = lastAttackTime;
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_DealDamageOnContact rec = (TimelineRecord_DealDamageOnContact)record;
 			cooldown = rec.cooldown;

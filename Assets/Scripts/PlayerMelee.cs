@@ -35,16 +35,20 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_PlayerMelee record = new TimelineRecord_PlayerMelee();
-			record.cooldown = cooldown;
-			record.damagePerHit = damagePerHit;
-			record.swingDuration = swingDuration;
-			return record;
+			return new TimelineRecord_PlayerMelee();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_PlayerMelee rec = (TimelineRecord_PlayerMelee)record;
+			rec.cooldown = cooldown;
+			rec.damagePerHit = damagePerHit;
+			rec.swingDuration = swingDuration;
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_PlayerMelee rec = (TimelineRecord_PlayerMelee)record;
 			cooldown = rec.cooldown;

@@ -9,6 +9,8 @@ namespace TechnoWolf.TimeManipulation
  */
 	public class Timeline
 	{
+		public readonly GameObject gameObject;
+
 		private Dictionary<int, TimelineSnapshot> snapshots = new Dictionary<int, TimelineSnapshot>();
 		private Stack<TimelineSnapshot> snapshotPool = new Stack<TimelineSnapshot>();
 
@@ -22,10 +24,11 @@ namespace TechnoWolf.TimeManipulation
 			}
 		}
 
-		public Timeline()
+		public Timeline(GameObject gameObject)
 		{
 			oldestSnapshot = -1;
 			newestSnapshot = -1;
+			this.gameObject = gameObject;
 		}
 
 		public TimelineSnapshot GetSnapshotForRecording()
@@ -34,7 +37,7 @@ namespace TechnoWolf.TimeManipulation
 			{
 				return snapshotPool.Pop();
 			}
-			return new TimelineSnapshot();
+			return new TimelineSnapshot(gameObject);
 		}
 
 		public bool HasSnapshot(int cycleNumber)
@@ -74,12 +77,6 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		public void RemoveSnapshotsOutsideRange(int oldestInclusive, int newestInclusive)
 		{
-			/*
-			if (debugThing != null && debugThing.name == "Player")
-			{
-				Debug.Log("Before2:" + snapshots.Count);
-			}
-			*/
 			for (int cn = oldestInclusive - 1; cn >= oldestSnapshot; cn--)
 			{
 				if (!snapshots.ContainsKey(cn))
@@ -98,12 +95,6 @@ namespace TechnoWolf.TimeManipulation
 				MoveSnapshotToPool(cn);
 			}
 			newestSnapshot = newestInclusive;
-			/*
-			if (debugThing.name == "Player")
-			{
-				Debug.Log("After2:" + snapshots.Count);
-			}
-			*/
 		}
 
 		private void MoveSnapshotToPool(int cycleNumber)

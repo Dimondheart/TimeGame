@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.DynamicInputSystem;
 using TechnoWolf.TimeManipulation;
+using System;
 
 namespace TechnoWolf.Project1
 {
@@ -40,23 +41,27 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public override TimelineRecord MakeTimelineRecord()
+		public override TimelineRecordForComponent MakeTimelineRecord()
 		{
-			TimelineRecord_PlayerMovement record = new TimelineRecord_PlayerMovement();
-			AddTimelineRecordValues(record);
-			record.movementSpeed = movementSpeed;
-			record.dashSpeed = dashSpeed;
-			record.dashDuration = dashDuration;
-			record.stopApplying = stopApplying;
-
-			record.lastDashStart = lastDashStart;
-			record.dashVelocity = dashVelocity;
-			record.isDashingInternal = isDashingInternal;
-			record.dashReleasedAfterExitingWater = dashReleasedAfterExitingWater;
-			return record;
+			return new TimelineRecord_PlayerMovement();
 		}
 
-		public override void ApplyTimelineRecord(TimelineRecord record)
+		public override void RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_PlayerMovement rec = (TimelineRecord_PlayerMovement)record;
+			AddTimelineRecordValues(rec);
+			rec.movementSpeed = movementSpeed;
+			rec.dashSpeed = dashSpeed;
+			rec.dashDuration = dashDuration;
+			rec.stopApplying = stopApplying;
+
+			rec.lastDashStart = lastDashStart;
+			rec.dashVelocity = dashVelocity;
+			rec.isDashingInternal = isDashingInternal;
+			rec.dashReleasedAfterExitingWater = dashReleasedAfterExitingWater;
+		}
+
+		public override void ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_PlayerMovement rec = (TimelineRecord_PlayerMovement)record;
 			ApplyTimelineRecordValues(rec);

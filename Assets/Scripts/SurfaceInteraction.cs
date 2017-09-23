@@ -41,15 +41,19 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_SurfaceInteraction record = new TimelineRecord_SurfaceInteraction();
-			record.frictionResistance = frictionResistance;
-			record.touchingSurfaces = touchingSurfaces.ToArray();
-			return record;
+			return new TimelineRecord_SurfaceInteraction();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_SurfaceInteraction rec = (TimelineRecord_SurfaceInteraction)record;
+			rec.frictionResistance = frictionResistance;
+			rec.touchingSurfaces = touchingSurfaces.ToArray();
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_SurfaceInteraction rec = (TimelineRecord_SurfaceInteraction)record;
 			frictionResistance = rec.frictionResistance;

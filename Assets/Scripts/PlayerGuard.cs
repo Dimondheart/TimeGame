@@ -24,16 +24,20 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_PlayerGuard record = new TimelineRecord_PlayerGuard();
-			record.shield = shield;
-			record.sideShieldLeft = sideShieldLeft;
-			record.sideShieldRight = sideShieldRight;
-			return record;
+			return new TimelineRecord_PlayerGuard();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_PlayerGuard rec = (TimelineRecord_PlayerGuard)record;
+			rec.shield = shield;
+			rec.sideShieldLeft = sideShieldLeft;
+			rec.sideShieldRight = sideShieldRight;
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_PlayerGuard rec = (TimelineRecord_PlayerGuard)record;
 			shield = rec.shield;

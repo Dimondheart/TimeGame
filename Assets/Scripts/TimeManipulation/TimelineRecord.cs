@@ -4,12 +4,16 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	/**<summary>Base class for all timeline record classes created for
-	 * each TimlineRecordable.</summary>
-	 */
 	public abstract class TimelineRecord
 	{
-		public abstract void AddCommonData(Component component);
-		public abstract void ApplyCommonData(Component component);
+	}
+
+	/**<summary>Base class for all timeline record classes created for
+	 * each ITimlineRecordable.</summary>
+	 */
+	public abstract class TimelineRecord<T> : TimelineRecord
+	{
+		public abstract void AddCommonData(T recorded);
+		public abstract void ApplyCommonData(T recorded);
 	}
 }

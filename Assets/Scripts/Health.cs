@@ -112,17 +112,21 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_Health record = new TimelineRecord_Health();
-			record.absoluteMaxHP = absoluteMaxHP;
-			record.currentMaxHP = currentmaxHP;
-			record.currentHP = currentHP;
-			record.isAlignedWithPlayer = isAlignedWithPlayer;
-			return record;
+			return new TimelineRecord_Health();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_Health rec = (TimelineRecord_Health)record;
+			rec.absoluteMaxHP = absoluteMaxHP;
+			rec.currentMaxHP = currentmaxHP;
+			rec.currentHP = currentHP;
+			rec.isAlignedWithPlayer = isAlignedWithPlayer;
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_Health rec = (TimelineRecord_Health)record;
 			absoluteMaxHP = rec.absoluteMaxHP;

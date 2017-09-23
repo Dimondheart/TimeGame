@@ -13,15 +13,19 @@ namespace TechnoWolf.Project1
 		/**<summary>Max distance to look towards the transform.</summary>*/
 		public float maxDistance = 6.0f;
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_LookTowardsTransform record = new TimelineRecord_LookTowardsTransform();
-			record.lookTowards = lookTowards;
-			record.maxDistance = maxDistance;
-			return record;
+			return new TimelineRecord_LookTowardsTransform();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_LookTowardsTransform rec = (TimelineRecord_LookTowardsTransform)record;
+			rec.lookTowards = lookTowards;
+			rec.maxDistance = maxDistance;
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_LookTowardsTransform rec = (TimelineRecord_LookTowardsTransform)record;
 			lookTowards = rec.lookTowards;

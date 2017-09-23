@@ -87,17 +87,21 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecord ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
 		{
-			TimelineRecord_MagicPoints record = new TimelineRecord_MagicPoints();
-			record.absoluteMaxMP = absoluteMaxMP;
-			record.maxMP = maxMP;
-			record.regenRate = regenRate;
-			record.currentMP = currentMP;
-			return record;
+			return new TimelineRecord_MagicPoints();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecord record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		{
+			TimelineRecord_MagicPoints rec = (TimelineRecord_MagicPoints)record;
+			rec.absoluteMaxMP = absoluteMaxMP;
+			rec.maxMP = maxMP;
+			rec.regenRate = regenRate;
+			rec.currentMP = currentMP;
+		}
+
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
 			TimelineRecord_MagicPoints rec = (TimelineRecord_MagicPoints)record;
 			absoluteMaxMP = rec.absoluteMaxMP;
