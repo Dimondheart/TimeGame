@@ -86,7 +86,7 @@ namespace TechnoWolf.Project1
 
 		private void OnTriggerEnter2D(Collider2D collision)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -98,7 +98,7 @@ namespace TechnoWolf.Project1
 
 		private void OnTriggerExit2D(Collider2D collision)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}

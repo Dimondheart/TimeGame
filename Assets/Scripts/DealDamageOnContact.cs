@@ -43,11 +43,11 @@ namespace TechnoWolf.Project1
 
 		private void OnCollisionStay2D(Collision2D collision)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
-			if (!GetComponent<Health>().IsAlive || ManipulableTime.IsTimeFrozen)
+			if (!GetComponent<Health>().IsAlive || ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}

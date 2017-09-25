@@ -65,7 +65,7 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}
@@ -99,7 +99,7 @@ namespace TechnoWolf.Project1
 
 		private void OnTriggerEnter2D(Collider2D collision)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || collision.isTrigger)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || collision.isTrigger)
 			{
 				return;
 			}
@@ -116,7 +116,7 @@ namespace TechnoWolf.Project1
 
 		public void Swing(float duration, float freezeDuration, float idleAngle, float startAngle, float endAngle)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || isSwinging)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || isSwinging)
 			{
 				return;
 			}
@@ -134,7 +134,7 @@ namespace TechnoWolf.Project1
 
 		public void CancelSwing()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}

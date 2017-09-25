@@ -72,7 +72,7 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}

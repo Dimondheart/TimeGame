@@ -34,7 +34,7 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || !GetComponent<Health>().IsAlive)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || !GetComponent<Health>().IsAlive)
 			{
 				return;
 			}

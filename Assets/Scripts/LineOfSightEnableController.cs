@@ -35,7 +35,7 @@ namespace TechnoWolf.Project1
 
 		private void OnTriggerEnter2D(Collider2D collision)
 		{
-			if (TimeManipulation.ManipulableTime.ApplyingTimelineRecords || TimeManipulation.ManipulableTime.IsTimeFrozen)
+			if (TimeManipulation.ManipulableTime.IsApplyingRecords || TimeManipulation.ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}
@@ -48,7 +48,7 @@ namespace TechnoWolf.Project1
 
 		private void OnTriggerExit2D(Collider2D collision)
 		{
-			if (TimeManipulation.ManipulableTime.ApplyingTimelineRecords || TimeManipulation.ManipulableTime.IsTimeFrozen)
+			if (TimeManipulation.ManipulableTime.IsApplyingRecords || TimeManipulation.ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}
@@ -62,7 +62,7 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (TimeManipulation.ManipulableTime.ApplyingTimelineRecords || TimeManipulation.ManipulableTime.IsTimeFrozen)
+			if (TimeManipulation.ManipulableTime.IsApplyingRecords || TimeManipulation.ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}

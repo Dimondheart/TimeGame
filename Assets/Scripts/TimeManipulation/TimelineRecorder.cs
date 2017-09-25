@@ -66,7 +66,7 @@ namespace TechnoWolf.TimeManipulation
 				}
 				timeline.AddSnapshot(ManipulableTime.cycleNumber, snapshot);
 			}
-			else if (ManipulableTime.ApplyingTimelineRecords)
+			else if (ManipulableTime.IsApplyingRecords)
 			{
 				if (timeline.HasSnapshot(ManipulableTime.cycleNumber))
 				{

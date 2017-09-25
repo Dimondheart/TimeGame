@@ -95,7 +95,7 @@ namespace TechnoWolf.Project1
 			{
 				return;
 			}
-			ManipulableTime.IsGameFrozen = true;
+			ManipulableTime.IsGamePaused = true;
 			pauseMenuPanel.SetActive(true);
 			menuBackgroundPanel.SetActive(true);
 			UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = pauseMenuPanelFirstSelected;
@@ -108,7 +108,7 @@ namespace TechnoWolf.Project1
 			{
 				return;
 			}
-			ManipulableTime.IsGameFrozen = false;
+			ManipulableTime.IsGamePaused = false;
 			pauseMenuPanel.SetActive(false);
 			menuBackgroundPanel.SetActive(false);
 			UnityEngine.EventSystems.EventSystem.current.firstSelectedGameObject = null;

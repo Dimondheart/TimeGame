@@ -73,11 +73,11 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
-			if (ManipulableTime.IsTimeFrozen)
+			if (ManipulableTime.IsTimeOrGamePaused)
 			{
 				GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 				return;

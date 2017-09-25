@@ -13,9 +13,12 @@ namespace TechnoWolf.TimeManipulation
 		 * cycle.</summary>
 		 */
 		public static readonly float rewindTimeLimit = 2.01f;
-
-		private static bool isTimeFrozenInternal;
-		private static TimeFreezeChangeState timeFreezeState;
+		/**<summary>Internal variable for when manipulable time is paused.</summary>*/
+		private static bool isTimePausedInternal;
+		/**<summary>How recently manipulable time pause has been changed. This affects
+		 * certain updates.</summary>
+		 */
+		private static TimePauseChangeState timePauseState;
 		private static TimelineState timelineState;
 		private static ExcessDataClearingState excessDataClearingState;
 		private static Dictionary<int, TimeDataForCycle> timeDataForCycles;
@@ -24,47 +27,46 @@ namespace TechnoWolf.TimeManipulation
 		/**<summary>The time when the current Update cycle started.</summary>*/
 		public static float time { get; private set; }
 		/**<summary>The time that passed between this Update cycle and
-		 * the previous one. Is set to 0 when time is frozen.</summary>
+		 * the previous one.</summary>
 		 */
 		public static float deltaTime { get; private set; }
 		/**<summary>The time when the current FixedUpdate cycle started.</summary>*/
 		public static float fixedTime { get; private set; }
 		/**<summary>The time that passed between this FixedUpdate cycle and
-		 * the previous one. Is set to 0 when time is frozen.</summary>
+		 * the previous one.</summary>
 		 */
 		public static float fixedDeltaTime { get; private set; }
 		public static int cycleNumber { get; private set; }
 		public static int oldestRecordedCycle { get; private set; }
 		public static int newestRecordedCycle { get; private set; }
 		public static int oldestCycleWithinRewindLimit { get; private set; }
-		/**<summary>Check if time is frozen (also returns true if the game is
-		 * frozen/paused or time is rewinding/replaying.) Will return before applying
-		 * changes if the game is frozen.</summary>
+		/**<summary>Indicates and controls if the manipulable time is frozen. This cannnot
+		 * be changed while the game is paused.</summary>
 		 */
-		public static bool IsTimeFrozen
+		public static bool IsTimePaused
 		{
 			get
 			{
-				return isTimeFrozenInternal || IsGameFrozen;
+				return isTimePausedInternal;
 			}
 			set
 			{
-				if (IsGameFrozen)
+				if (IsGamePaused)
 				{
 					return;
 				}
-				if (value != isTimeFrozenInternal)
+				if (value != isTimePausedInternal)
 				{
-					if (timeFreezeState == TimeFreezeChangeState.ChangedLastUpdate)
+					if (timePauseState == TimePauseChangeState.ChangedLastUpdate)
 					{
-						timeFreezeState = TimeFreezeChangeState.ChangedThisUpdateAndLastUpdate;
+						timePauseState = TimePauseChangeState.ChangedThisUpdateAndLastUpdate;
 					}
-					else if (timeFreezeState != TimeFreezeChangeState.ChangedThisUpdateAndLastUpdate)
+					else if (timePauseState != TimePauseChangeState.ChangedThisUpdateAndLastUpdate)
 					{
-						timeFreezeState = TimeFreezeChangeState.ChangedThisUpdate;
+						timePauseState = TimePauseChangeState.ChangedThisUpdate;
 					}
 				}
-				isTimeFrozenInternal = value;
+				isTimePausedInternal = value;
 				if (!value)
 				{
 					StopRewind();
@@ -73,11 +75,22 @@ namespace TechnoWolf.TimeManipulation
 				}
 			}
 		}
-		public static bool IsGameFrozen
+		/**<summary>Check if manipulable time is frozen and/or the game is paused.</summary>*/
+		public static bool IsTimeOrGamePaused
 		{
 			get
 			{
-				return Mathf.Approximately(0.0f, Time.timeScale);
+				return IsTimePaused || IsGamePaused;
+			}
+		}
+		/**<summary>Check and set if the game is paused. The game is considered paused when
+		 * the Unity Time.timeScale is set to exactly 0.0f.</summary>
+		 */
+		public static bool IsGamePaused
+		{
+			get
+			{
+				return Time.timeScale == 0.0f;
 			}
 			set
 			{
@@ -91,14 +104,14 @@ namespace TechnoWolf.TimeManipulation
 		{
 			get
 			{
-				return timeFreezeState == TimeFreezeChangeState.ChangedLastUpdate || timeFreezeState == TimeFreezeChangeState.ChangedThisUpdateAndLastUpdate;
+				return timePauseState == TimePauseChangeState.ChangedLastUpdate || timePauseState == TimePauseChangeState.ChangedThisUpdateAndLastUpdate;
 			}
 		}
 		public static bool RecordModeEnabled
 		{
 			get
 			{
-				return !IsTimeFrozen &&
+				return !IsTimeOrGamePaused &&
 					(timelineState == TimelineState.Recording || timelineState == TimelineState.RecordingAndRewindInitiated);
 			}
 		}
@@ -116,7 +129,7 @@ namespace TechnoWolf.TimeManipulation
 				return timelineState == TimelineState.Replaying;
 			}
 		}
-		public static bool ApplyingTimelineRecords
+		public static bool IsApplyingRecords
 		{
 			get
 			{
@@ -142,7 +155,7 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		public static void InitiateRewind()
 		{
-			if (IsGameFrozen || !IsTimeFrozen || cycleNumber == oldestCycleWithinRewindLimit)
+			if (IsGamePaused || !IsTimeOrGamePaused || cycleNumber == oldestCycleWithinRewindLimit)
 			{
 				return;
 			}
@@ -169,7 +182,7 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		public static void StopRewind()
 		{
-			if (IsGameFrozen)
+			if (IsGamePaused)
 			{
 				return;
 			}
@@ -196,7 +209,7 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		public static void InitiateReplay()
 		{
-			if (IsGameFrozen || !IsTimeFrozen || cycleNumber == newestRecordedCycle)
+			if (IsGamePaused || !IsTimeOrGamePaused || cycleNumber == newestRecordedCycle)
 			{
 				return;
 			}
@@ -205,7 +218,7 @@ namespace TechnoWolf.TimeManipulation
 				case TimelineState.Recording:
 				// Fall through
 				case TimelineState.Flowing:
-					if (IsTimeFrozen)
+					if (IsTimeOrGamePaused)
 					{
 						timelineState = TimelineState.ReplayInitiated;
 					}
@@ -225,7 +238,7 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		public static void StopReplay()
 		{
-			if (IsGameFrozen)
+			if (IsGamePaused)
 			{
 				return;
 			}
@@ -290,7 +303,7 @@ namespace TechnoWolf.TimeManipulation
 			//timelineState = TimelineState.Flowing;
 			timelineState = TimelineState.Recording;
 			//excessDataClearingState = ExcessDataClearingState.Clearing;
-			IsGameFrozen = false;
+			IsGamePaused = false;
 			time = Time.time;
 			deltaTime = Time.deltaTime;
 			fixedTime = Time.fixedTime;
@@ -301,7 +314,7 @@ namespace TechnoWolf.TimeManipulation
 
 		private void Update()
 		{
-			if (IsGameFrozen)
+			if (IsGamePaused)
 			{
 				return;
 			}
@@ -322,7 +335,7 @@ namespace TechnoWolf.TimeManipulation
 				case TimelineState.RecordingAndRewindInitiated:
 				// Fall through
 				case TimelineState.RewindInitiated:
-					if (IsTimeFrozen)
+					if (IsTimeOrGamePaused)
 					{
 						timelineState = TimelineState.Rewinding;
 					}
@@ -358,11 +371,7 @@ namespace TechnoWolf.TimeManipulation
 
 		private void FixedUpdate()
 		{
-			if (IsTimeFrozen || ApplyingTimelineRecords)
-			{
-				fixedDeltaTime = 0.0f;
-			}
-			else
+			if (!IsTimeOrGamePaused)
 			{
 				fixedDeltaTime = Time.fixedDeltaTime;
 				fixedTime += fixedDeltaTime;
@@ -371,21 +380,21 @@ namespace TechnoWolf.TimeManipulation
 
 		private void UpdateInternalTime()
 		{
-			switch (timeFreezeState)
+			switch (timePauseState)
 			{
-				case TimeFreezeChangeState.NotChangedRecently:
+				case TimePauseChangeState.NotChangedRecently:
 					break;
-				case TimeFreezeChangeState.ChangedLastUpdate:
-					timeFreezeState = TimeFreezeChangeState.NotChangedRecently;
+				case TimePauseChangeState.ChangedLastUpdate:
+					timePauseState = TimePauseChangeState.NotChangedRecently;
 					break;
-				case TimeFreezeChangeState.ChangedThisUpdate:
-					timeFreezeState = TimeFreezeChangeState.ChangedLastUpdate;
+				case TimePauseChangeState.ChangedThisUpdate:
+					timePauseState = TimePauseChangeState.ChangedLastUpdate;
 					break;
-				case TimeFreezeChangeState.ChangedThisUpdateAndLastUpdate:
-					timeFreezeState = TimeFreezeChangeState.ChangedLastUpdate;
+				case TimePauseChangeState.ChangedThisUpdateAndLastUpdate:
+					timePauseState = TimePauseChangeState.ChangedLastUpdate;
 					break;
 				default:
-					Debug.LogWarning("Unhandled TimeFreezeState ID:" + (int)timeFreezeState);
+					Debug.LogWarning("Unhandled TimeFreezeState ID:" + (int)timePauseState);
 					break;
 			}
 			switch (excessDataClearingState)
@@ -404,14 +413,10 @@ namespace TechnoWolf.TimeManipulation
 			{
 				InitiateExcessDataClearing();
 			}
-			if (IsTimeFrozen)
+			if (IsTimeOrGamePaused)
 			{
-				deltaTime = 0.0f;
-				// Also set fixed delta time to 0 here in case Time.timeScale is 0
-				fixedDeltaTime = 0.0f;
 				return;
 			}
-			//ClearExcessData();
 			deltaTime = Time.deltaTime;
 			time += deltaTime;
 			cycleNumber++;
@@ -442,7 +447,7 @@ namespace TechnoWolf.TimeManipulation
 
 		private void SetCurrentCycle(int newCycleNumber)
 		{
-			timeFreezeState = TimeFreezeChangeState.NotChangedRecently;
+			timePauseState = TimePauseChangeState.NotChangedRecently;
 			cycleNumber = newCycleNumber;
 			TimeDataForCycle td = timeDataForCycles[cycleNumber];
 			time = td.time;
@@ -454,7 +459,7 @@ namespace TechnoWolf.TimeManipulation
 		/**<summary>The states of time freeze relating to how recently it has
 		 * been changed.</summary>
 		 */
-		private enum TimeFreezeChangeState
+		private enum TimePauseChangeState
 		{
 			NotChangedRecently = 0,
 			ChangedThisUpdate,

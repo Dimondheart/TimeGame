@@ -102,7 +102,7 @@ namespace TechnoWolf.Project1
 		/**<summary>Add a player character to the tracking system.</summary>*/
 		public void AddPlayer(PlayerTrackerHelper helper)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -116,7 +116,7 @@ namespace TechnoWolf.Project1
 		/**<summary>Add an enemy to the tracking system.</summary>*/
 		public void AddEnemy(EnemyTrackerHelper helper)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}

@@ -23,7 +23,7 @@ namespace TechnoWolf.Project1
 			}
 			protected set
 			{
-				if (ManipulableTime.ApplyingTimelineRecords)
+				if (ManipulableTime.IsApplyingRecords)
 				{
 					return;
 				}

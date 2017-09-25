@@ -41,7 +41,7 @@ namespace TechnoWolf.Project1
 
 		public void OnLineOfSightEnter(GameObject entered)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -53,7 +53,7 @@ namespace TechnoWolf.Project1
 
 		public void OnLineOfSightExit(GameObject exited)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -62,7 +62,7 @@ namespace TechnoWolf.Project1
 
 		public void OnLineOfSightPersist(GameObject seen)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -74,7 +74,7 @@ namespace TechnoWolf.Project1
 
 		private void OnCollisionEnter2D(Collision2D collision)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -86,7 +86,7 @@ namespace TechnoWolf.Project1
 
 		private void OnCollisionExit2D(Collision2D collision)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -100,11 +100,11 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
-			if (ManipulableTime.IsTimeFrozen)
+			if (ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}

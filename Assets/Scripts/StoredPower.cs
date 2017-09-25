@@ -115,7 +115,7 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || regenRate == 0.0)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || regenRate == 0.0)
 			{
 				return;
 			}

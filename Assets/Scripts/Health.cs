@@ -144,7 +144,7 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || !IsAlive)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || !IsAlive)
 			{
 				return;
 			}
@@ -159,7 +159,7 @@ namespace TechnoWolf.Project1
 		 */
 		private void DoDamage(float damage)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -175,7 +175,7 @@ namespace TechnoWolf.Project1
 		 */
 		public bool Hit(HitInfo hit)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return false;
 			}
@@ -204,7 +204,7 @@ namespace TechnoWolf.Project1
 
 		private void DoPerminentDamage(float damage)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}

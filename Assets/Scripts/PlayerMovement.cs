@@ -83,11 +83,11 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
-			if (ManipulableTime.IsTimeFrozen)
+			if (ManipulableTime.IsTimeOrGamePaused)
 			{
 				GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 				return;
@@ -108,7 +108,7 @@ namespace TechnoWolf.Project1
 			{
 				float currentTime = ManipulableTime.time;
 				float lastDashTime = lastDashStart.manipulableTime;
-				if (ManipulableTime.IsTimeFrozen)
+				if (ManipulableTime.IsTimeOrGamePaused)
 				{
 					currentTime = Time.time;
 					lastDashTime = lastDashStart.unityTime;

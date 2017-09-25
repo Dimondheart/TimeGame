@@ -74,7 +74,7 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.IsGameFrozen)
+			if (ManipulableTime.IsGamePaused)
 			{
 				return;
 			}
@@ -85,7 +85,7 @@ namespace TechnoWolf.Project1
 				{
 					recharging = true;
 					isCharacterFreezingTime = false;
-					ManipulableTime.IsTimeFrozen = false;
+					ManipulableTime.IsTimePaused = false;
 				}
 			}
 			else

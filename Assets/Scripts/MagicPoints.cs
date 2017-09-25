@@ -118,7 +118,7 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || currentMP >= maxMP)
+			if (ManipulableTime.IsTimeOrGamePaused || currentMP >= maxMP)
 			{
 				return;
 			}

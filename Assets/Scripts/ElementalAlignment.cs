@@ -40,7 +40,7 @@ namespace TechnoWolf.Project1
 			}
 			set
 			{
-				if (ManipulableTime.ApplyingTimelineRecords)
+				if (ManipulableTime.IsApplyingRecords)
 				{
 					return;
 				}
@@ -61,7 +61,7 @@ namespace TechnoWolf.Project1
 			}
 			set
 			{
-				if (ManipulableTime.ApplyingTimelineRecords)
+				if (ManipulableTime.IsApplyingRecords)
 				{
 					return;
 				}
@@ -84,7 +84,7 @@ namespace TechnoWolf.Project1
 			}
 			set
 			{
-				if (ManipulableTime.ApplyingTimelineRecords)
+				if (ManipulableTime.IsApplyingRecords)
 				{
 					return;
 				}
@@ -167,7 +167,7 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || !dynamicAlignment)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || !dynamicAlignment)
 			{
 				return;
 			}
@@ -185,7 +185,7 @@ namespace TechnoWolf.Project1
 
 		public void UseTemperature(float use)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -196,7 +196,7 @@ namespace TechnoWolf.Project1
 
 		public void UseMoisture(float use)
 		{
-			if (ManipulableTime.ApplyingTimelineRecords)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}

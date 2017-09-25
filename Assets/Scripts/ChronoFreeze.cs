@@ -15,16 +15,16 @@ namespace TechnoWolf.Project1
 			{
 				return;
 			}
-			if (DynamicInput.GetButtonDown("Toggle Time Freeze") && !ManipulableTime.IsGameFrozen)
+			if (DynamicInput.GetButtonDown("Toggle Time Freeze") && !ManipulableTime.IsGamePaused)
 			{
 				if (GetComponent<ChronoPoints>().isCharacterFreezingTime)
 				{
-					ManipulableTime.IsTimeFrozen = false;
+					ManipulableTime.IsTimePaused = false;
 					GetComponent<ChronoPoints>().isCharacterFreezingTime = false;
 				}
-				else if (!ManipulableTime.IsTimeFrozen && GetComponent<ChronoPoints>().CanActivateChronoFreeze)
+				else if (!ManipulableTime.IsTimeOrGamePaused && GetComponent<ChronoPoints>().CanActivateChronoFreeze)
 				{
-					ManipulableTime.IsTimeFrozen = true;
+					ManipulableTime.IsTimePaused = true;
 					GetComponent<ChronoPoints>().isCharacterFreezingTime = true;
 				}
 			}

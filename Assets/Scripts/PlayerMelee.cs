@@ -58,7 +58,7 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen || !GetComponent<Health>().IsAlive)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || !GetComponent<Health>().IsAlive)
 			{
 				return;
 			}
@@ -95,7 +95,7 @@ namespace TechnoWolf.Project1
 
 		public void StopSwinging()
 		{
-			if (ManipulableTime.ApplyingTimelineRecords || ManipulableTime.IsTimeFrozen)
+			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}
