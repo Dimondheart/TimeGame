@@ -108,20 +108,38 @@ namespace TechnoWolf.DynamicInputSystem
 					)
 				);
 			DynamicInput.SetupButtonControl(
-				"Use Quick Slot",
+				"Offensive Combat Mode",
 				new DynamicControlButton(
-					"Hold to use something asigned to a quick slot",
-					new VirtualButtonFromAxis("9th axis (Joysticks)"),
-					new VirtualButtonBasic(KeyCode.Space),
-					 null
+					"Change the player combat mode to offensive",
+					new VirtualButtonFromDPad(false, true),
+					new VirtualButtonBasic(KeyCode.Alpha1),
+					null
 					)
 				);
 			DynamicInput.SetupButtonControl(
-				"Change Combat Mode",
+				"Defensive Combat Mode",
 				new DynamicControlButton(
-					"Hold to change the current combat mode",
-					new VirtualButtonFromAxis("10th axis (Joysticks)"),
-					new VirtualButtonBasic(KeyCode.LeftAlt),
+					"Change the player combat mode to defensive",
+					new VirtualButtonFromDPad(false, false),
+					new VirtualButtonBasic(KeyCode.Alpha2),
+					null
+					)
+				);
+			DynamicInput.SetupButtonControl(
+				"Ranged Combat Mode",
+				new DynamicControlButton(
+					"Change the player combat mode to ranged",
+					new VirtualButtonFromDPad(true, true),
+					new VirtualButtonBasic(KeyCode.Alpha3),
+					null
+					)
+				);
+			DynamicInput.SetupButtonControl(
+				"Unarmed Combat Mode",
+				new DynamicControlButton(
+					"Change the player combat mode to unarmed/magic",
+					new VirtualButtonFromDPad(true, false),
+					new VirtualButtonBasic(KeyCode.Alpha4),
 					null
 					)
 				);

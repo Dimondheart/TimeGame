@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.DynamicInputSystem;
 using TechnoWolf.TimeManipulation;
+using System;
 
 namespace TechnoWolf.Project1
 {
-	public class PlayerMelee : MonoBehaviour, ITimelineRecordable
+	public class PlayerMelee : PlayerCombatModeUser
 	{
 		public Sword sword;
 		/**<summary>Delay between attacks, in seconds.</summary>*/
@@ -35,30 +36,53 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		public override TimelineRecordForComponent MakeTimelineRecord()
 		{
 			return new TimelineRecord_PlayerMelee();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		public override void RecordCurrentState(TimelineRecordForComponent record)
 		{
+			base.RecordCurrentState(record);
 			TimelineRecord_PlayerMelee rec = (TimelineRecord_PlayerMelee)record;
 			rec.cooldown = cooldown;
 			rec.damagePerHit = damagePerHit;
 			rec.swingDuration = swingDuration;
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		public override void ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
+			base.ApplyTimelineRecord(record);
 			TimelineRecord_PlayerMelee rec = (TimelineRecord_PlayerMelee)record;
 			cooldown = rec.cooldown;
 			damagePerHit = rec.damagePerHit;
 			swingDuration = rec.swingDuration;
 		}
 
-		private void Update()
+		protected override void ChangeToOffensive()
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || !GetComponent<Health>().IsAlive)
+			// TODO
+		}
+
+		protected override void ChangeToDefensive()
+		{
+			// TODO
+		}
+
+		protected override void ChangeToRanged()
+		{
+			// TODO
+		}
+
+		protected override void ChangeToUnarmed()
+		{
+			// TODO
+		}
+
+		protected override void Update()
+		{
+			base.Update();
+			if (ManipulableTime.IsTimeOrGamePaused || !GetComponent<Health>().IsAlive)
 			{
 				return;
 			}
@@ -106,7 +130,7 @@ namespace TechnoWolf.Project1
 			currentSwingNumber = 0;
 		}
 
-		public class TimelineRecord_PlayerMelee : TimelineRecordForComponent
+		public class TimelineRecord_PlayerMelee : TimelineRecord_PlayerCombatModeUser
 		{
 			public float cooldown;
 			public int damagePerHit;

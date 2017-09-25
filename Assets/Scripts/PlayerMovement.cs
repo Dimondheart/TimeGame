@@ -8,8 +8,10 @@ using System;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Movement controlled by the player.</summary>*/
-	public class PlayerMovement : ControlledMovement
+	public class PlayerMovement : PlayerCombatModeUser
 	{
+		public PhysicsMaterial2D stationaryMaterial;
+		public PhysicsMaterial2D applyingMotionMaterial;
 		public float movementSpeed = 6.0f;
 		public float dashSpeed = 15.0f;
 		public float dashDuration = 0.2f;
@@ -19,6 +21,31 @@ namespace TechnoWolf.Project1
 		private Vector3 dashVelocity;
 		private bool isDashingInternal = false;
 		private bool dashReleasedAfterExitingWater = true;
+		private bool isApplyingMotion = false;
+
+		public bool IsApplyingMotion
+		{
+			get
+			{
+				return isApplyingMotion;
+			}
+			protected set
+			{
+				if (ManipulableTime.IsApplyingRecords)
+				{
+					return;
+				}
+				isApplyingMotion = value;
+				if (value)
+				{
+					GetComponent<Rigidbody2D>().sharedMaterial = applyingMotionMaterial;
+				}
+				else
+				{
+					GetComponent<Rigidbody2D>().sharedMaterial = stationaryMaterial;
+				}
+			}
+		}
 
 		public bool IsDashing
 		{
@@ -48,8 +75,9 @@ namespace TechnoWolf.Project1
 
 		public override void RecordCurrentState(TimelineRecordForComponent record)
 		{
+			base.RecordCurrentState(record);
 			TimelineRecord_PlayerMovement rec = (TimelineRecord_PlayerMovement)record;
-			AddTimelineRecordValues(rec);
+			rec.isApplyingMotion = isApplyingMotion;
 			rec.movementSpeed = movementSpeed;
 			rec.dashSpeed = dashSpeed;
 			rec.dashDuration = dashDuration;
@@ -63,8 +91,9 @@ namespace TechnoWolf.Project1
 
 		public override void ApplyTimelineRecord(TimelineRecordForComponent record)
 		{
+			base.ApplyTimelineRecord(record);
 			TimelineRecord_PlayerMovement rec = (TimelineRecord_PlayerMovement)record;
-			ApplyTimelineRecordValues(rec);
+			isApplyingMotion = rec.isApplyingMotion;
 			movementSpeed = rec.movementSpeed;
 			dashSpeed = rec.dashSpeed;
 			dashDuration = rec.dashDuration;
@@ -76,22 +105,40 @@ namespace TechnoWolf.Project1
 			dashReleasedAfterExitingWater = rec.dashReleasedAfterExitingWater;
 		}
 
+		protected override void ChangeToOffensive()
+		{
+			// TODO
+		}
+
+		protected override void ChangeToDefensive()
+		{
+			// TODO
+		}
+
+		protected override void ChangeToRanged()
+		{
+			// TODO
+		}
+
+		protected override void ChangeToUnarmed()
+		{
+			// TODO
+		}
+
 		private void Awake()
 		{
 			lastDashStart = ConvertableTimeRecord.GetTime();
 		}
 
-		private void Update()
+		protected override void Update()
 		{
-			if (ManipulableTime.IsApplyingRecords)
-			{
-				return;
-			}
+			base.Update();
 			if (ManipulableTime.IsTimeOrGamePaused)
 			{
 				GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 				return;
 			}
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 			if (!GetComponent<Health>().IsAlive)
 			{
 				IsApplyingMotion = false;
@@ -103,7 +150,6 @@ namespace TechnoWolf.Project1
 					1.0f
 					)
 				* movementSpeed;
-			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 			if (IsDashing)
 			{
 				float currentTime = ManipulableTime.time;
@@ -165,8 +211,9 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public class TimelineRecord_PlayerMovement : ControlledMovement.TimelineRecord_ControlledMovement
+		public class TimelineRecord_PlayerMovement : TimelineRecord_PlayerCombatModeUser
 		{
+			public bool isApplyingMotion;
 			public float movementSpeed;
 			public float dashSpeed;
 			public float dashDuration;

@@ -70,6 +70,7 @@ namespace TechnoWolf.Project1
 			if (GetComponent<Health>() == null
 				|| !GetComponent<Health>().IsAlive
 				|| (GetComponent<ControlledMovement>() != null && !GetComponent<ControlledMovement>().IsApplyingMotion)
+				|| (GetComponent<PlayerMovement>() != null && !GetComponent<PlayerMovement>().IsApplyingMotion)
 				)
 			{
 				return;
@@ -89,7 +90,9 @@ namespace TechnoWolf.Project1
 			{
 				return;
 			}
-			if (GetComponent<ControlledMovement>() != null && GetComponent<ControlledMovement>().IsApplyingMotion)
+			if ((GetComponent<ControlledMovement>() != null && GetComponent<ControlledMovement>().IsApplyingMotion)
+				|| (GetComponent<PlayerMovement>() != null && GetComponent<PlayerMovement>().IsApplyingMotion)
+				)
 			{
 				return;
 			}

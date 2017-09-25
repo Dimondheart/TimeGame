@@ -73,19 +73,12 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.IsApplyingRecords)
-			{
-				return;
-			}
 			if (ManipulableTime.IsTimeOrGamePaused)
 			{
 				GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 				return;
 			}
-			else
-			{
-				GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
-			}
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
 			if ((TargetTransform == null && targetLocationReached)
 				|| !GetComponent<Health>().IsAlive
 				|| Vector3.Distance(TargetPositon, transform.position) < 0.3f
