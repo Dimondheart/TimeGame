@@ -9,7 +9,8 @@ namespace TechnoWolf.Project1
 {
 	public class PlayerMelee : PlayerCombatModeUser
 	{
-		public Sword sword;
+		public Sword rightHandWeapon;
+		public Sword leftHandWeapon;
 		/**<summary>Delay between attacks, in seconds.</summary>*/
 		public float cooldown = 0.5f;
 		/**<summary>HP damage per attack.</summary>*/
@@ -18,13 +19,14 @@ namespace TechnoWolf.Project1
 		public float swordIdleAngle = -160.0f;
 		public float swordSwingArc = 160.0f;
 		public float comboLimit = 3;
-		private int currentSwingNumber;
+		private int currentSwingNumberRight;
+		private int currentSwingNumberLeft;
 
 		public bool IsSwinging
 		{
 			get
 			{
-				return sword.isSwinging || sword.isEndingSwing;
+				return rightHandWeapon.isSwinging || rightHandWeapon.isEndingSwing || leftHandWeapon.isSwinging || leftHandWeapon.isEndingSwing;
 			}
 		}
 
@@ -32,7 +34,23 @@ namespace TechnoWolf.Project1
 		{
 			get
 			{
-				return !sword.isSwinging;
+				return rightHandWeapon.isEndingSwing || leftHandWeapon.isEndingSwing;
+			}
+		}
+
+		public bool RightWeaponEnabled
+		{
+			get
+			{
+				return rightHandWeapon.GetComponent<SpriteRenderer>().enabled;
+			}
+		}
+
+		public bool LeftWeaponEnabled
+		{
+			get
+			{
+				return leftHandWeapon.GetComponent<SpriteRenderer>().enabled;
 			}
 		}
 
@@ -48,6 +66,11 @@ namespace TechnoWolf.Project1
 			rec.cooldown = cooldown;
 			rec.damagePerHit = damagePerHit;
 			rec.swingDuration = swingDuration;
+			rec.swordIdleAngle = swordIdleAngle;
+			rec.swordSwingArc = swordSwingArc;
+			rec.comboLimit = comboLimit;
+			rec.currentSwingNumberRight = currentSwingNumberRight;
+			rec.currentSwingNumberLeft = currentSwingNumberLeft;
 		}
 
 		public override void ApplyTimelineRecord(TimelineRecordForComponent record)
@@ -57,26 +80,32 @@ namespace TechnoWolf.Project1
 			cooldown = rec.cooldown;
 			damagePerHit = rec.damagePerHit;
 			swingDuration = rec.swingDuration;
+			swordIdleAngle = rec.swordIdleAngle;
+			swordSwingArc = rec.swordSwingArc;
+			comboLimit = rec.comboLimit;
+			currentSwingNumberRight = rec.currentSwingNumberRight;
+			currentSwingNumberLeft = rec.currentSwingNumberLeft;
 		}
 
 		protected override void ChangeToOffensive()
 		{
-			// TODO
+			SetWeaponsEnabled(true);
 		}
 
 		protected override void ChangeToDefensive()
 		{
-			// TODO
+			SetRightWeaponEnabled(true);
+			SetLeftWeaponEnabled(false);
 		}
 
 		protected override void ChangeToRanged()
 		{
-			// TODO
+			SetWeaponsEnabled(false);
 		}
 
 		protected override void ChangeToUnarmed()
 		{
-			// TODO
+			SetWeaponsEnabled(false);
 		}
 
 		protected override void Update()
@@ -88,46 +117,119 @@ namespace TechnoWolf.Project1
 			}
 			if (GetComponent<SurfaceInteraction>().IsSwimming)
 			{
-				StopSwinging();
+				SetWeaponsEnabled(false);
 			}
-			else if (DynamicInput.GetButtonDown("Melee") && !GetComponent<PlayerMovement>().IsDashing)
+			else
 			{
-				if (!sword.isSwinging && !sword.isEndingSwing)
+				SetLeftWeaponEnabled(currentCombatMode == PlayerCombatMode.CombatMode.Offensive);
+				SetRightWeaponEnabled(currentCombatMode == PlayerCombatMode.CombatMode.Offensive || currentCombatMode == PlayerCombatMode.CombatMode.Defensive);
+				if (!GetComponent<PlayerMovement>().IsDashing)
 				{
-					currentSwingNumber = 0;
-				}
-				if (sword.isEndingSwing || (!sword.isSwinging && !sword.isEndingSwing))
-				{
-					if (currentSwingNumber == 0)
+					if (DynamicInput.GetButtonDown("Right Hand Action") && RightWeaponEnabled)
 					{
-						sword.Swing(swingDuration, cooldown - swingDuration, swordIdleAngle, swordIdleAngle, swordSwingArc / 2.0f);
-						currentSwingNumber++;
-					}
-					else if (currentSwingNumber < comboLimit)
-					{
-						float angle = swordSwingArc / 2.0f;
-						if (currentSwingNumber % 2 != 0)
+						if (!rightHandWeapon.isSwinging && !rightHandWeapon.isEndingSwing)
 						{
-							angle = -angle;
+							currentSwingNumberRight = 0;
 						}
-						sword.Swing(swingDuration, cooldown - swingDuration, swordIdleAngle, -angle, angle);
-						currentSwingNumber++;
+						if (rightHandWeapon.isEndingSwing || (!rightHandWeapon.isSwinging && !rightHandWeapon.isEndingSwing))
+						{
+							if (currentSwingNumberRight == 0)
+							{
+								rightHandWeapon.Swing(swingDuration, cooldown - swingDuration, swordIdleAngle, swordIdleAngle, swordSwingArc / 2.0f);
+								currentSwingNumberRight++;
+							}
+							else if (currentSwingNumberRight < comboLimit)
+							{
+								float angle = swordSwingArc / 2.0f;
+								if (currentSwingNumberRight % 2 != 0)
+								{
+									angle = -angle;
+								}
+								rightHandWeapon.Swing(swingDuration, cooldown - swingDuration, swordIdleAngle, -angle, angle);
+								currentSwingNumberRight++;
+							}
+						}
+					}
+					if (DynamicInput.GetButtonDown("Left Hand Action") && LeftWeaponEnabled)
+					{
+						if (!leftHandWeapon.isSwinging && !leftHandWeapon.isEndingSwing)
+						{
+							currentSwingNumberLeft = 0;
+						}
+						if (leftHandWeapon.isEndingSwing || (!leftHandWeapon.isSwinging && !leftHandWeapon.isEndingSwing))
+						{
+							if (currentSwingNumberLeft == 0)
+							{
+								leftHandWeapon.Swing(swingDuration, cooldown - swingDuration, swordIdleAngle, swordIdleAngle, swordSwingArc / 2.0f);
+								currentSwingNumberLeft++;
+							}
+							else if (currentSwingNumberLeft < comboLimit)
+							{
+								float angle = swordSwingArc / 2.0f;
+								if (currentSwingNumberLeft % 2 != 0)
+								{
+									angle = -angle;
+								}
+								leftHandWeapon.Swing(swingDuration, cooldown - swingDuration, swordIdleAngle, -angle, angle);
+								currentSwingNumberLeft++;
+							}
+						}
 					}
 				}
 			}
 		}
 
+		/**<summary>Stop swinging both weapons.</summary>*/
 		public void StopSwinging()
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused)
+			StopRightSwinging();
+			StopLeftSwinging();
+		}
+
+		public void StopRightSwinging()
+		{
+			if (rightHandWeapon.isSwinging || rightHandWeapon.isEndingSwing)
+			{
+				rightHandWeapon.CancelSwing();
+			}
+			currentSwingNumberRight = 0;
+		}
+
+		public void StopLeftSwinging()
+		{
+			if (leftHandWeapon.isSwinging || leftHandWeapon.isEndingSwing)
+			{
+				leftHandWeapon.CancelSwing();
+			}
+			currentSwingNumberLeft = 0;
+		}
+
+		private void SetWeaponsEnabled(bool enabled)
+		{
+			SetRightWeaponEnabled(enabled);
+			SetLeftWeaponEnabled(enabled);
+		}
+
+		private void SetRightWeaponEnabled(bool enabled)
+		{
+			if (enabled == RightWeaponEnabled)
 			{
 				return;
 			}
-			if (sword.isSwinging || sword.isEndingSwing)
+			StopRightSwinging();
+			rightHandWeapon.GetComponent<SpriteRenderer>().enabled = enabled;
+			rightHandWeapon.GetComponent<Collider2D>().enabled = false;
+		}
+
+		private void SetLeftWeaponEnabled(bool enabled)
+		{
+			if (enabled == LeftWeaponEnabled)
 			{
-				sword.CancelSwing();
+				return;
 			}
-			currentSwingNumber = 0;
+			StopLeftSwinging();
+			leftHandWeapon.GetComponent<SpriteRenderer>().enabled = enabled;
+			leftHandWeapon.GetComponent<Collider2D>().enabled = false;
 		}
 
 		public class TimelineRecord_PlayerMelee : TimelineRecord_PlayerCombatModeUser
@@ -135,6 +237,11 @@ namespace TechnoWolf.Project1
 			public float cooldown;
 			public int damagePerHit;
 			public float swingDuration;
+			public float swordIdleAngle;
+			public float swordSwingArc;
+			public float comboLimit;
+			public int currentSwingNumberRight;
+			public int currentSwingNumberLeft;
 		}
 	}
 }

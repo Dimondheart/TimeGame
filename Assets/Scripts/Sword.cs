@@ -65,8 +65,13 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused)
+			if (ManipulableTime.IsTimeOrGamePaused)
 			{
+				return;
+			}
+			if (!owner.GetComponent<Health>().IsAlive)
+			{
+				GetComponent<Collider2D>().enabled = false;
 				return;
 			}
 			float swingTime = ManipulableTime.time - swingStartTime.manipulableTime;

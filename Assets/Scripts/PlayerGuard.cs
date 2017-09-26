@@ -114,9 +114,20 @@ namespace TechnoWolf.Project1
 			{
 				SetGuardEnabled(false);
 			}
+			else if (currentCombatMode == PlayerCombatMode.CombatMode.Offensive)
+			{
+				if (DynamicInput.GetButtonHeld("Left Hand Action") && DynamicInput.GetButtonHeld("Right Hand Action"))
+				{
+					SetGuardEnabled(true);
+				}
+				else
+				{
+					SetGuardEnabled(false);
+				}
+			}
 			else
 			{
-				if (DynamicInput.GetButtonDown("Guard"))
+				if (DynamicInput.GetButtonDown("Left Hand Action"))
 				{
 					if (!GetComponent<PlayerMovement>().IsDashing)
 					{
@@ -128,9 +139,9 @@ namespace TechnoWolf.Project1
 						SetGuardEnabled(false);
 					}
 				}
-				else if (DynamicInput.GetButtonHeld("Guard"))
+				else if (DynamicInput.GetButtonHeld("Left Hand Action"))
 				{
-					if (!GetComponent<PlayerMovement>().IsDashing && GetComponent<PlayerMelee>().IsInCooldown)
+					if (!GetComponent<PlayerMovement>().IsDashing && (GetComponent<PlayerMelee>().IsInCooldown || !GetComponent<PlayerMelee>().IsSwinging))
 					{
 						GetComponent<PlayerMelee>().StopSwinging();
 						SetGuardEnabled(true);

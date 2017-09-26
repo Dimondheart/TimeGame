@@ -198,11 +198,11 @@ namespace TechnoWolf.Project1
 			GetComponent<Rigidbody2D>().velocity = newVelocity;
 			IsApplyingMotion = IsDashing || !Mathf.Approximately(0.0f, newVelocity.x) || !Mathf.Approximately(0.0f, newVelocity.y);
 			bool isSwimming = GetComponent<SurfaceInteraction>().IsSwimming;
-			if ((GetComponent<PlayerMelee>().IsInCooldown && !IsDashing) || isSwimming)
+			if (((GetComponent<PlayerMelee>().IsInCooldown || !GetComponent<PlayerMelee>().IsSwinging) && !IsDashing) || isSwimming)
 			{
 				Vector2 lookDirection = new Vector2(DynamicInput.GetAxisRaw("Look Horizontal"), DynamicInput.GetAxisRaw("Look Vertical"));
 				if (Mathf.Approximately(0.0f, lookDirection.magnitude)
-					|| (isSwimming && !(DynamicInput.GamepadModeEnabled || DynamicInput.GetButtonHeld("Melee") || DynamicInput.GetButtonHeld("Guard")))
+					|| (isSwimming && !(DynamicInput.GamepadModeEnabled || DynamicInput.GetButtonHeld("Right Hand Action") || DynamicInput.GetButtonHeld("Left Hand Action")))
 					)
 				{
 					lookDirection = newVelocity;

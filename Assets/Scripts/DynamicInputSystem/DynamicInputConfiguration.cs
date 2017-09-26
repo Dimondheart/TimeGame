@@ -61,18 +61,18 @@ namespace TechnoWolf.DynamicInputSystem
 					)
 				);
 			DynamicInput.SetupButtonControl(
-				"Melee",
+				"Left Hand Action",
 				new DynamicControlButton(
-					"Melee",
+					"Action for the left hand",
 					new VirtualButtonBasic(KeyCode.Joystick1Button4),
 					new VirtualButtonBasic(KeyCode.Mouse0),
 					null
 					)
 				);
 			DynamicInput.SetupButtonControl(
-				"Guard",
+				"Right Hand Action",
 				new DynamicControlButton(
-					"Guard",
+					"Action for the right hand",
 					new VirtualButtonBasic(KeyCode.Joystick1Button5),
 					new VirtualButtonBasic(KeyCode.Mouse1),
 					null
