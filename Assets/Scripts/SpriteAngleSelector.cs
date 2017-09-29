@@ -93,14 +93,14 @@ namespace TechnoWolf.Project1
 
 		private void Update()
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused)
+			if (ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}
-			float angle = GetComponent<DirectionLooking>().Angle;
+			float angle = GetComponentInParent<DirectionLooking>().Angle;
 			float absAngle = Mathf.Abs(angle);
 			int newAngle = currentAngle;
-			bool useDeadVersion = !GetComponent<Health>().IsAlive;
+			bool useDeadVersion = !GetComponentInParent<Health>().IsAlive;
 			// Back
 			if (absAngle < 22.5f - angleBuffer)
 			{
