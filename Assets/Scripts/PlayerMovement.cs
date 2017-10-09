@@ -68,12 +68,12 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public override TimelineRecordForComponent MakeTimelineRecord()
+		public override TimelineRecordForBehaviour MakeTimelineRecord()
 		{
 			return new TimelineRecord_PlayerMovement();
 		}
 
-		public override void RecordCurrentState(TimelineRecordForComponent record)
+		public override void RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			base.RecordCurrentState(record);
 			TimelineRecord_PlayerMovement rec = (TimelineRecord_PlayerMovement)record;
@@ -89,7 +89,7 @@ namespace TechnoWolf.Project1
 			rec.dashReleasedAfterExitingWater = dashReleasedAfterExitingWater;
 		}
 
-		public override void ApplyTimelineRecord(TimelineRecordForComponent record)
+		public override void ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			base.ApplyTimelineRecord(record);
 			TimelineRecord_PlayerMovement rec = (TimelineRecord_PlayerMovement)record;

@@ -53,19 +53,19 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public abstract TimelineRecordForComponent MakeTimelineRecord();
+		public abstract TimelineRecordForBehaviour MakeTimelineRecord();
 
-		public virtual void RecordCurrentState(TimelineRecordForComponent record)
+		public virtual void RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			((TimelineRecord_PlayerCombatModeUser)record).currentCombatMode = currentCombatMode;
 		}
 
-		public virtual void ApplyTimelineRecord(TimelineRecordForComponent record)
+		public virtual void ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			currentCombatMode = ((TimelineRecord_PlayerCombatModeUser)record).currentCombatMode;
 		}
 
-		public abstract class TimelineRecord_PlayerCombatModeUser : TimelineRecordForComponent
+		public abstract class TimelineRecord_PlayerCombatModeUser : TimelineRecordForBehaviour
 		{
 			public PlayerCombatMode.CombatMode currentCombatMode;
 		}

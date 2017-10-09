@@ -112,12 +112,12 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_Health();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_Health rec = (TimelineRecord_Health)record;
 			rec.absoluteMaxHP = absoluteMaxHP;
@@ -126,7 +126,7 @@ namespace TechnoWolf.Project1
 			rec.isAlignedWithPlayer = isAlignedWithPlayer;
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_Health rec = (TimelineRecord_Health)record;
 			absoluteMaxHP = rec.absoluteMaxHP;
@@ -211,7 +211,7 @@ namespace TechnoWolf.Project1
 			CurrentMaxHP -= damage;
 		}
 
-		public class TimelineRecord_Health : TimelineRecordForComponent
+		public class TimelineRecord_Health : TimelineRecordForBehaviour
 		{
 			public float absoluteMaxHP;
 			public float currentMaxHP;

@@ -20,7 +20,7 @@ namespace TechnoWolf.Project1
 		private float swingDuration;
 		private float freezeDuration;
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_Sword rec = (TimelineRecord_Sword)record;
 			idleAngle = rec.idleAngle;
@@ -36,7 +36,7 @@ namespace TechnoWolf.Project1
 			freezeDuration = rec.freezeDuration;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_Sword rec = (TimelineRecord_Sword)record;
 			rec.idleAngle = idleAngle;
@@ -52,7 +52,7 @@ namespace TechnoWolf.Project1
 			rec.freezeDuration = freezeDuration;
 		}
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_Sword();
 		}
@@ -149,7 +149,7 @@ namespace TechnoWolf.Project1
 			GetComponent<Collider2D>().enabled = false;
 		}
 
-		public class TimelineRecord_Sword : TimelineRecordForComponent
+		public class TimelineRecord_Sword : TimelineRecordForBehaviour
 		{
 			public float idleAngle;
 			public float swingAngleStart;

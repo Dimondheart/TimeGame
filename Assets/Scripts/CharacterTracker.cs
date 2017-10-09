@@ -78,19 +78,19 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_CharacterTracker();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_CharacterTracker rec = (TimelineRecord_CharacterTracker)record;
 			rec.players = players.ToArray();
 			rec.enemies = enemies.ToArray();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_CharacterTracker rec = (TimelineRecord_CharacterTracker)record;
 			players.Clear();
@@ -127,7 +127,7 @@ namespace TechnoWolf.Project1
 			enemies.Add(helper);
 		}
 
-		public class TimelineRecord_CharacterTracker : TimelineRecordForComponent
+		public class TimelineRecord_CharacterTracker : TimelineRecordForBehaviour
 		{
 			public PlayerTrackerHelper[] players;
 			public EnemyTrackerHelper[] enemies;

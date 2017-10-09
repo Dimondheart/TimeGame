@@ -11,8 +11,8 @@ namespace TechnoWolf.TimeManipulation
 	{
 		public readonly GameObject gameObject;
 		public TimelineRecordForGameObject gameObjectRecord;
-		private Dictionary<Component, TimelineRecordForComponent> records =
-			new Dictionary<Component, TimelineRecordForComponent>();
+		private Dictionary<Component, TimelineRecordForBehaviour> records =
+			new Dictionary<Component, TimelineRecordForBehaviour>();
 
 		public TimelineSnapshot(GameObject gameObject)
 		{
@@ -24,12 +24,12 @@ namespace TechnoWolf.TimeManipulation
 			return records.ContainsKey(component);
 		}
 
-		public TimelineRecordForComponent GetRecord(Component component)
+		public TimelineRecordForBehaviour GetRecord(Component component)
 		{
 			return records[component];
 		}
 
-		public void AddRecord(Component component, TimelineRecordForComponent record)
+		public void AddRecord(Component component, TimelineRecordForBehaviour record)
 		{
 			records[component] = record;
 		}
@@ -37,7 +37,7 @@ namespace TechnoWolf.TimeManipulation
 		public void ApplyRecords()
 		{
 			gameObjectRecord.ApplyCommonData(gameObject);
-			foreach (KeyValuePair<Component, TimelineRecordForComponent> kvp in records)
+			foreach (KeyValuePair<Component, TimelineRecordForBehaviour> kvp in records)
 			{
 				kvp.Value.ApplyRecord();
 			}

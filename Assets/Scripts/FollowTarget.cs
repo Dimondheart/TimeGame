@@ -43,12 +43,12 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public override TimelineRecordForComponent MakeTimelineRecord()
+		public override TimelineRecordForBehaviour MakeTimelineRecord()
 		{
 			return new TimelineRecord_FollowTarget();
 		}
 
-		public override void RecordCurrentState(TimelineRecordForComponent record)
+		public override void RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_FollowTarget rec = (TimelineRecord_FollowTarget)record;
 			AddTimelineRecordValues(rec);
@@ -57,7 +57,7 @@ namespace TechnoWolf.Project1
 			rec.targetLocationReached = targetLocationReached;
 		}
 
-		public override void ApplyTimelineRecord(TimelineRecordForComponent record)
+		public override void ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_FollowTarget rec = (TimelineRecord_FollowTarget)record;
 			ApplyTimelineRecordValues(rec);

@@ -14,12 +14,12 @@ namespace TechnoWolf.Project1
 		public List<GameObject> otherHostilesDetected = new List<GameObject>();
 		public Vector3 targetLastSpotted { get; private set; }
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_HostileTargetSelector();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_HostileTargetSelector rec = (TimelineRecord_HostileTargetSelector)record;
 			rec.target = target;
@@ -28,7 +28,7 @@ namespace TechnoWolf.Project1
 			rec.targetLastSpotted = targetLastSpotted;
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_HostileTargetSelector rec = (TimelineRecord_HostileTargetSelector)record;
 			target = rec.target;
@@ -158,7 +158,7 @@ namespace TechnoWolf.Project1
 			return closest;
 		}
 
-		public class TimelineRecord_HostileTargetSelector : TimelineRecordForComponent
+		public class TimelineRecord_HostileTargetSelector : TimelineRecordForBehaviour
 		{
 			public GameObject target;
 			public GameObject[] hostilesInLineOfSight;

@@ -25,12 +25,12 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public override TimelineRecordForComponent MakeTimelineRecord()
+		public override TimelineRecordForBehaviour MakeTimelineRecord()
 		{
 			return new TimelineRecord_PlayerGuard();
 		}
 
-		public override void RecordCurrentState(TimelineRecordForComponent record)
+		public override void RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			base.RecordCurrentState(record);
 			TimelineRecord_PlayerGuard rec = (TimelineRecord_PlayerGuard)record;
@@ -39,7 +39,7 @@ namespace TechnoWolf.Project1
 			rec.sideShieldRight = sideShieldRight;
 		}
 
-		public override void ApplyTimelineRecord(TimelineRecordForComponent record)
+		public override void ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			base.ApplyTimelineRecord(record);
 			TimelineRecord_PlayerGuard rec = (TimelineRecord_PlayerGuard)record;

@@ -149,26 +149,26 @@ namespace TechnoWolf.Project1
 			CurrentMaxPP -= amount;
 		}
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_StoredPower();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_StoredPower rec = (TimelineRecord_StoredPower)record;
 			rec.currentMaxPP = currentMaxPP;
 			rec.currentPP = currentPP;
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_StoredPower rec = (TimelineRecord_StoredPower)record;
 			currentMaxPP = rec.currentMaxPP;
 			currentPP = rec.currentPP;
 		}
 
-		public class TimelineRecord_StoredPower : TimelineRecordForComponent
+		public class TimelineRecord_StoredPower : TimelineRecordForBehaviour
 		{
 			public double currentMaxPP;
 			public double currentPP;

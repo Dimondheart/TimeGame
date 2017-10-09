@@ -87,12 +87,12 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_MagicPoints();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_MagicPoints rec = (TimelineRecord_MagicPoints)record;
 			rec.absoluteMaxMP = absoluteMaxMP;
@@ -101,7 +101,7 @@ namespace TechnoWolf.Project1
 			rec.currentMP = currentMP;
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_MagicPoints rec = (TimelineRecord_MagicPoints)record;
 			absoluteMaxMP = rec.absoluteMaxMP;
@@ -149,7 +149,7 @@ namespace TechnoWolf.Project1
 			currentMP = newMP;
 		}
 
-		public class TimelineRecord_MagicPoints : TimelineRecordForComponent
+		public class TimelineRecord_MagicPoints : TimelineRecordForBehaviour
 		{
 			public float mpUsed;
 			public float absoluteMaxMP;

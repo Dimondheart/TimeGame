@@ -67,12 +67,12 @@ namespace TechnoWolf.Project1
 		 */
 		private bool forceUpdateThisCycle;
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_SpriteAngleSelector();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_SpriteAngleSelector rec = (TimelineRecord_SpriteAngleSelector)record;
 			rec.syncronizeRotations = syncronizeRotations.ToArray();
@@ -81,7 +81,7 @@ namespace TechnoWolf.Project1
 			rec.forceUpdateThisCycle = forceUpdateThisCycle;
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_SpriteAngleSelector rec = (TimelineRecord_SpriteAngleSelector)record;
 			syncronizeRotations.Clear();
@@ -234,7 +234,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public class TimelineRecord_SpriteAngleSelector : TimelineRecordForComponent
+		public class TimelineRecord_SpriteAngleSelector : TimelineRecordForBehaviour
 		{
 			public Transform[] syncronizeRotations;
 			public int currentAngle;

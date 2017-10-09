@@ -41,19 +41,19 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_SurfaceInteraction();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_SurfaceInteraction rec = (TimelineRecord_SurfaceInteraction)record;
 			rec.frictionResistance = frictionResistance;
 			rec.touchingSurfaces = touchingSurfaces.ToArray();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_SurfaceInteraction rec = (TimelineRecord_SurfaceInteraction)record;
 			frictionResistance = rec.frictionResistance;
@@ -118,7 +118,7 @@ namespace TechnoWolf.Project1
 			touchingSurfaces.Remove(surface);
 		}
 
-		public class TimelineRecord_SurfaceInteraction : TimelineRecordForComponent
+		public class TimelineRecord_SurfaceInteraction : TimelineRecordForBehaviour
 		{
 			public float frictionResistance;
 			public Surface[] touchingSurfaces;

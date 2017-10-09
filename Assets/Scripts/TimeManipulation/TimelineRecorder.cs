@@ -10,11 +10,11 @@ namespace TechnoWolf.TimeManipulation
 	 */
 	public class TimelineRecorder : MonoBehaviour
 	{
-		public Timeline timeline { get; private set; }
+		public CombinedTimeline timeline { get; private set; }
 
 		private void Awake()
 		{
-			timeline = new Timeline(gameObject);
+			timeline = new CombinedTimeline(gameObject);
 		}
 
 		private void OnDisable()
@@ -50,14 +50,14 @@ namespace TechnoWolf.TimeManipulation
 					{
 						if (c is ITimelineRecordable)
 						{
-							TimelineRecordForComponent rec = ((ITimelineRecordable)c).MakeTimelineRecord();
+							TimelineRecordForBehaviour rec = ((ITimelineRecordable)c).MakeTimelineRecord();
 							rec.SetupRecord(c);
 							rec.RecordState();
 							snapshot.AddRecord(c, rec);
 						}
-						else if (TimelineRecordForComponent.HasTimelineRecordMaker(c))
+						else if (TimelineRecordForBehaviour.HasTimelineRecordMaker(c))
 						{
-							TimelineRecordForComponent rec = TimelineRecordForComponent.MakeTimelineRecord(c);
+							TimelineRecordForBehaviour rec = TimelineRecordForBehaviour.MakeTimelineRecord(c);
 							rec.SetupRecord(c);
 							rec.RecordState();
 							snapshot.AddRecord(c, rec);

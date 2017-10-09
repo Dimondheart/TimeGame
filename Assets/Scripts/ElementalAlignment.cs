@@ -136,12 +136,12 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_ElementalAlignment();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_ElementalAlignment rec = (TimelineRecord_ElementalAlignment)record;
 			rec.minGainRate = minGainRate;
@@ -153,7 +153,7 @@ namespace TechnoWolf.Project1
 			rec.moistureGainRate = moistureGainRate;
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_ElementalAlignment rec = (TimelineRecord_ElementalAlignment)record;
 			minGainRate = rec.minGainRate;
@@ -275,7 +275,7 @@ namespace TechnoWolf.Project1
 			Moist = Dry | Wet
 		}
 
-		public class TimelineRecord_ElementalAlignment : TimelineRecordForComponent
+		public class TimelineRecord_ElementalAlignment : TimelineRecordForBehaviour
 		{
 			public float minGainRate;
 			public float maxGainRate;

@@ -18,7 +18,7 @@ namespace TechnoWolf.TimeManipulation
 		/**<summary>How recently manipulable time pause has been changed. This affects
 		 * certain updates.</summary>
 		 */
-		private static TimePauseChangeState timePauseState;
+		private static TimePauseChangeState timePauseChangeState;
 		private static TimelineState timelineState;
 		private static ExcessDataClearingState excessDataClearingState;
 		private static Dictionary<int, TimeDataForCycle> timeDataForCycles;
@@ -40,6 +40,7 @@ namespace TechnoWolf.TimeManipulation
 		public static int oldestRecordedCycle { get; private set; }
 		public static int newestRecordedCycle { get; private set; }
 		public static int oldestCycleWithinRewindLimit { get; private set; }
+		public static TimePauseState timePauseState { get; private set; }
 		/**<summary>Indicates and controls if the manipulable time is frozen. This cannnot
 		 * be changed while the game is paused.</summary>
 		 */
@@ -57,13 +58,13 @@ namespace TechnoWolf.TimeManipulation
 				}
 				if (value != isTimePausedInternal)
 				{
-					if (timePauseState == TimePauseChangeState.ChangedLastUpdate)
+					if (timePauseChangeState == TimePauseChangeState.ChangedLastUpdate)
 					{
-						timePauseState = TimePauseChangeState.ChangedThisUpdateAndLastUpdate;
+						timePauseChangeState = TimePauseChangeState.ChangedThisUpdateAndLastUpdate;
 					}
-					else if (timePauseState != TimePauseChangeState.ChangedThisUpdateAndLastUpdate)
+					else if (timePauseChangeState != TimePauseChangeState.ChangedThisUpdateAndLastUpdate)
 					{
-						timePauseState = TimePauseChangeState.ChangedThisUpdate;
+						timePauseChangeState = TimePauseChangeState.ChangedThisUpdate;
 					}
 				}
 				isTimePausedInternal = value;
@@ -104,7 +105,7 @@ namespace TechnoWolf.TimeManipulation
 		{
 			get
 			{
-				return timePauseState == TimePauseChangeState.ChangedLastUpdate || timePauseState == TimePauseChangeState.ChangedThisUpdateAndLastUpdate;
+				return timePauseChangeState == TimePauseChangeState.ChangedLastUpdate || timePauseChangeState == TimePauseChangeState.ChangedThisUpdateAndLastUpdate;
 			}
 		}
 		public static bool RecordModeEnabled
@@ -155,7 +156,7 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		public static void InitiateRewind()
 		{
-			if (IsGamePaused || !IsTimeOrGamePaused || cycleNumber == oldestCycleWithinRewindLimit)
+			if (IsGamePaused || !IsTimePaused || cycleNumber == oldestCycleWithinRewindLimit)
 			{
 				return;
 			}
@@ -209,22 +210,19 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		public static void InitiateReplay()
 		{
-			if (IsGamePaused || !IsTimeOrGamePaused || cycleNumber == newestRecordedCycle)
+			if (IsGamePaused || !IsTimePaused || cycleNumber == newestRecordedCycle)
 			{
 				return;
 			}
 			switch (timelineState)
 			{
 				case TimelineState.Recording:
-				// Fall through
+					// Fall through
 				case TimelineState.Flowing:
-					if (IsTimeOrGamePaused)
-					{
-						timelineState = TimelineState.ReplayInitiated;
-					}
+					timelineState = TimelineState.ReplayInitiated;
 					break;
 				case TimelineState.Rewinding:
-				// Fall through
+					// Fall through
 				case TimelineState.RewindInitiated:
 					timelineState = TimelineState.ReplayInitiated;
 					break;
@@ -335,16 +333,7 @@ namespace TechnoWolf.TimeManipulation
 				case TimelineState.RecordingAndRewindInitiated:
 				// Fall through
 				case TimelineState.RewindInitiated:
-					if (IsTimeOrGamePaused)
-					{
-						timelineState = TimelineState.Rewinding;
-					}
-					else
-					{
-						UpdateInternalTime();
-						//timelineState = TimelineState.Flowing;
-						timelineState = TimelineState.Recording;
-					}
+					timelineState = TimelineState.Rewinding;
 					break;
 				case TimelineState.Rewinding:
 					if (cycleNumber > oldestCycleWithinRewindLimit)
@@ -380,21 +369,25 @@ namespace TechnoWolf.TimeManipulation
 
 		private void UpdateInternalTime()
 		{
-			switch (timePauseState)
+			if (IsGamePaused)
+			{
+				return;
+			}
+			switch (timePauseChangeState)
 			{
 				case TimePauseChangeState.NotChangedRecently:
 					break;
 				case TimePauseChangeState.ChangedLastUpdate:
-					timePauseState = TimePauseChangeState.NotChangedRecently;
+					timePauseChangeState = TimePauseChangeState.NotChangedRecently;
 					break;
 				case TimePauseChangeState.ChangedThisUpdate:
-					timePauseState = TimePauseChangeState.ChangedLastUpdate;
+					timePauseChangeState = TimePauseChangeState.ChangedLastUpdate;
 					break;
 				case TimePauseChangeState.ChangedThisUpdateAndLastUpdate:
-					timePauseState = TimePauseChangeState.ChangedLastUpdate;
+					timePauseChangeState = TimePauseChangeState.ChangedLastUpdate;
 					break;
 				default:
-					Debug.LogWarning("Unhandled TimeFreezeState ID:" + (int)timePauseState);
+					Debug.LogWarning("Unhandled TimeFreezeState ID:" + (int)timePauseChangeState);
 					break;
 			}
 			switch (excessDataClearingState)
@@ -413,7 +406,7 @@ namespace TechnoWolf.TimeManipulation
 			{
 				InitiateExcessDataClearing();
 			}
-			if (IsTimeOrGamePaused)
+			if (IsTimePaused)
 			{
 				return;
 			}
@@ -447,13 +440,23 @@ namespace TechnoWolf.TimeManipulation
 
 		private void SetCurrentCycle(int newCycleNumber)
 		{
-			timePauseState = TimePauseChangeState.NotChangedRecently;
+			timePauseChangeState = TimePauseChangeState.NotChangedRecently;
 			cycleNumber = newCycleNumber;
 			TimeDataForCycle td = timeDataForCycles[cycleNumber];
 			time = td.time;
 			deltaTime = td.deltaTime;
 			fixedTime = td.fixedTime;
 			fixedDeltaTime = td.fixedDeltaTime;
+		}
+
+		public enum TimePauseState : byte
+		{
+			Flowing = 0,
+			Paused,
+			ResumingNextCycle,
+			PausingNextCycle,
+			JustResumed,
+			JustPaused
 		}
 
 		/**<summary>The states of time freeze relating to how recently it has

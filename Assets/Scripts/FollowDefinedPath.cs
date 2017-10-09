@@ -15,12 +15,12 @@ namespace TechnoWolf.Project1
 		public float maxSpeed = 4.0f;
 		public int targetIndex = 0;
 
-		public override TimelineRecordForComponent MakeTimelineRecord()
+		public override TimelineRecordForBehaviour MakeTimelineRecord()
 		{
 			return new TimelineRecord_FollowDefinedPath();
 		}
 
-		public override void RecordCurrentState(TimelineRecordForComponent record)
+		public override void RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_FollowDefinedPath rec = (TimelineRecord_FollowDefinedPath)record;
 			AddTimelineRecordValues(rec);
@@ -29,7 +29,7 @@ namespace TechnoWolf.Project1
 			rec.targetIndex = targetIndex;
 		}
 
-		public override void ApplyTimelineRecord(TimelineRecordForComponent record)
+		public override void ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_FollowDefinedPath rec = (TimelineRecord_FollowDefinedPath)record;
 			ApplyTimelineRecordValues(rec);

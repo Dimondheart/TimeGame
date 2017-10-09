@@ -13,19 +13,19 @@ namespace TechnoWolf.Project1
 
 		private List<Collider2D> enemiesInRange = new List<Collider2D>();
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_LineOfSightEnableController();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_LineOfSightEnableController rec = (TimelineRecord_LineOfSightEnableController)record;
 			rec.dynamicLight = dynamicLight;
 			rec.enemiesInRange = enemiesInRange.ToArray();
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_LineOfSightEnableController rec = (TimelineRecord_LineOfSightEnableController)record;
 			dynamicLight = rec.dynamicLight;
@@ -69,7 +69,7 @@ namespace TechnoWolf.Project1
 			dynamicLight.enabled = enemiesInRange.Count > 0;
 		}
 
-		public class TimelineRecord_LineOfSightEnableController : TimeManipulation.TimelineRecordForComponent
+		public class TimelineRecord_LineOfSightEnableController : TimeManipulation.TimelineRecordForBehaviour
 		{
 			public DynamicLight2D.DynamicLight dynamicLight;
 			public Collider2D[] enemiesInRange;

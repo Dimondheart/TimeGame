@@ -4,103 +4,92 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	/**<summary>Contains all Recorded data for a single game object
- * to be used while rewinding.</summary>
- */
-	public class Timeline
+	/**<summary></summary>*/
+	public class Timeline<T> where T : TimelineRecord, new()
 	{
-		public readonly GameObject gameObject;
+		public static readonly int timelineRecordCapacity =
+			Mathf.CeilToInt(ManipulableTime.rewindTimeLimit / 0.008f);
 
-		private Dictionary<int, TimelineSnapshot> snapshots = new Dictionary<int, TimelineSnapshot>();
-		private Stack<TimelineSnapshot> snapshotPool = new Stack<TimelineSnapshot>();
+		private static int currentCycleIndex = 0;
+		private static int cycleNumberAtFirstIndex = 0;
+		private static int cycleNumberAtLastIndex = -1;
 
-		public int oldestSnapshot { get; private set; }
-		public int newestSnapshot { get; private set; }
-		public bool HasAtLeastOneSnapshot
+		public readonly int timelineCreatedDuringCycle;
+
+		private T[] recordLoop;
+
+		public Timeline()
 		{
-			get
+			timelineCreatedDuringCycle = ManipulableTime.cycleNumber;
+			recordLoop = new T[timelineRecordCapacity];
+			for (int i = 0; i < recordLoop.Length; i++)
 			{
-				return oldestSnapshot != -1;
+				recordLoop[i] = new T();
 			}
 		}
 
-		public Timeline(GameObject gameObject)
-		{
-			oldestSnapshot = -1;
-			newestSnapshot = -1;
-			this.gameObject = gameObject;
-		}
-
-		public TimelineSnapshot GetSnapshotForRecording()
-		{
-			if (snapshotPool.Count > 0)
-			{
-				return snapshotPool.Pop();
-			}
-			return new TimelineSnapshot(gameObject);
-		}
-
-		public bool HasSnapshot(int cycleNumber)
-		{
-			return snapshots.ContainsKey(cycleNumber);
-		}
-
-		public void AddSnapshot(int cycleNumber, TimelineSnapshot snapshot)
-		{
-			snapshots[cycleNumber] = snapshot;
-			if (oldestSnapshot == -1)
-			{
-				oldestSnapshot = cycleNumber;
-			}
-			newestSnapshot = cycleNumber;
-		}
-
-		public void ApplySnapshot(int cycleNumber)
-		{
-			TimelineSnapshot snapshot = snapshots[cycleNumber];
-			if (snapshot == null)
-			{
-				Debug.LogWarning(
-					"Attempted to apply a snapshot number not found in" +
-					"the timeline:" +
-					cycleNumber
-					);
-			}
-			else
-			{
-				snapshot.ApplyRecords();
-			}
-		}
-
-		/**<summary>Return all snapshots outside the specified range to the pool. The
-		 * two snapshots that fall on the specifed bounds will be kept.</summary>
+		/**<summary>Update the shared/static timeline values so they line up with
+		 * the next cycle.</summary>
 		 */
-		public void RemoveSnapshotsOutsideRange(int oldestInclusive, int newestInclusive)
+		public static void MoveToNextCycle()
 		{
-			for (int cn = oldestInclusive - 1; cn >= oldestSnapshot; cn--)
+			currentCycleIndex = (currentCycleIndex + 1) % timelineRecordCapacity;
+			if (currentCycleIndex == 0)
 			{
-				if (!snapshots.ContainsKey(cn))
-				{
-					continue;
-				}
-				MoveSnapshotToPool(cn);
+				cycleNumberAtFirstIndex = ManipulableTime.cycleNumber;
 			}
-			oldestSnapshot = oldestInclusive;
-			for (int cn = newestInclusive + 1; cn <= newestSnapshot; cn++)
+			else if (currentCycleIndex == timelineRecordCapacity - 1)
 			{
-				if (!snapshots.ContainsKey(cn))
-				{
-					continue;
-				}
-				MoveSnapshotToPool(cn);
+				cycleNumberAtLastIndex = ManipulableTime.cycleNumber;
 			}
-			newestSnapshot = newestInclusive;
 		}
 
-		private void MoveSnapshotToPool(int cycleNumber)
+		/**<summary>Get the TimelineRecord for the current cycle.</summary>*/
+		public T GetRecordForCurrentCycle()
 		{
-			snapshotPool.Push(snapshots[cycleNumber]);
-			snapshots.Remove(cycleNumber);
+			return recordLoop[currentCycleIndex];
+		}
+
+		public bool HasRecord(int cycle)
+		{
+			return GetIndexOfCycle(cycle) >= 0;
+		}
+
+		/**<summary>Get the record for the specified cycle. Does not verify that the
+		 * specified cycle has been recorded into this timeline. Use HasRecord(int cycle)
+		 * to check if this timeline has a record for the given cycle. An exception will occur
+		 * if the record does not exist.</summary>
+		 */
+		public T GetRecord(int cycle)
+		{
+			return recordLoop[GetIndexOfCycle(cycle)];
+		}
+
+		private int GetIndexOfCycle(int cycle)
+		{
+			if (cycle < timelineCreatedDuringCycle)
+			{
+				return -1;
+			}
+			else if (cycle >= cycleNumberAtFirstIndex)
+			{
+				int index = cycle - cycleNumberAtFirstIndex;
+				if (index <= currentCycleIndex)
+				{
+					return index;
+				}
+				// otherwise cycle has not been recorded yet
+			}
+			else if (cycle <= cycleNumberAtLastIndex)
+			{
+				int index = recordLoop.Length - 1 - (cycleNumberAtLastIndex - cycle);
+				if (index > currentCycleIndex)
+				{
+					return index;
+				}
+				// Otherwise cycle record has aleady been recorded over by another cycle
+			}
+			return -1;
 		}
 	}
 }

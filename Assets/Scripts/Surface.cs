@@ -67,18 +67,18 @@ namespace TechnoWolf.Project1
 			return sum / surfaces.Count;
 		}
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_Surface();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_Surface rec = (TimelineRecord_Surface)record;
 			rec.surfaceType = surfaceType;
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_Surface rec = (TimelineRecord_Surface)record;
 			surfaceType = rec.surfaceType;
@@ -118,7 +118,7 @@ namespace TechnoWolf.Project1
 			Path
 		}
 
-		public class TimelineRecord_Surface : TimelineRecordForComponent
+		public class TimelineRecord_Surface : TimelineRecordForBehaviour
 		{
 			public SurfaceType surfaceType;
 		}

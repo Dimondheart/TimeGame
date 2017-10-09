@@ -39,9 +39,9 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public abstract TimelineRecordForComponent MakeTimelineRecord();
-		public abstract void RecordCurrentState(TimelineRecordForComponent record);
-		public abstract void ApplyTimelineRecord(TimelineRecordForComponent record);
+		public abstract TimelineRecordForBehaviour MakeTimelineRecord();
+		public abstract void RecordCurrentState(TimelineRecordForBehaviour record);
+		public abstract void ApplyTimelineRecord(TimelineRecordForBehaviour record);
 
 		protected void AddTimelineRecordValues(TimelineRecord_ControlledMovement record)
 		{
@@ -53,7 +53,7 @@ namespace TechnoWolf.Project1
 			isApplyingMotion = record.isApplyingMotion;
 		}
 
-		public abstract class TimelineRecord_ControlledMovement : TimelineRecordForComponent
+		public abstract class TimelineRecord_ControlledMovement : TimelineRecordForBehaviour
 		{
 			public bool isApplyingMotion;
 		}

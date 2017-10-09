@@ -15,19 +15,19 @@ namespace TechnoWolf.Project1
 		/**<summary>The combat mode to set the current mode to during late update.</summary>*/
 		private CombatMode nextMode;
 
-		TimelineRecordForComponent ITimelineRecordable.MakeTimelineRecord()
+		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
 			return new TimelineRecord_PlayerCombatMode();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForComponent record)
+		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_PlayerCombatMode rec = (TimelineRecord_PlayerCombatMode)record;
 			rec.currentMode = currentMode;
 			rec.nextMode = nextMode;
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForComponent record)
+		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
 		{
 			TimelineRecord_PlayerCombatMode rec = (TimelineRecord_PlayerCombatMode)record;
 			currentMode = rec.currentMode;
@@ -83,7 +83,7 @@ namespace TechnoWolf.Project1
 			Ranged
 		}
 
-		public class TimelineRecord_PlayerCombatMode : TimelineRecordForComponent
+		public class TimelineRecord_PlayerCombatMode : TimelineRecordForBehaviour
 		{
 			public CombatMode currentMode;
 			public CombatMode nextMode;
