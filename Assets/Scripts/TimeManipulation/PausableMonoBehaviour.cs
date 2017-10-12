@@ -5,66 +5,154 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	/**<summary></summary>*/
+	/**<summary>Base for all MonoBehaviours that are paused when the game
+	 * is paused, and have different functionality depending on if
+	 * manipulable time is paused or not. Update, LateUpdate, and
+	 * FixedUpdate are all covered by this class.</summary>
+	 */
 	public abstract class PausableMonoBehaviour : MonoBehaviour
 	{
-		/**<summary>Called when time is first paused. By default this will call the
-		 * NormalUpdate() method, so this should be overrided when subclasses require
-		 * different behaviour for this cycle.</summary>
+
+		/**<summary>Called when time is first resumed. By default this will call the
+		 * FlowingUpdate() method.</summary>
 		 */
-		protected virtual void PauseTimeUpdate()
+		protected virtual void FirstResumedUpdate()
+		{
+			FlowingUpdate();
+		}
+
+		protected virtual void FirstResumedLateUpdate()
+		{
+			FlowingLateUpdate();
+		}
+
+		protected virtual void FirstResumedFixedUpdate()
+		{
+			FlowingFixedUpdate();
+		}
+
+		/**<summary>Called when time is first paused. This will be called after
+		 * the equivalent has been done for Unity components (like freezing rigidbodies.)
+		 * By default this will call the PausedUpdate() method.</summary>
+		 */
+		protected virtual void FirstPausedUpdate()
 		{
 			PausedUpdate();
 		}
 
-		/**<summary>Called when time is first resumed. By default this will call the
-		 * NormalUpdate() method, so this should be overrided when subclasses require
-		 * different behaviour for this cycle.</summary>
+		protected virtual void FirstPausedLateUpdate()
+		{
+			PausedLateUpdate();
+		}
+
+		protected virtual void FirstPausedFixedUpdate()
+		{
+			PausedFixedUpdate();
+		}
+
+		/**<summary>Called while time is not paused. Is not called on the first
+		 * cycle after time is resumed, unless called from another method like
+		 * FirstResumedUpdate().</summary>
 		 */
-		protected virtual void ResumeTimeUpdate()
-		{
-			NormalUpdate();
-		}
-
-		/**<summary>Called while time is advancing normally.</summary>*/
-		protected virtual void NormalUpdate()
+		protected virtual void FlowingUpdate()
 		{
 		}
 
-		/**<summary>Called while time is paused, but not rewinding or replaying.</summary>*/
+		protected virtual void FlowingLateUpdate()
+		{
+		}
+
+		protected virtual void FlowingFixedUpdate()
+		{
+		}
+
+		/**<summary>Called while time is paused, but not when the game is paused or
+		 * time is rewinding/replaying.</summary>
+		 */
 		protected virtual void PausedUpdate()
 		{
 		}
 
-		void Update()
+		protected virtual void PausedLateUpdate()
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsGamePaused)
+		}
+
+		protected virtual void PausedFixedUpdate()
+		{
+		}
+
+		/**<summary>This base method implements the functionality for calling the 
+		 * special update methods.</summary>
+		 */
+		public virtual void Update()
+		{
+			if (ManipulableTime.IsGamePaused)
 			{
 				return;
 			}
-			switch (ManipulableTime.timePauseState)
+			if (ManipulableTime.TimePauseState.JustResumed == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.JustResumed))
 			{
-				case ManipulableTime.TimePauseState.Flowing:
-					NormalUpdate();
-					break;
-				case ManipulableTime.TimePauseState.Paused:
-					PausedUpdate();
-					break;
-				case ManipulableTime.TimePauseState.JustResumed:
-					ResumeTimeUpdate();
-					break;
-				case ManipulableTime.TimePauseState.JustPaused:
-					PauseTimeUpdate();
-					break;
-				case ManipulableTime.TimePauseState.ResumingNextCycle:
-					PausedUpdate();
-					break;
-				case ManipulableTime.TimePauseState.PausingNextCycle:
-					NormalUpdate();
-					break;
-				default:
-					Debug.LogWarning("Unhandled time pause state:" + ManipulableTime.timePauseState);
-					break;
+				FirstResumedUpdate();
+			}
+			else if (ManipulableTime.TimePauseState.JustPaused == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.JustPaused))
+			{
+				FirstPausedUpdate();
+			}
+			else if (ManipulableTime.TimePauseState.Flowing == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Flowing))
+			{
+				FlowingUpdate();
+			}
+			else if (ManipulableTime.TimePauseState.Paused == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Paused))
+			{
+				PausedUpdate();
+			}
+		}
+
+		public virtual void LateUpdate()
+		{
+			if (ManipulableTime.IsGamePaused)
+			{
+				return;
+			}
+			if (ManipulableTime.TimePauseState.JustResumed == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.JustResumed))
+			{
+				FirstResumedLateUpdate();
+			}
+			else if (ManipulableTime.TimePauseState.JustPaused == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.JustPaused))
+			{
+				FirstPausedLateUpdate();
+			}
+			else if (ManipulableTime.TimePauseState.Flowing == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Flowing))
+			{
+				FlowingLateUpdate();
+			}
+			else if (ManipulableTime.TimePauseState.Paused == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Paused))
+			{
+				PausedLateUpdate();
+			}
+		}
+
+		public virtual void FixedUpdate()
+		{
+			if (ManipulableTime.IsGamePaused)
+			{
+				return;
+			}
+			if (ManipulableTime.TimePauseState.JustResumed == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.JustResumed))
+			{
+				FirstResumedFixedUpdate();
+			}
+			else if (ManipulableTime.TimePauseState.JustPaused == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.JustPaused))
+			{
+				FirstPausedFixedUpdate();
+			}
+			else if (ManipulableTime.TimePauseState.Flowing == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Flowing))
+			{
+				FlowingFixedUpdate();
+			}
+			else if (ManipulableTime.TimePauseState.Paused == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Paused))
+			{
+				PausedFixedUpdate();
 			}
 		}
 	}

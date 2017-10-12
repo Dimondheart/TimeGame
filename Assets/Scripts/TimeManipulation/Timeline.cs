@@ -4,44 +4,98 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	/**<summary></summary>*/
-	public class Timeline<T> where T : TimelineRecord, new()
+	/**<summary>Base timeline class, implements all instance-independent behaviour
+	 * and properties for easy access.</summary>
+	 */
+	public abstract class Timeline
 	{
-		public static readonly int timelineRecordCapacity =
-			Mathf.CeilToInt(ManipulableTime.rewindTimeLimit / 0.008f);
+		/**<summary>The number of records that can be contained in a timeline.</summary>*/
+		public static readonly int timelineRecordCapacity;
 
-		private static int currentCycleIndex = 0;
-		private static int cycleNumberAtFirstIndex = 0;
-		private static int cycleNumberAtLastIndex = -1;
+		/**<summary>The index of the current cycle in the array/list of records.</summary>*/
+		public static int currentCycleIndex;
+		/**<summary>The cycle number corresponding to index 0 in the array/list
+		 * of records.</summary>
+		 */
+		protected static int cycleNumberAtFirstIndex;
+		/**<summary>The cycle number corresponding to the last index in the array/list
+		 * of records.</summary>
+		 */
+		protected static int cycleNumberAtLastIndex;
 
+		static Timeline()
+		{
+			timelineRecordCapacity = Mathf.CeilToInt(ManipulableTime.rewindTimeLimit / 0.008f);
+			Reset();
+		}
+
+		/**<summary>Update the shared/static timeline values so they line up with
+		 * the next cycle. The timeline values may not be properly configured until
+		 * the first time this is called, so do not attempt to read or manipulate
+		 * a timeline instance until this has been called at least once.</summary>
+		 */
+		public static void AdvanceToNextCycle()
+		{
+			if (currentCycleIndex < 0)
+			{
+				currentCycleIndex = 0;
+				return;
+			}
+			currentCycleIndex = (currentCycleIndex + 1) % timelineRecordCapacity;
+			if (currentCycleIndex == 0)
+			{
+				cycleNumberAtFirstIndex = ManipulableTime.cycleNumber + 1;
+			}
+			else if (currentCycleIndex == timelineRecordCapacity - 1)
+			{
+				cycleNumberAtLastIndex = ManipulableTime.cycleNumber + 1;
+			}
+		}
+
+		public static void Reset()
+		{
+			currentCycleIndex = -1;
+			cycleNumberAtFirstIndex = 0;
+			cycleNumberAtLastIndex = -2;
+		}
+
+		public static void ShiftCurrentCycle(int deltaCycles)
+		{
+			if (deltaCycles > 0)
+			{
+				currentCycleIndex = (currentCycleIndex + deltaCycles) % timelineRecordCapacity;
+			}
+			else if (deltaCycles < 0)
+			{
+				if (currentCycleIndex >= Mathf.Abs(deltaCycles))
+				{
+					currentCycleIndex += deltaCycles;
+				}
+				else
+				{
+					currentCycleIndex = timelineRecordCapacity + currentCycleIndex + deltaCycles;
+					while (currentCycleIndex < 0)
+					{
+						currentCycleIndex = timelineRecordCapacity - currentCycleIndex;
+					}
+				}
+			}
+		}
+	}
+
+	/**<summary></summary>*/
+	public class Timeline<T> : Timeline where T : TimelineRecord, new()
+	{
 		public readonly int timelineCreatedDuringCycle;
 
+		/**<summary>The array of records.</summary>*/
 		private T[] recordLoop;
 
 		public Timeline()
 		{
 			timelineCreatedDuringCycle = ManipulableTime.cycleNumber;
 			recordLoop = new T[timelineRecordCapacity];
-			for (int i = 0; i < recordLoop.Length; i++)
-			{
-				recordLoop[i] = new T();
-			}
-		}
-
-		/**<summary>Update the shared/static timeline values so they line up with
-		 * the next cycle.</summary>
-		 */
-		public static void MoveToNextCycle()
-		{
-			currentCycleIndex = (currentCycleIndex + 1) % timelineRecordCapacity;
-			if (currentCycleIndex == 0)
-			{
-				cycleNumberAtFirstIndex = ManipulableTime.cycleNumber;
-			}
-			else if (currentCycleIndex == timelineRecordCapacity - 1)
-			{
-				cycleNumberAtLastIndex = ManipulableTime.cycleNumber;
-			}
+			PopulateRecordArray(0, recordLoop.Length - 1);
 		}
 
 		/**<summary>Get the TimelineRecord for the current cycle.</summary>*/
@@ -90,6 +144,14 @@ namespace TechnoWolf.TimeManipulation
 				// Otherwise cycle record has aleady been recorded over by another cycle
 			}
 			return -1;
+		}
+
+		private void PopulateRecordArray(int startIndex, int endIndex)
+		{
+			for (int i = startIndex; i <= endIndex; i++)
+			{
+				recordLoop[i] = new T();
+			}
 		}
 	}
 }

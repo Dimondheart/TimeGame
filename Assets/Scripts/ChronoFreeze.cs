@@ -19,12 +19,12 @@ namespace TechnoWolf.Project1
 			{
 				if (GetComponent<ChronoPoints>().isCharacterFreezingTime)
 				{
-					ManipulableTime.IsTimePaused = false;
+					ManipulableTime.ChangeTimePaused(false);
 					GetComponent<ChronoPoints>().isCharacterFreezingTime = false;
 				}
 				else if (!ManipulableTime.IsTimeOrGamePaused && GetComponent<ChronoPoints>().CanActivateChronoFreeze)
 				{
-					ManipulableTime.IsTimePaused = true;
+					ManipulableTime.ChangeTimePaused(true);
 					GetComponent<ChronoPoints>().isCharacterFreezingTime = true;
 				}
 			}

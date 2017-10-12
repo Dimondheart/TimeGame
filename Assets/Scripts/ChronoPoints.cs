@@ -85,7 +85,7 @@ namespace TechnoWolf.Project1
 				{
 					recharging = true;
 					isCharacterFreezingTime = false;
-					ManipulableTime.IsTimePaused = false;
+					ManipulableTime.ChangeTimePaused(false);
 				}
 			}
 			else

@@ -8,13 +8,29 @@ namespace TechnoWolf.TimeManipulation
 	 * also handles playback of recorded data. Also implements ITimelineRecordable
 	 * itself to record data for the GameObject itself.</summary>
 	 */
-	public class TimelineRecorder : MonoBehaviour
+	public class TimelineRecorder : PausableMonoBehaviour
 	{
-		public CombinedTimeline timeline { get; private set; }
+		public Dictionary<Component, Timeline> otherComponentTimelines { get; private set; }
 
 		private void Awake()
 		{
-			timeline = new CombinedTimeline(gameObject);
+			otherComponentTimelines = new Dictionary<Component, Timeline>();
+		}
+
+		private void Start()
+		{
+			Component[] components = GetComponents<Component>();
+			foreach (Component c in components)
+			{
+				if (c is RecordableMonoBehaviour)
+				{
+					continue;
+				}
+				if (TimelineRecordForComponent<Component>.HasTimelineMaker(c))
+				{
+
+				}
+			}
 		}
 
 		private void OnDisable()
@@ -22,55 +38,84 @@ namespace TechnoWolf.TimeManipulation
 			TimelineRecorderForceUpdate.AddDisabledRecorder(this);
 		}
 
-		public void Update()
+		public override void Update()
 		{
-			if (ManipulableTime.ClearingExcessTimelineData)
+			base.Update();
+			if (ManipulableTime.IsRecording)
 			{
-				timeline.RemoveSnapshotsOutsideRange(ManipulableTime.oldestRecordedCycle, ManipulableTime.newestRecordedCycle);
-			}
-			if (ManipulableTime.RecordModeEnabled)
-			{
-				TimelineSnapshot snapshot = timeline.GetSnapshotForRecording();
-				if (snapshot.gameObjectRecord == null)
-				{
-					snapshot.gameObjectRecord = new TimelineRecordForGameObject(gameObject);
-				}
-				else
-				{
-					snapshot.gameObjectRecord.AddCommonData(gameObject);
-				}
-				Component[] components = gameObject.GetComponents(typeof(Component));
+				Component[] components = GetComponents<Component>();
 				foreach (Component c in components)
 				{
-					if (snapshot.HasRecord(c))
+					if (c is RecordableMonoBehaviour)
 					{
-						snapshot.GetRecord(c).RecordState();
+						((RecordableMonoBehaviour)c).WriteRecord();
 					}
-					else
+					else if (TimelineRecordForComponent<Component>.HasTimelineMaker(c))
 					{
-						if (c is ITimelineRecordable)
+						if (!otherComponentTimelines.ContainsKey(c))
 						{
-							TimelineRecordForBehaviour rec = ((ITimelineRecordable)c).MakeTimelineRecord();
-							rec.SetupRecord(c);
-							rec.RecordState();
-							snapshot.AddRecord(c, rec);
+							otherComponentTimelines[c] =
+								TimelineRecordForComponent<Component>.MakeTimeline(c);
 						}
-						else if (TimelineRecordForBehaviour.HasTimelineRecordMaker(c))
+						TimelineRecordForComponent<Component>.WriteRecord(otherComponentTimelines[c], c);
+					}
+					else if (TimelineRecordForComponentWithEnabled.IsComponentWithEnabled(c))
+					{
+						if (!otherComponentTimelines.ContainsKey(c))
 						{
-							TimelineRecordForBehaviour rec = TimelineRecordForBehaviour.MakeTimelineRecord(c);
-							rec.SetupRecord(c);
-							rec.RecordState();
-							snapshot.AddRecord(c, rec);
+							otherComponentTimelines[c] =
+								new Timeline<TimelineRecordForComponentWithEnabled>();
 						}
+						((Timeline<TimelineRecordForComponentWithEnabled>)otherComponentTimelines[c])
+							.GetRecordForCurrentCycle().AddCommonData(c);
+					}
+					else if (c is Behaviour)
+					{
+						if (!otherComponentTimelines.ContainsKey(c))
+						{
+							otherComponentTimelines[c] = new Timeline<TimelineRecord_Behaviour>();
+						}
+						((Timeline<TimelineRecord_Behaviour>)otherComponentTimelines[c])
+							.GetRecordForCurrentCycle().AddCommonData((Behaviour)c);
 					}
 				}
-				timeline.AddSnapshot(ManipulableTime.cycleNumber, snapshot);
 			}
 			else if (ManipulableTime.IsApplyingRecords)
 			{
-				if (timeline.HasSnapshot(ManipulableTime.cycleNumber))
+				Component[] components = GetComponents<Component>();
+				foreach (Component c in components)
 				{
-					timeline.ApplySnapshot(ManipulableTime.cycleNumber);
+					if (c is RecordableMonoBehaviour)
+					{
+						((RecordableMonoBehaviour)c).ApplyRecord(ManipulableTime.cycleNumber);
+					}
+					else if (TimelineRecordForComponent<Component>.HasTimelineMaker(c))
+					{
+						if (otherComponentTimelines.ContainsKey(c))
+						{
+							TimelineRecordForComponent<Component>.ApplyRecord(
+								otherComponentTimelines[c],
+								ManipulableTime.cycleNumber,
+								c
+								);
+						}
+					}
+					else if (TimelineRecordForComponentWithEnabled.IsComponentWithEnabled(c))
+					{
+						if (otherComponentTimelines.ContainsKey(c))
+						{
+							((Timeline<TimelineRecordForComponentWithEnabled>)otherComponentTimelines[c])
+								.GetRecordForCurrentCycle().ApplyCommonData(c);
+						}
+					}
+					else if (c is Behaviour)
+					{
+						if (otherComponentTimelines.ContainsKey(c))
+						{
+							((Timeline<TimelineRecord_Behaviour>)otherComponentTimelines[c])
+								.GetRecordForCurrentCycle().ApplyCommonData((Behaviour)c);
+						}
+					}
 				}
 			}
 		}

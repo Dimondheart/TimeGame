@@ -27,11 +27,11 @@ namespace TechnoWolf.Project1
 			{
 				if (controlValue < 0.0f)
 				{
-					ManipulableTime.InitiateRewind();
+					ManipulableTime.StartRewind();
 				}
 				else
 				{
-					ManipulableTime.InitiateReplay();
+					ManipulableTime.StartReplay();
 				}
 			}
 			else

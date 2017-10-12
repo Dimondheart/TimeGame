@@ -16,7 +16,7 @@ namespace TechnoWolf.Project1
 		private void Awake()
 		{
 			ManipulableTime.IsGamePaused = false;
-			ManipulableTime.IsTimePaused = false;
+			ManipulableTime.ChangeTimePaused(false);
 		}
 
 		public void StartGame()
