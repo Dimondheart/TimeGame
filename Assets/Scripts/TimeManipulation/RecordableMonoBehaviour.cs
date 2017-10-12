@@ -40,11 +40,13 @@ namespace TechnoWolf.TimeManipulation
 		public override void WriteRecord()
 		{
 			WriteCurrentState(timeline.GetRecordForCurrentCycle());
+			timeline.GetRecordForCurrentCycle().AddCommonData(this);
 		}
 
 		public override void ApplyRecord(int cycle)
 		{
 			ApplyRecordedState(timeline.GetRecord(cycle));
+			timeline.GetRecord(cycle).ApplyCommonData(this);
 		}
 	}
 }
