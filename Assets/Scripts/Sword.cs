@@ -16,7 +16,7 @@ namespace TechnoWolf.Project1
 		public bool isSwinging { get; private set; }
 		public bool isEndingSwing { get; private set; }
 
-		private ConvertableTimeRecord swingStartTime;
+		private ConvertableTime swingStartTime;
 		private float swingDuration;
 		private float freezeDuration;
 
@@ -59,7 +59,7 @@ namespace TechnoWolf.Project1
 
 		private void Start()
 		{
-			swingStartTime = ConvertableTimeRecord.GetTime();
+			swingStartTime = ConvertableTime.GetTime();
 			swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, -160.0f);
 		}
 
@@ -159,7 +159,7 @@ namespace TechnoWolf.Project1
 			public bool isSwinging;
 			public bool isEndingSwing;
 
-			public ConvertableTimeRecord swingStartTime;
+			public ConvertableTime swingStartTime;
 			public float swingDuration;
 			public float freezeDuration;
 		}

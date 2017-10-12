@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	public class TimelineRecord_SpriteRenderer : TimelineRecordForComponentWithEnabled
+	public class TimelineRecord_SpriteRenderer : TimelineRecord_ComponentWithEnabled
 	{
 		public Sprite sprite;
 		public Color color;

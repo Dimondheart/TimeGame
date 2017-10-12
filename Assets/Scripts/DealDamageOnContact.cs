@@ -13,7 +13,7 @@ namespace TechnoWolf.Project1
 		/**<summary>HP damage per attack.</summary>*/
 		public int damagePerHit = 5;
 		/**<summary>Time the last attack was made.</summary>*/
-		private ConvertableTimeRecord lastAttackTime;
+		private ConvertableTime lastAttackTime;
 
 		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
 		{
@@ -38,7 +38,7 @@ namespace TechnoWolf.Project1
 
 		private void Awake()
 		{
-			lastAttackTime = ConvertableTimeRecord.GetTime();
+			lastAttackTime = ConvertableTime.GetTime();
 		}
 
 		private void OnCollisionStay2D(Collision2D collision)
@@ -74,7 +74,7 @@ namespace TechnoWolf.Project1
 		{
 			public float cooldown;
 			public int damagePerHit;
-			public ConvertableTimeRecord lastAttackTime;
+			public ConvertableTime lastAttackTime;
 		}
 	}
 }

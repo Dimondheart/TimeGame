@@ -17,7 +17,7 @@ namespace TechnoWolf.Project1
 		public float dashDuration = 0.2f;
 		private bool stopApplying = false;
 
-		private ConvertableTimeRecord lastDashStart;
+		private ConvertableTime lastDashStart;
 		private Vector3 dashVelocity;
 		private bool isDashingInternal = false;
 		private bool dashReleasedAfterExitingWater = true;
@@ -127,7 +127,7 @@ namespace TechnoWolf.Project1
 
 		private void Awake()
 		{
-			lastDashStart = ConvertableTimeRecord.GetTime();
+			lastDashStart = ConvertableTime.GetTime();
 		}
 
 		protected override void Update()
@@ -210,7 +210,7 @@ namespace TechnoWolf.Project1
 			public float dashDuration;
 			public bool stopApplying;
 
-			public ConvertableTimeRecord lastDashStart;
+			public ConvertableTime lastDashStart;
 			public Vector3 dashVelocity;
 			public bool isDashingInternal;
 			public bool dashReleasedAfterExitingWater;

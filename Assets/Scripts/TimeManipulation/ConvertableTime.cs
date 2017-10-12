@@ -7,10 +7,10 @@ namespace TechnoWolf.TimeManipulation
 	/**<summary>Records an instant in time with both the Unity Time
  * and ManipulableTime.</summary>
  */
-	public struct ConvertableTimeRecord
+	public struct ConvertableTime
 	{
-		public static readonly ConvertableTimeRecord zeroTime = new ConvertableTimeRecord(0.0f, 0.0f, false);
-		public static readonly ConvertableTimeRecord zeroFixedTime = new ConvertableTimeRecord(0.0f, 0.0f, true);
+		public static readonly ConvertableTime zeroTime = new ConvertableTime(0.0f, 0.0f, false);
+		public static readonly ConvertableTime zeroFixedTime = new ConvertableTime(0.0f, 0.0f, true);
 		/**<summary>The time of this record in Unity time.</summary>*/
 		public float unityTime { get; private set; }
 		/**<summary>The time of this record in manipulable time.</summary>*/
@@ -20,7 +20,7 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		public bool isFixedTime { get; private set; }
 
-		private ConvertableTimeRecord(float unityTime, float manipulableTime, bool isFixedTime)
+		private ConvertableTime(float unityTime, float manipulableTime, bool isFixedTime)
 		{
 			this.unityTime = unityTime;
 			this.manipulableTime = manipulableTime;
@@ -28,15 +28,15 @@ namespace TechnoWolf.TimeManipulation
 		}
 
 		/**<summary>Get the current Time.time & ManipulableTime.time.</summary>*/
-		public static ConvertableTimeRecord GetTime()
+		public static ConvertableTime GetTime()
 		{
-			return new ConvertableTimeRecord(Time.time, ManipulableTime.time, false);
+			return new ConvertableTime(Time.time, ManipulableTime.time, false);
 		}
 
 		/**<summary>Get the current Time.fixedTime & ManipulableTime.fixedTime.</summary>*/
-		public static ConvertableTimeRecord GetFixedTime()
+		public static ConvertableTime GetFixedTime()
 		{
-			return new ConvertableTimeRecord(Time.fixedTime, ManipulableTime.fixedTime, true);
+			return new ConvertableTime(Time.fixedTime, ManipulableTime.fixedTime, true);
 		}
 
 		/**<summary>Set the time of this record.</summary>*/

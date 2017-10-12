@@ -4,12 +4,15 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	/**<summary>Records all timeline data for the game object, and
-	 * also handles playback of recorded data. Also implements ITimelineRecordable
-	 * itself to record data for the GameObject itself.</summary>
+	/**<summary>Records all timeline data for the game object and its
+	 * components, and also applies timeline records during
+	 * rewind/replay.</summary>
 	 */
-	public class TimelineRecorder : PausableMonoBehaviour
+	public class TimelineRecorder : MonoBehaviour
 	{
+		/**<summary>Timelines for components that do not inherit from the
+		 * recordable classes (like core Unity components.)</summary>
+		 */
 		public Dictionary<Component, Timeline> otherComponentTimelines { get; private set; }
 
 		private void Awake()
@@ -19,6 +22,7 @@ namespace TechnoWolf.TimeManipulation
 
 		private void Start()
 		{
+			// Create necessary timelines now to make the first record cycle smoother
 			Component[] components = GetComponents<Component>();
 			foreach (Component c in components)
 			{
@@ -28,7 +32,17 @@ namespace TechnoWolf.TimeManipulation
 				}
 				if (TimelineRecordForComponent<Component>.HasTimelineMaker(c))
 				{
-
+					otherComponentTimelines[c] =
+						TimelineRecordForComponent<Component>.MakeTimeline(c);
+				}
+				else if (TimelineRecordForComponent<Component>.IsComponentWithEnabled(c))
+				{
+					otherComponentTimelines[c] =
+						new Timeline<TimelineRecord_ComponentWithEnabled>();
+				}
+				else if (c is Behaviour)
+				{
+					otherComponentTimelines[c] = new Timeline<TimelineRecord_Behaviour>();
 				}
 			}
 		}
@@ -38,9 +52,8 @@ namespace TechnoWolf.TimeManipulation
 			TimelineRecorderForceUpdate.AddDisabledRecorder(this);
 		}
 
-		public override void Update()
+		public void Update()
 		{
-			base.Update();
 			if (ManipulableTime.IsRecording)
 			{
 				Component[] components = GetComponents<Component>();
@@ -59,14 +72,14 @@ namespace TechnoWolf.TimeManipulation
 						}
 						TimelineRecordForComponent<Component>.WriteRecord(otherComponentTimelines[c], c);
 					}
-					else if (TimelineRecordForComponentWithEnabled.IsComponentWithEnabled(c))
+					else if (TimelineRecordForComponent<Component>.IsComponentWithEnabled(c))
 					{
 						if (!otherComponentTimelines.ContainsKey(c))
 						{
 							otherComponentTimelines[c] =
-								new Timeline<TimelineRecordForComponentWithEnabled>();
+								new Timeline<TimelineRecord_ComponentWithEnabled>();
 						}
-						((Timeline<TimelineRecordForComponentWithEnabled>)otherComponentTimelines[c])
+						((Timeline<TimelineRecord_ComponentWithEnabled>)otherComponentTimelines[c])
 							.GetRecordForCurrentCycle().AddCommonData(c);
 					}
 					else if (c is Behaviour)
@@ -100,11 +113,11 @@ namespace TechnoWolf.TimeManipulation
 								);
 						}
 					}
-					else if (TimelineRecordForComponentWithEnabled.IsComponentWithEnabled(c))
+					else if (TimelineRecordForComponent<Component>.IsComponentWithEnabled(c))
 					{
 						if (otherComponentTimelines.ContainsKey(c))
 						{
-							((Timeline<TimelineRecordForComponentWithEnabled>)otherComponentTimelines[c])
+							((Timeline<TimelineRecord_ComponentWithEnabled>)otherComponentTimelines[c])
 								.GetRecordForCurrentCycle().ApplyCommonData(c);
 						}
 					}

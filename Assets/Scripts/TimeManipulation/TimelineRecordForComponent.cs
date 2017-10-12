@@ -5,62 +5,6 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	public class TimelineRecordForComponentWithEnabled : TimelineRecordForComponent<Component>
-	{
-		public bool enabled { get; private set; }
-
-		public static bool IsComponentWithEnabled(Component component)
-		{
-			return component is Collider
-				|| component is LODGroup
-				|| component is Cloth
-				|| component is Renderer;
-		}
-
-		public override void AddCommonData(Component component)
-		{
-			if (component is Collider)
-			{
-				enabled = ((Collider)component).enabled;
-			}
-			else if (component is LODGroup)
-			{
-				enabled = ((LODGroup)component).enabled;
-			}
-			else if (component is Cloth)
-			{
-				enabled = ((Cloth)component).enabled;
-			}
-			else if (component is Renderer)
-			{
-				enabled = ((Renderer)component).enabled;
-			}
-			else
-			{
-				enabled = true;
-			}
-		}
-
-		public override void ApplyCommonData(Component component)
-		{
-			if (component is Collider)
-			{
-				((Collider)component).enabled = enabled;
-			}
-			else if (component is LODGroup)
-			{
-				((LODGroup)component).enabled = enabled;
-			}
-			else if (component is Cloth)
-			{
-				((Cloth)component).enabled = enabled;
-			}
-			else if (component is Renderer)
-			{
-				((Renderer)component).enabled = enabled;
-			}
-		}
-	}
 	/**<summary>Timeline record base for component records.</summary>*/
 	public abstract class TimelineRecordForComponent<T> : TimelineRecord<T> where T : Component
 	{
@@ -89,6 +33,14 @@ namespace TechnoWolf.TimeManipulation
 				return new Timeline<TimelineRecord_Rigidbody2D>();
 			}
 			return null;
+		}
+
+		public static bool IsComponentWithEnabled(Component component)
+		{
+			return component is Collider
+				|| component is LODGroup
+				|| component is Cloth
+				|| component is Renderer;
 		}
 
 		public static void WriteRecord(Timeline timeline, Component component)

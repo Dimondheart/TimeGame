@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TechnoWolf.DynamicInputSystem;
 
-namespace TechnoWolf.DynamicInputSystem
+namespace TechnoWolf.SystemConfiguration
 {
 	/**<summary></summary>*/
 	public static class DynamicInputConfiguration
