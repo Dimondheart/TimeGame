@@ -6,37 +6,29 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Selects a target for hostile actions.</summary>*/
-	[RequireComponent(typeof(Health))]
-	public class HostileTargetSelector : MonoBehaviour, ITimelineRecordable
+	public class HostileTargetSelector : RecordableMonoBehaviour<TimelineRecord_HostileTargetSelector>
 	{
 		public GameObject target { get; private set; }
 		public List<GameObject> hostilesInLineOfSight = new List<GameObject>();
 		public List<GameObject> otherHostilesDetected = new List<GameObject>();
 		public Vector3 targetLastSpotted { get; private set; }
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_HostileTargetSelector record)
 		{
-			return new TimelineRecord_HostileTargetSelector();
+			record.target = target;
+			record.hostilesInLineOfSight = hostilesInLineOfSight.ToArray();
+			record.otherHostilesDetected = otherHostilesDetected.ToArray();
+			record.targetLastSpotted = targetLastSpotted;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_HostileTargetSelector record)
 		{
-			TimelineRecord_HostileTargetSelector rec = (TimelineRecord_HostileTargetSelector)record;
-			rec.target = target;
-			rec.hostilesInLineOfSight = hostilesInLineOfSight.ToArray();
-			rec.otherHostilesDetected = otherHostilesDetected.ToArray();
-			rec.targetLastSpotted = targetLastSpotted;
-		}
-
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_HostileTargetSelector rec = (TimelineRecord_HostileTargetSelector)record;
-			target = rec.target;
+			target = record.target;
 			hostilesInLineOfSight.Clear();
-			hostilesInLineOfSight.AddRange(rec.hostilesInLineOfSight);
+			hostilesInLineOfSight.AddRange(record.hostilesInLineOfSight);
 			otherHostilesDetected.Clear();
-			otherHostilesDetected.AddRange(rec.otherHostilesDetected);
-			targetLastSpotted = rec.targetLastSpotted;
+			otherHostilesDetected.AddRange(record.otherHostilesDetected);
+			targetLastSpotted = record.targetLastSpotted;
 		}
 
 		public void OnLineOfSightEnter(GameObject entered)
@@ -66,9 +58,16 @@ namespace TechnoWolf.Project1
 			{
 				return;
 			}
-			if (!hostilesInLineOfSight.Contains(seen) && IsHostile(seen))
+			if (IsHostile(seen))
 			{
-				hostilesInLineOfSight.Add(seen);
+				if (!hostilesInLineOfSight.Contains(seen))
+				{
+					hostilesInLineOfSight.Add(seen);
+				}
+			}
+			else
+			{
+				hostilesInLineOfSight.Remove(seen);
 			}
 		}
 
@@ -98,16 +97,8 @@ namespace TechnoWolf.Project1
 			targetLastSpotted = transform.position;
 		}
 
-		private void Update()
+		protected override void FlowingUpdate()
 		{
-			if (ManipulableTime.IsApplyingRecords)
-			{
-				return;
-			}
-			if (ManipulableTime.IsTimeOrGamePaused)
-			{
-				return;
-			}
 			if (!hostilesInLineOfSight.Contains(target))
 			{
 				target = null;
@@ -157,13 +148,13 @@ namespace TechnoWolf.Project1
 			}
 			return closest;
 		}
+	}
 
-		public class TimelineRecord_HostileTargetSelector : TimelineRecordForBehaviour
-		{
-			public GameObject target;
-			public GameObject[] hostilesInLineOfSight;
-			public GameObject[] otherHostilesDetected;
-			public Vector3 targetLastSpotted;
-		}
+	public class TimelineRecord_HostileTargetSelector : TimelineRecordForBehaviour
+	{
+		public GameObject target;
+		public GameObject[] hostilesInLineOfSight;
+		public GameObject[] otherHostilesDetected;
+		public Vector3 targetLastSpotted;
 	}
 }

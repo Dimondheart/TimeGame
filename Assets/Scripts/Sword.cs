@@ -6,7 +6,7 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Handles sword related stuff.</summary>*/
-	public class Sword : MonoBehaviour, ITimelineRecordable
+	public class Sword : RecordableMonoBehaviour<TimelineRecord_Sword>
 	{
 		public float idleAngle;
 		public float swingAngleStart;
@@ -20,41 +20,34 @@ namespace TechnoWolf.Project1
 		private float swingDuration;
 		private float freezeDuration;
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_Sword record)
 		{
-			TimelineRecord_Sword rec = (TimelineRecord_Sword)record;
-			idleAngle = rec.idleAngle;
-			swingAngleStart = rec.swingAngleStart;
-			swingAngleEnd = rec.swingAngleEnd;
-			swingTransform = rec.swingTransform;
-			owner = rec.owner;
-			isSwinging = rec.isSwinging;
-			isEndingSwing = rec.isEndingSwing;
+			idleAngle = record.idleAngle;
+			swingAngleStart = record.swingAngleStart;
+			swingAngleEnd = record.swingAngleEnd;
+			swingTransform = record.swingTransform;
+			owner = record.owner;
+			isSwinging = record.isSwinging;
+			isEndingSwing = record.isEndingSwing;
 
-			swingStartTime = rec.swingStartTime;
-			swingDuration = rec.swingDuration;
-			freezeDuration = rec.freezeDuration;
+			swingStartTime = record.swingStartTime;
+			swingDuration = record.swingDuration;
+			freezeDuration = record.freezeDuration;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void WriteCurrentState(TimelineRecord_Sword record)
 		{
-			TimelineRecord_Sword rec = (TimelineRecord_Sword)record;
-			rec.idleAngle = idleAngle;
-			rec.swingAngleStart = swingAngleStart;
-			rec.swingAngleEnd = swingAngleEnd;
-			rec.swingTransform = swingTransform;
-			rec.owner = owner;
-			rec.isSwinging = isSwinging;
-			rec.isEndingSwing = isEndingSwing;
+			record.idleAngle = idleAngle;
+			record.swingAngleStart = swingAngleStart;
+			record.swingAngleEnd = swingAngleEnd;
+			record.swingTransform = swingTransform;
+			record.owner = owner;
+			record.isSwinging = isSwinging;
+			record.isEndingSwing = isEndingSwing;
 
-			rec.swingStartTime = swingStartTime;
-			rec.swingDuration = swingDuration;
-			rec.freezeDuration = freezeDuration;
-		}
-
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
-		{
-			return new TimelineRecord_Sword();
+			record.swingStartTime = swingStartTime;
+			record.swingDuration = swingDuration;
+			record.freezeDuration = freezeDuration;
 		}
 
 		private void Start()
@@ -63,12 +56,8 @@ namespace TechnoWolf.Project1
 			swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, -160.0f);
 		}
 
-		private void Update()
+		protected override void FlowingUpdate()
 		{
-			if (ManipulableTime.IsTimeOrGamePaused)
-			{
-				return;
-			}
 			if (!owner.GetComponent<Health>().IsAlive)
 			{
 				GetComponent<Collider2D>().enabled = false;
@@ -104,7 +93,7 @@ namespace TechnoWolf.Project1
 
 		private void OnTriggerEnter2D(Collider2D collision)
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || collision.isTrigger)
+			if (ManipulableTime.IsTimeOrGamePaused || collision.isTrigger)
 			{
 				return;
 			}
@@ -121,7 +110,7 @@ namespace TechnoWolf.Project1
 
 		public void Swing(float duration, float freezeDuration, float idleAngle, float startAngle, float endAngle)
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || isSwinging)
+			if (ManipulableTime.IsTimeOrGamePaused || isSwinging)
 			{
 				return;
 			}
@@ -139,7 +128,7 @@ namespace TechnoWolf.Project1
 
 		public void CancelSwing()
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused)
+			if (ManipulableTime.IsTimeOrGamePaused)
 			{
 				return;
 			}
@@ -148,20 +137,20 @@ namespace TechnoWolf.Project1
 			swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, idleAngle);
 			GetComponent<Collider2D>().enabled = false;
 		}
+	}
 
-		public class TimelineRecord_Sword : TimelineRecordForBehaviour
-		{
-			public float idleAngle;
-			public float swingAngleStart;
-			public float swingAngleEnd;
-			public Transform swingTransform;
-			public GameObject owner;
-			public bool isSwinging;
-			public bool isEndingSwing;
+	public class TimelineRecord_Sword : TimelineRecordForBehaviour
+	{
+		public float idleAngle;
+		public float swingAngleStart;
+		public float swingAngleEnd;
+		public Transform swingTransform;
+		public GameObject owner;
+		public bool isSwinging;
+		public bool isEndingSwing;
 
-			public ConvertableTime swingStartTime;
-			public float swingDuration;
-			public float freezeDuration;
-		}
+		public ConvertableTime swingStartTime;
+		public float swingDuration;
+		public float freezeDuration;
 	}
 }

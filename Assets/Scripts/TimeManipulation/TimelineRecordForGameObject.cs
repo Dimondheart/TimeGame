@@ -5,7 +5,7 @@ using UnityEngine;
 namespace TechnoWolf.TimeManipulation
 {
 	/**<summary>A timeline record for a game object.</summary>*/
-	public class TimelineRecordForGameObject : TimelineRecord<GameObject>
+	public class TimelineRecordForGameObject : TimelineRecord
 	{
 		public bool activeSelf;
 
@@ -14,12 +14,12 @@ namespace TechnoWolf.TimeManipulation
 			AddCommonData(gameObject);
 		}
 
-		public override void AddCommonData(GameObject gameObject)
+		public void AddCommonData(GameObject gameObject)
 		{
 			activeSelf = gameObject.activeSelf;
 		}
 
-		public override void ApplyCommonData(GameObject gameObject)
+		public void ApplyCommonData(GameObject gameObject)
 		{
 			gameObject.SetActive(activeSelf);
 		}

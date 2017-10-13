@@ -8,7 +8,7 @@ namespace TechnoWolf.Project1
 	/**<summary>Elemental alignment is the amount of each element
 	 * stored in something.</summary>
 	 */
-	public class ElementalAlignment : MonoBehaviour, ITimelineRecordable
+	public class ElementalAlignment : RecordableMonoBehaviour<TimelineRecord_ElementalAlignment>
 	{
 		/**<summary>Minimum value for an elemental alignment to be considered
 		 * aligned with an element.</summary>
@@ -136,51 +136,26 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_ElementalAlignment record)
 		{
-			return new TimelineRecord_ElementalAlignment();
+			record.minGainRate = minGainRate;
+			record.maxGainRate = maxGainRate;
+			record.gainFocus = gainFocus;
+			record.temperature = temperature;
+			record.moisture = moisture;
+			record.temperatureGainRate = temperatureGainRate;
+			record.moistureGainRate = moistureGainRate;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_ElementalAlignment record)
 		{
-			TimelineRecord_ElementalAlignment rec = (TimelineRecord_ElementalAlignment)record;
-			rec.minGainRate = minGainRate;
-			rec.maxGainRate = maxGainRate;
-			rec.gainFocus = gainFocus;
-			rec.temperature = temperature;
-			rec.moisture = moisture;
-			rec.temperatureGainRate = temperatureGainRate;
-			rec.moistureGainRate = moistureGainRate;
-		}
-
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_ElementalAlignment rec = (TimelineRecord_ElementalAlignment)record;
-			minGainRate = rec.minGainRate;
-			maxGainRate = rec.maxGainRate;
-			gainFocus = rec.gainFocus;
-			temperature = rec.temperature;
-			moisture = rec.moisture;
-			temperatureGainRate = rec.temperatureGainRate;
-			moistureGainRate = rec.moistureGainRate;
-		}
-
-		private void Update()
-		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || !dynamicAlignment)
-			{
-				return;
-			}
-			if (temperatureGainRate != 0.0f)
-			{
-				temperature = Mathf.Clamp(temperature + temperatureGainRate * ManipulableTime.deltaTime, -1.0f, 1.0f);
-				UpdateTempGainRate();
-			}
-			if (moistureGainRate != 0.0f)
-			{
-				moisture = Mathf.Clamp(moisture + moistureGainRate * ManipulableTime.deltaTime, -1.0f, 1.0f);
-				UpdateMoistureGainRate();
-			}
+			minGainRate = record.minGainRate;
+			maxGainRate = record.maxGainRate;
+			gainFocus = record.gainFocus;
+			temperature = record.temperature;
+			moisture = record.moisture;
+			temperatureGainRate = record.temperatureGainRate;
+			moistureGainRate = record.moistureGainRate;
 		}
 
 		public void UseTemperature(float use)
@@ -274,18 +249,18 @@ namespace TechnoWolf.Project1
 			/**<summary>Never set an alignment value to this, only use as a shortcut for bit ops.</summary>*/
 			Moist = Dry | Wet
 		}
+	}
 
-		public class TimelineRecord_ElementalAlignment : TimelineRecordForBehaviour
-		{
-			public float minGainRate;
-			public float maxGainRate;
+	public class TimelineRecord_ElementalAlignment : TimelineRecordForBehaviour
+	{
+		public float minGainRate;
+		public float maxGainRate;
 
-			public Element gainFocus;
-			public float temperature;
-			public float moisture;
+		public ElementalAlignment.Element gainFocus;
+		public float temperature;
+		public float moisture;
 
-			public float temperatureGainRate;
-			public float moistureGainRate;
-		}
+		public float temperatureGainRate;
+		public float moistureGainRate;
 	}
 }

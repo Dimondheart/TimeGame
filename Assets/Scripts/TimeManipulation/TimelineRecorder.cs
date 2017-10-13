@@ -30,12 +30,12 @@ namespace TechnoWolf.TimeManipulation
 				{
 					continue;
 				}
-				if (TimelineRecordForComponent<Component>.HasTimelineMaker(c))
+				if (TimelineRecordForComponent.HasTimelineMaker(c))
 				{
 					otherComponentTimelines[c] =
-						TimelineRecordForComponent<Component>.MakeTimeline(c);
+						TimelineRecordForComponent.MakeTimeline(c);
 				}
-				else if (TimelineRecordForComponent<Component>.IsComponentWithEnabled(c))
+				else if (TimelineRecordForComponent.IsComponentWithEnabled(c))
 				{
 					otherComponentTimelines[c] =
 						new Timeline<TimelineRecord_ComponentWithEnabled>();
@@ -63,16 +63,16 @@ namespace TechnoWolf.TimeManipulation
 					{
 						((RecordableMonoBehaviour)c).WriteRecord();
 					}
-					else if (TimelineRecordForComponent<Component>.HasTimelineMaker(c))
+					else if (TimelineRecordForComponent.HasTimelineMaker(c))
 					{
 						if (!otherComponentTimelines.ContainsKey(c))
 						{
 							otherComponentTimelines[c] =
-								TimelineRecordForComponent<Component>.MakeTimeline(c);
+								TimelineRecordForComponent.MakeTimeline(c);
 						}
-						TimelineRecordForComponent<Component>.WriteRecord(otherComponentTimelines[c], c);
+						TimelineRecordForComponent.WriteRecord(otherComponentTimelines[c], c);
 					}
-					else if (TimelineRecordForComponent<Component>.IsComponentWithEnabled(c))
+					else if (TimelineRecordForComponent.IsComponentWithEnabled(c))
 					{
 						if (!otherComponentTimelines.ContainsKey(c))
 						{
@@ -102,18 +102,18 @@ namespace TechnoWolf.TimeManipulation
 					{
 						((RecordableMonoBehaviour)c).ApplyRecord(ManipulableTime.cycleNumber);
 					}
-					else if (TimelineRecordForComponent<Component>.HasTimelineMaker(c))
+					else if (TimelineRecordForComponent.HasTimelineMaker(c))
 					{
 						if (otherComponentTimelines.ContainsKey(c))
 						{
-							TimelineRecordForComponent<Component>.ApplyRecord(
+							TimelineRecordForComponent.ApplyRecord(
 								otherComponentTimelines[c],
 								ManipulableTime.cycleNumber,
 								c
 								);
 						}
 					}
-					else if (TimelineRecordForComponent<Component>.IsComponentWithEnabled(c))
+					else if (TimelineRecordForComponent.IsComponentWithEnabled(c))
 					{
 						if (otherComponentTimelines.ContainsKey(c))
 						{

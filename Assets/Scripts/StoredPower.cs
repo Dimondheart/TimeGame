@@ -7,7 +7,7 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Finite stored power available for use.</summary>*/
-	public class StoredPower : MonoBehaviour, IPrimaryValue, ITimelineRecordable
+	public class StoredPower : RecordableMonoBehaviour<TimelineRecord_StoredPower>, IPrimaryValue
 	{
 		public double initialMaxPP = 1000.0;
 		public double regenRate = 0.0;
@@ -113,9 +113,9 @@ namespace TechnoWolf.Project1
 			CurrentPP = absoluteMaxPP;
 		}
 
-		private void Update()
+		protected override void FlowingUpdate()
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || regenRate == 0.0)
+			if (regenRate == 0.0)
 			{
 				return;
 			}
@@ -149,29 +149,22 @@ namespace TechnoWolf.Project1
 			CurrentMaxPP -= amount;
 		}
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_StoredPower record)
 		{
-			return new TimelineRecord_StoredPower();
+			record.currentMaxPP = currentMaxPP;
+			record.currentPP = currentPP;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_StoredPower record)
 		{
-			TimelineRecord_StoredPower rec = (TimelineRecord_StoredPower)record;
-			rec.currentMaxPP = currentMaxPP;
-			rec.currentPP = currentPP;
+			currentMaxPP = record.currentMaxPP;
+			currentPP = record.currentPP;
 		}
+	}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_StoredPower rec = (TimelineRecord_StoredPower)record;
-			currentMaxPP = rec.currentMaxPP;
-			currentPP = rec.currentPP;
-		}
-
-		public class TimelineRecord_StoredPower : TimelineRecordForBehaviour
-		{
-			public double currentMaxPP;
-			public double currentPP;
-		}
+	public class TimelineRecord_StoredPower : TimelineRecordForBehaviour
+	{
+		public double currentMaxPP;
+		public double currentPP;
 	}
 }

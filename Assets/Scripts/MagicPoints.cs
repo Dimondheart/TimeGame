@@ -7,7 +7,7 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Standard MP concept.</summary>*/
-	public class MagicPoints : MonoBehaviour, IPrimaryValue, ITimelineRecordable
+	public class MagicPoints : RecordableMonoBehaviour<TimelineRecord_MagicPoints>, IPrimaryValue
 	{
 		public float initialMaxMP = 100.0f;
 		public float regenRate = 10.0f;
@@ -87,27 +87,20 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_MagicPoints record)
 		{
-			return new TimelineRecord_MagicPoints();
+			record.absoluteMaxMP = absoluteMaxMP;
+			record.maxMP = maxMP;
+			record.regenRate = regenRate;
+			record.currentMP = currentMP;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_MagicPoints record)
 		{
-			TimelineRecord_MagicPoints rec = (TimelineRecord_MagicPoints)record;
-			rec.absoluteMaxMP = absoluteMaxMP;
-			rec.maxMP = maxMP;
-			rec.regenRate = regenRate;
-			rec.currentMP = currentMP;
-		}
-
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_MagicPoints rec = (TimelineRecord_MagicPoints)record;
-			absoluteMaxMP = rec.absoluteMaxMP;
-			maxMP = rec.maxMP;
-			regenRate = rec.regenRate;
-			currentMP = rec.currentMP;
+			absoluteMaxMP = record.absoluteMaxMP;
+			maxMP = record.maxMP;
+			regenRate = record.regenRate;
+			currentMP = record.currentMP;
 		}
 
 		private void Awake()
@@ -116,9 +109,9 @@ namespace TechnoWolf.Project1
 			currentMP = 0.0f;
 		}
 
-		private void Update()
+		protected override void FlowingUpdate()
 		{
-			if (ManipulableTime.IsTimeOrGamePaused || currentMP >= maxMP)
+			if (currentMP >= maxMP)
 			{
 				return;
 			}
@@ -148,14 +141,14 @@ namespace TechnoWolf.Project1
 			}
 			currentMP = newMP;
 		}
+	}
 
-		public class TimelineRecord_MagicPoints : TimelineRecordForBehaviour
-		{
-			public float mpUsed;
-			public float absoluteMaxMP;
-			public float maxMP;
-			public float regenRate;
-			public float currentMP;
-		}
+	public class TimelineRecord_MagicPoints : TimelineRecordForBehaviour
+	{
+		public float mpUsed;
+		public float absoluteMaxMP;
+		public float maxMP;
+		public float regenRate;
+		public float currentMP;
 	}
 }

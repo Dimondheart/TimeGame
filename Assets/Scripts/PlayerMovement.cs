@@ -8,7 +8,7 @@ using System;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Movement controlled by the player.</summary>*/
-	public class PlayerMovement : PlayerCombatModeUser
+	public class PlayerMovement : RecordableMonoBehaviour<TimelineRecord_PlayerMovement>
 	{
 		public PhysicsMaterial2D stationaryMaterial;
 		public PhysicsMaterial2D applyingMotionMaterial;
@@ -31,10 +31,6 @@ namespace TechnoWolf.Project1
 			}
 			protected set
 			{
-				if (ManipulableTime.IsApplyingRecords)
-				{
-					return;
-				}
 				isApplyingMotion = value;
 				if (value)
 				{
@@ -68,61 +64,32 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public override TimelineRecordForBehaviour MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_PlayerMovement record)
 		{
-			return new TimelineRecord_PlayerMovement();
+			record.isApplyingMotion = isApplyingMotion;
+			record.movementSpeed = movementSpeed;
+			record.dashSpeed = dashSpeed;
+			record.dashDuration = dashDuration;
+			record.stopApplying = stopApplying;
+
+			record.lastDashStart = lastDashStart;
+			record.dashVelocity = dashVelocity;
+			record.isDashingInternal = isDashingInternal;
+			record.dashReleasedAfterExitingWater = dashReleasedAfterExitingWater;
 		}
 
-		public override void RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_PlayerMovement record)
 		{
-			base.RecordCurrentState(record);
-			TimelineRecord_PlayerMovement rec = (TimelineRecord_PlayerMovement)record;
-			rec.isApplyingMotion = isApplyingMotion;
-			rec.movementSpeed = movementSpeed;
-			rec.dashSpeed = dashSpeed;
-			rec.dashDuration = dashDuration;
-			rec.stopApplying = stopApplying;
+			isApplyingMotion = record.isApplyingMotion;
+			movementSpeed = record.movementSpeed;
+			dashSpeed = record.dashSpeed;
+			dashDuration = record.dashDuration;
+			stopApplying = record.stopApplying;
 
-			rec.lastDashStart = lastDashStart;
-			rec.dashVelocity = dashVelocity;
-			rec.isDashingInternal = isDashingInternal;
-			rec.dashReleasedAfterExitingWater = dashReleasedAfterExitingWater;
-		}
-
-		public override void ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			base.ApplyTimelineRecord(record);
-			TimelineRecord_PlayerMovement rec = (TimelineRecord_PlayerMovement)record;
-			isApplyingMotion = rec.isApplyingMotion;
-			movementSpeed = rec.movementSpeed;
-			dashSpeed = rec.dashSpeed;
-			dashDuration = rec.dashDuration;
-			stopApplying = rec.stopApplying;
-
-			lastDashStart = rec.lastDashStart;
-			dashVelocity = rec.dashVelocity;
-			isDashingInternal = rec.isDashingInternal;
-			dashReleasedAfterExitingWater = rec.dashReleasedAfterExitingWater;
-		}
-
-		protected override void ChangeToOffensive()
-		{
-			// TODO
-		}
-
-		protected override void ChangeToDefensive()
-		{
-			// TODO
-		}
-
-		protected override void ChangeToRanged()
-		{
-			// TODO
-		}
-
-		protected override void ChangeToUnarmed()
-		{
-			// TODO
+			lastDashStart = record.lastDashStart;
+			dashVelocity = record.dashVelocity;
+			isDashingInternal = record.isDashingInternal;
+			dashReleasedAfterExitingWater = record.dashReleasedAfterExitingWater;
 		}
 
 		private void Awake()
@@ -130,9 +97,8 @@ namespace TechnoWolf.Project1
 			lastDashStart = ConvertableTime.GetTime();
 		}
 
-		protected override void Update()
+		public override void Update()
 		{
-			base.Update();
 			if (ManipulableTime.IsTimeOrGamePaused)
 			{
 				GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
@@ -201,19 +167,19 @@ namespace TechnoWolf.Project1
 				|| !Mathf.Approximately(0.0f, newVelocity.x)
 				|| !Mathf.Approximately(0.0f, newVelocity.y);
 		}
+	}
 
-		public class TimelineRecord_PlayerMovement : TimelineRecord_PlayerCombatModeUser
-		{
-			public bool isApplyingMotion;
-			public float movementSpeed;
-			public float dashSpeed;
-			public float dashDuration;
-			public bool stopApplying;
+	public class TimelineRecord_PlayerMovement : TimelineRecordForBehaviour
+	{
+		public bool isApplyingMotion;
+		public float movementSpeed;
+		public float dashSpeed;
+		public float dashDuration;
+		public bool stopApplying;
 
-			public ConvertableTime lastDashStart;
-			public Vector3 dashVelocity;
-			public bool isDashingInternal;
-			public bool dashReleasedAfterExitingWater;
-		}
+		public ConvertableTime lastDashStart;
+		public Vector3 dashVelocity;
+		public bool isDashingInternal;
+		public bool dashReleasedAfterExitingWater;
 	}
 }

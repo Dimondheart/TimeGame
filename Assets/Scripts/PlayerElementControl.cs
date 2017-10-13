@@ -5,9 +5,9 @@ using UnityEngine;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Player control of the elemental alignment.</summary>*/
-	public class PlayerElementControl : MonoBehaviour
+	public class PlayerElementControl : TechnoWolf.TimeManipulation.PausableMonoBehaviour
 	{
-		private void Update()
+		protected override void FlowingUpdate()
 		{
 			float newTemp = 0.0f;
 			float newMoist = 0.0f;

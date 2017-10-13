@@ -6,35 +6,28 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Look towards a specified transform.</summary>*/
-	public class LookTowardsTransform : MonoBehaviour, ITimelineRecordable
+	public class LookTowardsTransform : RecordableMonoBehaviour<TimelineRecord_LookTowardsTransform>
 	{
 		/**<summary>The transform to look towards.</summary>*/
 		public Transform lookTowards;
 		/**<summary>Max distance to look towards the transform.</summary>*/
 		public float maxDistance = 6.0f;
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_LookTowardsTransform record)
 		{
-			return new TimelineRecord_LookTowardsTransform();
+			record.lookTowards = lookTowards;
+			record.maxDistance = maxDistance;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_LookTowardsTransform record)
 		{
-			TimelineRecord_LookTowardsTransform rec = (TimelineRecord_LookTowardsTransform)record;
-			rec.lookTowards = lookTowards;
-			rec.maxDistance = maxDistance;
+			lookTowards = record.lookTowards;
+			maxDistance = record.maxDistance;
 		}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
+		protected override void FlowingUpdate()
 		{
-			TimelineRecord_LookTowardsTransform rec = (TimelineRecord_LookTowardsTransform)record;
-			lookTowards = rec.lookTowards;
-			maxDistance = rec.maxDistance;
-		}
-
-		private void Update()
-		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || !GetComponent<Health>().IsAlive)
+			if (!GetComponent<Health>().IsAlive)
 			{
 				return;
 			}
@@ -44,11 +37,11 @@ namespace TechnoWolf.Project1
 				GetComponent<DirectionLooking>().Direction = lookVector;
 			}
 		}
+	}
 
-		public class TimelineRecord_LookTowardsTransform : TimelineRecordForBehaviour
-		{
-			public Transform lookTowards;
-			public float maxDistance;
-		}
+	public class TimelineRecord_LookTowardsTransform : TimelineRecordForBehaviour
+	{
+		public Transform lookTowards;
+		public float maxDistance;
 	}
 }

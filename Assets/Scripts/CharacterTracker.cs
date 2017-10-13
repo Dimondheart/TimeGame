@@ -8,7 +8,7 @@ namespace TechnoWolf.Project1
 	/**<summary>Track statistics and other data on all characters currently in
 	 * the scene.</summary>
 	 */
-	public class CharacterTracker : MonoBehaviour, ITimelineRecordable
+	public class CharacterTracker : RecordableMonoBehaviour<TimelineRecord_CharacterTracker>
 	{
 		private List<PlayerTrackerHelper> players = new List<PlayerTrackerHelper>();
 		private List<EnemyTrackerHelper> enemies = new List<EnemyTrackerHelper>();
@@ -78,34 +78,23 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_CharacterTracker record)
 		{
-			return new TimelineRecord_CharacterTracker();
+			record.players = players.ToArray();
+			record.enemies = enemies.ToArray();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_CharacterTracker record)
 		{
-			TimelineRecord_CharacterTracker rec = (TimelineRecord_CharacterTracker)record;
-			rec.players = players.ToArray();
-			rec.enemies = enemies.ToArray();
-		}
-
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_CharacterTracker rec = (TimelineRecord_CharacterTracker)record;
 			players.Clear();
-			players.AddRange(rec.players);
+			players.AddRange(record.players);
 			enemies.Clear();
-			enemies.AddRange(rec.enemies);
+			enemies.AddRange(record.enemies);
 		}
 
 		/**<summary>Add a player character to the tracking system.</summary>*/
 		public void AddPlayer(PlayerTrackerHelper helper)
 		{
-			if (ManipulableTime.IsApplyingRecords)
-			{
-				return;
-			}
 			if (players.Contains(helper))
 			{
 				return;
@@ -116,21 +105,17 @@ namespace TechnoWolf.Project1
 		/**<summary>Add an enemy to the tracking system.</summary>*/
 		public void AddEnemy(EnemyTrackerHelper helper)
 		{
-			if (ManipulableTime.IsApplyingRecords)
-			{
-				return;
-			}
 			if (enemies.Contains(helper))
 			{
 				return;
 			}
 			enemies.Add(helper);
 		}
+	}
 
-		public class TimelineRecord_CharacterTracker : TimelineRecordForBehaviour
-		{
-			public PlayerTrackerHelper[] players;
-			public EnemyTrackerHelper[] enemies;
-		}
+	public class TimelineRecord_CharacterTracker : TimelineRecordForBehaviour
+	{
+		public PlayerTrackerHelper[] players;
+		public EnemyTrackerHelper[] enemies;
 	}
 }

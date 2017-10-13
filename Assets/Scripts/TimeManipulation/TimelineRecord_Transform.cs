@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	public class TimelineRecord_Transform : TimelineRecordForComponent<Transform>
+	public class TimelineRecord_Transform : TimelineRecordForComponent
 	{
 		public Vector3 localPosition;
 		public Quaternion localRotation;

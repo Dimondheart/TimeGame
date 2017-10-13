@@ -8,7 +8,7 @@ using System;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Player controlled guarding.</summary>*/
-	public class PlayerGuard : PlayerCombatModeUser, IHitTaker
+	public class PlayerGuard : RecordableMonoBehaviour<TimelineRecord_PlayerGuard>, IHitTaker
 	{
 		public GameObject shield;
 		public GameObject sideShieldLeft;
@@ -25,27 +25,18 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public override TimelineRecordForBehaviour MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_PlayerGuard record)
 		{
-			return new TimelineRecord_PlayerGuard();
+			record.shield = shield;
+			record.sideShieldLeft = sideShieldLeft;
+			record.sideShieldRight = sideShieldRight;
 		}
 
-		public override void RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_PlayerGuard record)
 		{
-			base.RecordCurrentState(record);
-			TimelineRecord_PlayerGuard rec = (TimelineRecord_PlayerGuard)record;
-			rec.shield = shield;
-			rec.sideShieldLeft = sideShieldLeft;
-			rec.sideShieldRight = sideShieldRight;
-		}
-
-		public override void ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			base.ApplyTimelineRecord(record);
-			TimelineRecord_PlayerGuard rec = (TimelineRecord_PlayerGuard)record;
-			shield = rec.shield;
-			sideShieldLeft = rec.sideShieldLeft;
-			sideShieldRight = rec.sideShieldRight;
+			shield = record.shield;
+			sideShieldLeft = record.sideShieldLeft;
+			sideShieldRight = record.sideShieldRight;
 		}
 
 		bool IHitTaker.TakeHit(HitInfo hit)
@@ -73,57 +64,11 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void ChangeToOffensive()
+		protected override void FlowingUpdate()
 		{
-			SetSideShieldLeftEnabled(false);
-			SetSideShieldRightEnabled(false);
-			shield.transform.localScale = new Vector3(0.75f, 0.5f, 1.0f);
-			shield.transform.localPosition = new Vector3(0.0f, 0.355f, 0.0f);
-		}
-
-		protected override void ChangeToDefensive()
-		{
-			SetSideShieldLeftEnabled(true);
-			SetSideShieldRightEnabled(true);
-			shield.transform.localScale = Vector3.one;
-			shield.transform.localPosition = new Vector3(0.0f, 0.335f, 0.0f);
-		}
-
-		protected override void ChangeToRanged()
-		{
-			SetSideShieldLeftEnabled(true);
-			SetSideShieldRightEnabled(true);
-			shield.transform.localScale = new Vector3(0.75f, 0.5f, 1.0f);
-			shield.transform.localPosition = new Vector3(0.0f, 0.355f, 0.0f);
-		}
-
-		protected override void ChangeToUnarmed()
-		{
-			SetSideShieldLeftEnabled(false);
-			SetSideShieldRightEnabled(false);
-		}
-
-		protected override void Update()
-		{
-			base.Update();
-			if (ManipulableTime.IsTimeOrGamePaused)
-			{
-				return;
-			}
-			if (GetComponent<SurfaceInteraction>().IsSwimming || currentCombatMode == PlayerCombatMode.CombatMode.Unarmed)
+			if (GetComponent<SurfaceInteraction>().IsSwimming)
 			{
 				SetGuardEnabled(false);
-			}
-			else if (currentCombatMode == PlayerCombatMode.CombatMode.Offensive)
-			{
-				if (DynamicInput.GetButtonHeld("Left Hand Action") && DynamicInput.GetButtonHeld("Right Hand Action"))
-				{
-					SetGuardEnabled(true);
-				}
-				else
-				{
-					SetGuardEnabled(false);
-				}
 			}
 			else
 			{
@@ -163,11 +108,8 @@ namespace TechnoWolf.Project1
 			shield.GetComponent<SpriteRenderer>().enabled = enabled;
 			shield.GetComponent<Collider2D>().isTrigger = !enabled;
 			shield.GetComponent<Collider2D>().enabled = enabled;
-			if (currentCombatMode == PlayerCombatMode.CombatMode.Ranged)
-			{
-				SetSideShieldLeftEnabled(!enabled);
-				SetSideShieldRightEnabled(!enabled);
-			}
+			SetSideShieldLeftEnabled(false);
+			SetSideShieldRightEnabled(false);
 		}
 
 		private void SetSideShieldLeftEnabled(bool enabled)
@@ -183,12 +125,12 @@ namespace TechnoWolf.Project1
 			sideShieldRight.GetComponent<Collider2D>().isTrigger = !enabled;
 			sideShieldRight.GetComponent<Collider2D>().enabled = enabled;
 		}
+	}
 
-		public class TimelineRecord_PlayerGuard : TimelineRecord_PlayerCombatModeUser
-		{
-			public GameObject shield;
-			public GameObject sideShieldLeft;
-			public GameObject sideShieldRight;
-		}
+	public class TimelineRecord_PlayerGuard : TimelineRecordForBehaviour
+	{
+		public GameObject shield;
+		public GameObject sideShieldLeft;
+		public GameObject sideShieldRight;
 	}
 }

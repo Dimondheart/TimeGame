@@ -9,33 +9,26 @@ namespace TechnoWolf.Project1
 	/**<summary>Follow a path using a predefined set of points, which
 	 * loop back to the first point.</summary>
 	 */
-	public class FollowDefinedPath : ControlledMovement
+	public class FollowDefinedPath : ControlledMovement<TimelineRecord_FollowDefinedPath>
 	{
 		public Transform[] targets;
 		public float maxSpeed = 4.0f;
 		public int targetIndex = 0;
 
-		public override TimelineRecordForBehaviour MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_FollowDefinedPath record)
 		{
-			return new TimelineRecord_FollowDefinedPath();
+			base.WriteCurrentState(record);
+			record.targets = (Transform[])targets.Clone();
+			record.maxSpeed = maxSpeed;
+			record.targetIndex = targetIndex;
 		}
 
-		public override void RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_FollowDefinedPath record)
 		{
-			TimelineRecord_FollowDefinedPath rec = (TimelineRecord_FollowDefinedPath)record;
-			AddTimelineRecordValues(rec);
-			rec.targets = (Transform[])targets.Clone();
-			rec.maxSpeed = maxSpeed;
-			rec.targetIndex = targetIndex;
-		}
-
-		public override void ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_FollowDefinedPath rec = (TimelineRecord_FollowDefinedPath)record;
-			ApplyTimelineRecordValues(rec);
-			targets = (Transform[])rec.targets.Clone();
-			maxSpeed = rec.maxSpeed;
-			targetIndex = rec.targetIndex;
+			base.ApplyRecordedState(record);
+			targets = (Transform[])record.targets.Clone();
+			maxSpeed = record.maxSpeed;
+			targetIndex = record.targetIndex;
 		}
 
 		private void OnEnable()
@@ -58,7 +51,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		private void Update()
+		public override void Update()
 		{
 			if (ManipulableTime.IsTimeOrGamePaused)
 			{
@@ -92,12 +85,12 @@ namespace TechnoWolf.Project1
 			IsApplyingMotion = true;
 			GetComponent<DirectionLooking>().Direction = newVelocity;
 		}
+	}
 
-		public class TimelineRecord_FollowDefinedPath : ControlledMovement.TimelineRecord_ControlledMovement
-		{
-			public Transform[] targets;
-			public float maxSpeed;
-			public int targetIndex;
-		}
+	public class TimelineRecord_FollowDefinedPath : TimelineRecord_ControlledMovement
+	{
+		public Transform[] targets;
+		public float maxSpeed;
+		public int targetIndex;
 	}
 }

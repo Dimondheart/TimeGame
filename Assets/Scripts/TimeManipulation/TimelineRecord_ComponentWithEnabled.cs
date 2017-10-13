@@ -7,7 +7,7 @@ namespace TechnoWolf.TimeManipulation
 	/**<summary>Timeline record for non-behaviour Unity components that have an
 	 * enabled property, but don't have their own timeline record.</summary>
 	 */
-	public class TimelineRecord_ComponentWithEnabled : TimelineRecordForComponent<Component>
+	public class TimelineRecord_ComponentWithEnabled : TimelineRecordForComponent
 	{
 		/**<summary>If component was enabled at this point in time.</summary>*/
 		public bool enabled { get; private set; }

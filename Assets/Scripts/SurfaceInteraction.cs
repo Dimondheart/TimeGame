@@ -8,7 +8,7 @@ namespace TechnoWolf.Project1
 	/**<summary>Surface interactions (like friction) and information
 	 * relating to touching surfaces.</summary>
 	 */
-	public class SurfaceInteraction : MonoBehaviour, ITimelineRecordable
+	public class SurfaceInteraction : RecordableMonoBehaviour<TimelineRecord_SurfaceInteraction>
 	{
 		/**<summary>Velocity multiplier when not touching a specific surface
 		 * (meaning outside the map/play area.)</summary>
@@ -41,40 +41,29 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_SurfaceInteraction record)
 		{
-			return new TimelineRecord_SurfaceInteraction();
+			record.frictionResistance = frictionResistance;
+			record.touchingSurfaces = touchingSurfaces.ToArray();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_SurfaceInteraction record)
 		{
-			TimelineRecord_SurfaceInteraction rec = (TimelineRecord_SurfaceInteraction)record;
-			rec.frictionResistance = frictionResistance;
-			rec.touchingSurfaces = touchingSurfaces.ToArray();
-		}
-
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_SurfaceInteraction rec = (TimelineRecord_SurfaceInteraction)record;
-			frictionResistance = rec.frictionResistance;
+			frictionResistance = record.frictionResistance;
 			touchingSurfaces.Clear();
-			touchingSurfaces.AddRange(rec.touchingSurfaces);
+			touchingSurfaces.AddRange(record.touchingSurfaces);
 		}
 
-		private void Update()
+		protected override void FlowingUpdate()
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused)
-			{
-				return;
-			}
-			if (GetComponent<Health>() == null
+			/*if (GetComponent<Health>() == null
 				|| !GetComponent<Health>().IsAlive
-				|| (GetComponent<ControlledMovement>() != null && !GetComponent<ControlledMovement>().IsApplyingMotion)
+				|| (GetComponent<ControlledMovement<TimelineRecord_ControlledMovement>>() != null && !GetComponent<ControlledMovement<TimelineRecord_ControlledMovement>>().IsApplyingMotion)
 				|| (GetComponent<PlayerMovement>() != null && !GetComponent<PlayerMovement>().IsApplyingMotion)
 				)
 			{
 				return;
-			}
+			}*/
 			float multiplier = defaultVelocityMultiplier;
 			if (touchingSurfaces.Count > 0)
 			{
@@ -84,18 +73,16 @@ namespace TechnoWolf.Project1
 			GetComponent<Rigidbody2D>().velocity = GetComponent<Rigidbody2D>().velocity * multiplier;
 		}
 
-		private void FixedUpdate()
+		protected override void FlowingFixedUpdate()
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused)
-			{
-				return;
-			}
-			if ((GetComponent<ControlledMovement>() != null && GetComponent<ControlledMovement>().IsApplyingMotion)
+			/*
+			if ((GetComponent<ControlledMovement<TimelineRecord_ControlledMovement>>() != null && GetComponent<ControlledMovement<TimelineRecord_ControlledMovement>>().IsApplyingMotion)
 				|| (GetComponent<PlayerMovement>() != null && GetComponent<PlayerMovement>().IsApplyingMotion)
 				)
 			{
 				return;
 			}
+			*/
 			float multiplier = defaultVelocityMultiplier;
 			if (touchingSurfaces.Count > 0)
 			{
@@ -117,11 +104,11 @@ namespace TechnoWolf.Project1
 		{
 			touchingSurfaces.Remove(surface);
 		}
+	}
 
-		public class TimelineRecord_SurfaceInteraction : TimelineRecordForBehaviour
-		{
-			public float frictionResistance;
-			public Surface[] touchingSurfaces;
-		}
+	public class TimelineRecord_SurfaceInteraction : TimelineRecordForBehaviour
+	{
+		public float frictionResistance;
+		public Surface[] touchingSurfaces;
 	}
 }

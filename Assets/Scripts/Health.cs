@@ -6,7 +6,7 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>HP tracking and releated data/functionality.</summary>*/
-	public class Health : MonoBehaviour, IPrimaryValue, ITimelineRecordable
+	public class Health : RecordableMonoBehaviour<TimelineRecord_Health>, IPrimaryValue
 	{
 		/**<summary>Minimum percent of current max health for a normal damage hit
 		 * to deal perminent damage.</summary>
@@ -16,6 +16,7 @@ namespace TechnoWolf.Project1
 		 * health per normal damage hit.</summary>
 		 */
 		public static readonly float maxPerminentDamageHit = 1.0f;
+		/**<summary>For sorting hit takers in the order they should be used.</summary>*/
 		private static int CompareIHitTakersByPriority(IHitTaker a, IHitTaker b)
 		{
 			return a.Priority.CompareTo(b.Priority);
@@ -112,27 +113,20 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_Health record)
 		{
-			return new TimelineRecord_Health();
+			record.absoluteMaxHP = absoluteMaxHP;
+			record.currentMaxHP = currentmaxHP;
+			record.currentHP = currentHP;
+			record.isAlignedWithPlayer = isAlignedWithPlayer;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_Health record)
 		{
-			TimelineRecord_Health rec = (TimelineRecord_Health)record;
-			rec.absoluteMaxHP = absoluteMaxHP;
-			rec.currentMaxHP = currentmaxHP;
-			rec.currentHP = currentHP;
-			rec.isAlignedWithPlayer = isAlignedWithPlayer;
-		}
-
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_Health rec = (TimelineRecord_Health)record;
-			absoluteMaxHP = rec.absoluteMaxHP;
-			currentmaxHP = rec.currentMaxHP;
-			currentHP = rec.currentHP;
-			isAlignedWithPlayer = rec.isAlignedWithPlayer;
+			absoluteMaxHP = record.absoluteMaxHP;
+			currentmaxHP = record.currentMaxHP;
+			currentHP = record.currentHP;
+			isAlignedWithPlayer = record.isAlignedWithPlayer;
 		}
 
 		private void Awake()
@@ -142,9 +136,9 @@ namespace TechnoWolf.Project1
 			CurrentHP = currentmaxHP;
 		}
 
-		private void Update()
+		protected override void FlowingUpdate()
 		{
-			if (ManipulableTime.IsApplyingRecords || ManipulableTime.IsTimeOrGamePaused || !IsAlive)
+			if (!IsAlive)
 			{
 				return;
 			}
@@ -159,10 +153,6 @@ namespace TechnoWolf.Project1
 		 */
 		private void DoDamage(float damage)
 		{
-			if (ManipulableTime.IsApplyingRecords)
-			{
-				return;
-			}
 			CurrentHP -= damage;
 			if (damage / CurrentMaxHP >= percentForPerminentDamage)
 			{
@@ -175,10 +165,6 @@ namespace TechnoWolf.Project1
 		 */
 		public bool Hit(HitInfo hit)
 		{
-			if (ManipulableTime.IsApplyingRecords)
-			{
-				return false;
-			}
 			List<IHitTaker> hitTakers = new List<IHitTaker>(GetComponents<IHitTaker>());
 			hitTakers.Sort(CompareIHitTakersByPriority);
 			bool hitNullified = false;
@@ -204,19 +190,18 @@ namespace TechnoWolf.Project1
 
 		private void DoPerminentDamage(float damage)
 		{
-			if (ManipulableTime.IsApplyingRecords)
+			if (IsAlive)
 			{
-				return;
+				CurrentMaxHP -= damage;
 			}
-			CurrentMaxHP -= damage;
 		}
+	}
 
-		public class TimelineRecord_Health : TimelineRecordForBehaviour
-		{
-			public float absoluteMaxHP;
-			public float currentMaxHP;
-			public float currentHP;
-			public bool isAlignedWithPlayer;
-		}
+	public class TimelineRecord_Health : TimelineRecordForBehaviour
+	{
+		public float absoluteMaxHP;
+		public float currentMaxHP;
+		public float currentHP;
+		public bool isAlignedWithPlayer;
 	}
 }

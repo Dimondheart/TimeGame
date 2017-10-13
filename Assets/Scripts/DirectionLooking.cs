@@ -8,7 +8,7 @@ namespace TechnoWolf.Project1
 	/**<summary>Defines the direction something is facing without
 	 * applying a transform rotation.</summary>
 	 */
-	public class DirectionLooking : MonoBehaviour, ITimelineRecordable
+	public class DirectionLooking : RecordableMonoBehaviour<TimelineRecord_DirectionLooking>
 	{
 		private Vector2 direction = Vector2.down;
 
@@ -34,26 +34,19 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_DirectionLooking record)
 		{
-			return new TimelineRecord_DirectionLooking();
+			record.direction = direction;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_DirectionLooking record)
 		{
-			TimelineRecord_DirectionLooking rec = (TimelineRecord_DirectionLooking)record;
-			rec.direction = direction;
+			direction = record.direction;
 		}
+	}
 
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_DirectionLooking r = (TimelineRecord_DirectionLooking)record;
-			direction = r.direction;
-		}
-
-		public class TimelineRecord_DirectionLooking : TimelineRecordForBehaviour
-		{
-			public Vector2 direction;
-		}
+	public class TimelineRecord_DirectionLooking : TimelineRecordForBehaviour
+	{
+		public Vector2 direction;
 	}
 }

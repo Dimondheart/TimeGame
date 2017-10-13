@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	public class TimelineRecord_Rigidbody2D : TimelineRecordForComponent<Rigidbody2D>
+	public class TimelineRecord_Rigidbody2D : TimelineRecordForComponent
 	{
 		public PhysicsMaterial2D sharedMaterial;
 		public Vector2 velocity;

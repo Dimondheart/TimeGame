@@ -7,7 +7,7 @@ using System;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Move towards a target.</summary>*/
-	public class FollowTarget : ControlledMovement
+	public class FollowTarget : ControlledMovement<TimelineRecord_FollowTarget>
 	{
 		public float maxSpeed = 4.0f;
 		public float velocityBlendRate = 100.0f;
@@ -43,27 +43,20 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public override TimelineRecordForBehaviour MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_FollowTarget record)
 		{
-			return new TimelineRecord_FollowTarget();
+			base.WriteCurrentState(record);
+			record.maxSpeed = maxSpeed;
+			record.velocityBlendRate = velocityBlendRate;
+			record.targetLocationReached = targetLocationReached;
 		}
 
-		public override void RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_FollowTarget record)
 		{
-			TimelineRecord_FollowTarget rec = (TimelineRecord_FollowTarget)record;
-			AddTimelineRecordValues(rec);
-			rec.maxSpeed = maxSpeed;
-			rec.velocityBlendRate = velocityBlendRate;
-			rec.targetLocationReached = targetLocationReached;
-		}
-
-		public override void ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_FollowTarget rec = (TimelineRecord_FollowTarget)record;
-			ApplyTimelineRecordValues(rec);
-			maxSpeed = rec.maxSpeed;
-			velocityBlendRate = rec.velocityBlendRate;
-			targetLocationReached = rec.targetLocationReached;
+			base.ApplyRecordedState(record);
+			maxSpeed = record.maxSpeed;
+			velocityBlendRate = record.velocityBlendRate;
+			targetLocationReached = record.targetLocationReached;
 		}
 
 		private void Start()
@@ -71,14 +64,19 @@ namespace TechnoWolf.Project1
 			targetLocationReached = true;
 		}
 
-		private void Update()
+		protected override void FirstPausedUpdate()
 		{
-			if (ManipulableTime.IsTimeOrGamePaused)
-			{
-				GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-				return;
-			}
+			Debug.Log("hello from here");
+			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+		}
+
+		protected override void FirstResumedUpdate()
+		{
 			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
+		}
+
+		protected override void FlowingUpdate()
+		{
 			if ((TargetTransform == null && targetLocationReached)
 				|| !GetComponent<Health>().IsAlive
 				|| Vector3.Distance(TargetPositon, transform.position) < 0.3f
@@ -112,12 +110,12 @@ namespace TechnoWolf.Project1
 			IsApplyingMotion = true;
 			GetComponent<DirectionLooking>().Direction = newVelocity;
 		}
+	}
 
-		public class TimelineRecord_FollowTarget : ControlledMovement.TimelineRecord_ControlledMovement
-		{
-			public float maxSpeed;
-			public float velocityBlendRate;
-			public bool targetLocationReached;
-		}
+	public class TimelineRecord_FollowTarget : TimelineRecord_ControlledMovement
+	{
+		public float maxSpeed;
+		public float velocityBlendRate;
+		public bool targetLocationReached;
 	}
 }

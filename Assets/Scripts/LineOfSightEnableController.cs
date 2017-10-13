@@ -6,36 +6,29 @@ using UnityEngine;
 
 namespace TechnoWolf.Project1
 {
-	/**<summary></summary>*/
-	public class LineOfSightEnableController : MonoBehaviour, TimeManipulation.ITimelineRecordable
+	/**<summary>Simple script to disable the 2DDL light used for line of sight
+	 * when no enemies are nearby.</summary>
+	 */
+	public class LineOfSightEnableController : RecordableMonoBehaviour<TimelineRecord_LineOfSightEnableController>
 	{
 		public DynamicLight2D.DynamicLight dynamicLight { get; private set; }
 
 		private List<Collider2D> enemiesInRange = new List<Collider2D>();
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_LineOfSightEnableController record)
 		{
-			return new TimelineRecord_LineOfSightEnableController();
+			record.enemiesInRange = enemiesInRange.ToArray();
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_LineOfSightEnableController record)
 		{
-			TimelineRecord_LineOfSightEnableController rec = (TimelineRecord_LineOfSightEnableController)record;
-			rec.dynamicLight = dynamicLight;
-			rec.enemiesInRange = enemiesInRange.ToArray();
-		}
-
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_LineOfSightEnableController rec = (TimelineRecord_LineOfSightEnableController)record;
-			dynamicLight = rec.dynamicLight;
 			enemiesInRange.Clear();
-			enemiesInRange.AddRange(rec.enemiesInRange);
+			enemiesInRange.AddRange(record.enemiesInRange);
 		}
 
 		private void OnTriggerEnter2D(Collider2D collision)
 		{
-			if (TimeManipulation.ManipulableTime.IsApplyingRecords || TimeManipulation.ManipulableTime.IsTimeOrGamePaused)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -48,7 +41,7 @@ namespace TechnoWolf.Project1
 
 		private void OnTriggerExit2D(Collider2D collision)
 		{
-			if (TimeManipulation.ManipulableTime.IsApplyingRecords || TimeManipulation.ManipulableTime.IsTimeOrGamePaused)
+			if (ManipulableTime.IsApplyingRecords)
 			{
 				return;
 			}
@@ -60,19 +53,14 @@ namespace TechnoWolf.Project1
 			dynamicLight = GetComponentInChildren<DynamicLight2D.DynamicLight>(true);
 		}
 
-		private void Update()
+		protected override void FlowingUpdate()
 		{
-			if (TimeManipulation.ManipulableTime.IsApplyingRecords || TimeManipulation.ManipulableTime.IsTimeOrGamePaused)
-			{
-				return;
-			}
 			dynamicLight.enabled = enemiesInRange.Count > 0;
 		}
+	}
 
-		public class TimelineRecord_LineOfSightEnableController : TimeManipulation.TimelineRecordForBehaviour
-		{
-			public DynamicLight2D.DynamicLight dynamicLight;
-			public Collider2D[] enemiesInRange;
-		}
+	public class TimelineRecord_LineOfSightEnableController : TimelineRecordForBehaviour
+	{
+		public Collider2D[] enemiesInRange;
 	}
 }

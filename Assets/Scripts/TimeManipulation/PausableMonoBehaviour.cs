@@ -98,11 +98,11 @@ namespace TechnoWolf.TimeManipulation
 			{
 				FirstPausedUpdate();
 			}
-			else if (ManipulableTime.TimePauseState.Flowing == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Flowing))
+			else if (!ManipulableTime.IsTimePaused)
 			{
 				FlowingUpdate();
 			}
-			else if (ManipulableTime.TimePauseState.Paused == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Paused))
+			else
 			{
 				PausedUpdate();
 			}
@@ -122,11 +122,11 @@ namespace TechnoWolf.TimeManipulation
 			{
 				FirstPausedLateUpdate();
 			}
-			else if (ManipulableTime.TimePauseState.Flowing == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Flowing))
+			else if (!ManipulableTime.IsTimePaused)
 			{
 				FlowingLateUpdate();
 			}
-			else if (ManipulableTime.TimePauseState.Paused == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Paused))
+			else
 			{
 				PausedLateUpdate();
 			}
@@ -146,11 +146,11 @@ namespace TechnoWolf.TimeManipulation
 			{
 				FirstPausedFixedUpdate();
 			}
-			else if (ManipulableTime.TimePauseState.Flowing == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Flowing))
+			else if (!ManipulableTime.IsTimePaused)
 			{
 				FlowingFixedUpdate();
 			}
-			else if (ManipulableTime.TimePauseState.Paused == (ManipulableTime.timePauseState & ManipulableTime.TimePauseState.Paused))
+			else
 			{
 				PausedFixedUpdate();
 			}

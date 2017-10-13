@@ -5,25 +5,18 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	public abstract class TimelineRecordForBehaviour<T> : TimelineRecordForComponent<T> where T : Behaviour
+	public abstract class TimelineRecordForBehaviour : TimelineRecordForComponent
 	{
 		public bool enabled { get; private set; }
 
-		public override void AddCommonData(T behaviour)
+		public override void AddCommonData(Component behaviour)
 		{
-			enabled = behaviour.enabled;
+			enabled = ((Behaviour)behaviour).enabled;
 		}
 
-		public override void ApplyCommonData(T behaviour)
+		public override void ApplyCommonData(Component behaviour)
 		{
-			behaviour.enabled = enabled;
+			((Behaviour)behaviour).enabled = enabled;
 		}
-	}
-
-	/**<summary>Base class for all timeline record classes created for
- * components.</summary>
- */
-	public abstract class TimelineRecordForBehaviour : TimelineRecordForComponent<Component>
-	{
 	}
 }

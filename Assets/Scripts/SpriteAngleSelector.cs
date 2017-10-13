@@ -10,7 +10,7 @@ namespace TechnoWolf.Project1
 	 * note; the sprite variables are not accounted for in the record, so if in
 	 * the future the sprites are changed then this will need to be added.</summary>
 	 */
-	public class SpriteAngleSelector : MonoBehaviour, ITimelineRecordable
+	public class SpriteAngleSelector : RecordableMonoBehaviour<TimelineRecord_SpriteAngleSelector>
 	{
 		private static readonly Quaternion upRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 		private static readonly Quaternion downRotation = Quaternion.Euler(0.0f, 0.0f, 180.0f);
@@ -67,36 +67,25 @@ namespace TechnoWolf.Project1
 		 */
 		private bool forceUpdateThisCycle;
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_SpriteAngleSelector record)
 		{
-			return new TimelineRecord_SpriteAngleSelector();
+			record.syncronizeRotations = syncronizeRotations.ToArray();
+			record.currentAngle = currentAngle;
+			record.usingDeadVersion = usingDeadVersion;
+			record.forceUpdateThisCycle = forceUpdateThisCycle;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_SpriteAngleSelector record)
 		{
-			TimelineRecord_SpriteAngleSelector rec = (TimelineRecord_SpriteAngleSelector)record;
-			rec.syncronizeRotations = syncronizeRotations.ToArray();
-			rec.currentAngle = currentAngle;
-			rec.usingDeadVersion = usingDeadVersion;
-			rec.forceUpdateThisCycle = forceUpdateThisCycle;
-		}
-
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_SpriteAngleSelector rec = (TimelineRecord_SpriteAngleSelector)record;
 			syncronizeRotations.Clear();
-			syncronizeRotations.AddRange(rec.syncronizeRotations);
-			currentAngle = rec.currentAngle;
-			usingDeadVersion = rec.usingDeadVersion;
-			forceUpdateThisCycle = rec.forceUpdateThisCycle;
+			syncronizeRotations.AddRange(record.syncronizeRotations);
+			currentAngle = record.currentAngle;
+			usingDeadVersion = record.usingDeadVersion;
+			forceUpdateThisCycle = record.forceUpdateThisCycle;
 		}
 
-		private void Update()
+		protected override void FlowingUpdate()
 		{
-			if (ManipulableTime.IsTimeOrGamePaused)
-			{
-				return;
-			}
 			float angle = GetComponentInParent<DirectionLooking>().Angle;
 			float absAngle = Mathf.Abs(angle);
 			int newAngle = currentAngle;
@@ -233,13 +222,13 @@ namespace TechnoWolf.Project1
 				t.localRotation = synchRotation;
 			}
 		}
+	}
 
-		public class TimelineRecord_SpriteAngleSelector : TimelineRecordForBehaviour
-		{
-			public Transform[] syncronizeRotations;
-			public int currentAngle;
-			public bool usingDeadVersion;
-			public bool forceUpdateThisCycle;
-		}
+	public class TimelineRecord_SpriteAngleSelector : TimelineRecordForBehaviour
+	{
+		public Transform[] syncronizeRotations;
+		public int currentAngle;
+		public bool usingDeadVersion;
+		public bool forceUpdateThisCycle;
 	}
 }

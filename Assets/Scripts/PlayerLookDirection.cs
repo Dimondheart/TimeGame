@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.DynamicInputSystem;
+using TechnoWolf.TimeManipulation;
 
 namespace TechnoWolf.Project1
 {
 	/**<summary>Controls the direction the player is looking.</summary>*/
 	[RequireComponent(typeof(DirectionLooking))]
-	public class PlayerLookDirection : MonoBehaviour
+	public class PlayerLookDirection : PausableMonoBehaviour
 	{
-		private void Update()
+		protected override void FlowingUpdate()
 		{
-			if (TechnoWolf.TimeManipulation.ManipulableTime.IsTimeOrGamePaused)
-			{
-				return;
-			}
-			// TODO combine this check with the above early return
 			if (
 				((GetComponent<PlayerMelee>().IsInCooldown || !GetComponent<PlayerMelee>().IsSwinging) && !GetComponent<PlayerMovement>().IsDashing)
 				|| GetComponent<SurfaceInteraction>().IsSwimming

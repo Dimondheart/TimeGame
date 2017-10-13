@@ -6,7 +6,7 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Deal damage to opponents on contact.</summary>*/
-	public class DealDamageOnContact : MonoBehaviour, ITimelineRecordable
+	public class DealDamageOnContact : RecordableMonoBehaviour<TimelineRecord_DealDamageOnContact>
 	{
 		/**<summary>Delay between attacks, in seconds.</summary>*/
 		public float cooldown = 0.25f;
@@ -15,25 +15,18 @@ namespace TechnoWolf.Project1
 		/**<summary>Time the last attack was made.</summary>*/
 		private ConvertableTime lastAttackTime;
 
-		TimelineRecordForBehaviour ITimelineRecordable.MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_DealDamageOnContact record)
 		{
-			return new TimelineRecord_DealDamageOnContact();
+			record.cooldown = cooldown;
+			record.damagePerHit = damagePerHit;
+			record.lastAttackTime = lastAttackTime;
 		}
 
-		void ITimelineRecordable.RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_DealDamageOnContact record)
 		{
-			TimelineRecord_DealDamageOnContact rec = (TimelineRecord_DealDamageOnContact)record;
-			rec.cooldown = cooldown;
-			rec.damagePerHit = damagePerHit;
-			rec.lastAttackTime = lastAttackTime;
-		}
-
-		void ITimelineRecordable.ApplyTimelineRecord(TimelineRecordForBehaviour record)
-		{
-			TimelineRecord_DealDamageOnContact rec = (TimelineRecord_DealDamageOnContact)record;
-			cooldown = rec.cooldown;
-			damagePerHit = rec.damagePerHit;
-			lastAttackTime = rec.lastAttackTime;
+			cooldown = record.cooldown;
+			damagePerHit = record.damagePerHit;
+			lastAttackTime = record.lastAttackTime;
 		}
 
 		private void Awake()
@@ -43,11 +36,12 @@ namespace TechnoWolf.Project1
 
 		private void OnCollisionStay2D(Collision2D collision)
 		{
-			if (ManipulableTime.IsApplyingRecords)
-			{
-				return;
-			}
-			if (!GetComponent<Health>().IsAlive || ManipulableTime.IsTimeOrGamePaused)
+			if (
+				ManipulableTime.IsTimeOrGamePaused
+				|| !GetComponent<Health>().IsAlive
+				|| collision.gameObject.GetComponent<Collider2D>().isTrigger
+				|| ManipulableTime.time - lastAttackTime.manipulableTime < cooldown
+			)
 			{
 				return;
 			}
@@ -55,8 +49,6 @@ namespace TechnoWolf.Project1
 			if (
 				otherHealth == null
 				|| !otherHealth.IsAlive
-				|| collision.gameObject.GetComponent<Collider2D>().isTrigger
-				|| ManipulableTime.time - lastAttackTime.manipulableTime < cooldown
 				|| otherHealth.isAlignedWithPlayer == GetComponent<Health>().isAlignedWithPlayer
 			)
 			{
@@ -69,12 +61,12 @@ namespace TechnoWolf.Project1
 			otherHealth.Hit(hit);
 			lastAttackTime.SetToCurrent();
 		}
+	}
 
-		public class TimelineRecord_DealDamageOnContact : TimelineRecordForBehaviour
-		{
-			public float cooldown;
-			public int damagePerHit;
-			public ConvertableTime lastAttackTime;
-		}
+	public class TimelineRecord_DealDamageOnContact : TimelineRecordForBehaviour
+	{
+		public float cooldown;
+		public int damagePerHit;
+		public ConvertableTime lastAttackTime;
 	}
 }

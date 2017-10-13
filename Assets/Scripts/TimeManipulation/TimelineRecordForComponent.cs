@@ -6,7 +6,7 @@ using UnityEngine;
 namespace TechnoWolf.TimeManipulation
 {
 	/**<summary>Timeline record base for component records.</summary>*/
-	public abstract class TimelineRecordForComponent<T> : TimelineRecord<T> where T : Component
+	public abstract class TimelineRecordForComponent : TimelineRecord
 	{
 		/**<summary>Check if the specified component has a timeline maker
 		 * implemented by this class.</summary>
@@ -109,10 +109,10 @@ namespace TechnoWolf.TimeManipulation
 			}
 		}
 
-		public override void AddCommonData(T component)
+		public virtual void AddCommonData(Component component)
 		{
 		}
-		public override void ApplyCommonData(T component)
+		public virtual void ApplyCommonData(Component component)
 		{
 		}
 	}

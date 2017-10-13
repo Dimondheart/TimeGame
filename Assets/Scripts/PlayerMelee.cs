@@ -7,7 +7,7 @@ using System;
 
 namespace TechnoWolf.Project1
 {
-	public class PlayerMelee : PlayerCombatModeUser
+	public class PlayerMelee : RecordableMonoBehaviour<TimelineRecord_PlayerMelee>
 	{
 		public Sword rightHandWeapon;
 		public Sword leftHandWeapon;
@@ -54,64 +54,33 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public override TimelineRecordForBehaviour MakeTimelineRecord()
+		protected override void WriteCurrentState(TimelineRecord_PlayerMelee record)
 		{
-			return new TimelineRecord_PlayerMelee();
+			record.cooldown = cooldown;
+			record.damagePerHit = damagePerHit;
+			record.swingDuration = swingDuration;
+			record.swordIdleAngle = swordIdleAngle;
+			record.swordSwingArc = swordSwingArc;
+			record.comboLimit = comboLimit;
+			record.currentSwingNumberRight = currentSwingNumberRight;
+			record.currentSwingNumberLeft = currentSwingNumberLeft;
 		}
 
-		public override void RecordCurrentState(TimelineRecordForBehaviour record)
+		protected override void ApplyRecordedState(TimelineRecord_PlayerMelee record)
 		{
-			base.RecordCurrentState(record);
-			TimelineRecord_PlayerMelee rec = (TimelineRecord_PlayerMelee)record;
-			rec.cooldown = cooldown;
-			rec.damagePerHit = damagePerHit;
-			rec.swingDuration = swingDuration;
-			rec.swordIdleAngle = swordIdleAngle;
-			rec.swordSwingArc = swordSwingArc;
-			rec.comboLimit = comboLimit;
-			rec.currentSwingNumberRight = currentSwingNumberRight;
-			rec.currentSwingNumberLeft = currentSwingNumberLeft;
+			cooldown = record.cooldown;
+			damagePerHit = record.damagePerHit;
+			swingDuration = record.swingDuration;
+			swordIdleAngle = record.swordIdleAngle;
+			swordSwingArc = record.swordSwingArc;
+			comboLimit = record.comboLimit;
+			currentSwingNumberRight = record.currentSwingNumberRight;
+			currentSwingNumberLeft = record.currentSwingNumberLeft;
 		}
 
-		public override void ApplyTimelineRecord(TimelineRecordForBehaviour record)
+		protected override void FlowingUpdate()
 		{
-			base.ApplyTimelineRecord(record);
-			TimelineRecord_PlayerMelee rec = (TimelineRecord_PlayerMelee)record;
-			cooldown = rec.cooldown;
-			damagePerHit = rec.damagePerHit;
-			swingDuration = rec.swingDuration;
-			swordIdleAngle = rec.swordIdleAngle;
-			swordSwingArc = rec.swordSwingArc;
-			comboLimit = rec.comboLimit;
-			currentSwingNumberRight = rec.currentSwingNumberRight;
-			currentSwingNumberLeft = rec.currentSwingNumberLeft;
-		}
-
-		protected override void ChangeToOffensive()
-		{
-			SetWeaponsEnabled(true);
-		}
-
-		protected override void ChangeToDefensive()
-		{
-			SetRightWeaponEnabled(true);
-			SetLeftWeaponEnabled(false);
-		}
-
-		protected override void ChangeToRanged()
-		{
-			SetWeaponsEnabled(false);
-		}
-
-		protected override void ChangeToUnarmed()
-		{
-			SetWeaponsEnabled(false);
-		}
-
-		protected override void Update()
-		{
-			base.Update();
-			if (ManipulableTime.IsTimeOrGamePaused || !GetComponent<Health>().IsAlive)
+			if (!GetComponent<Health>().IsAlive)
 			{
 				return;
 			}
@@ -121,8 +90,8 @@ namespace TechnoWolf.Project1
 			}
 			else
 			{
-				SetLeftWeaponEnabled(currentCombatMode == PlayerCombatMode.CombatMode.Offensive);
-				SetRightWeaponEnabled(currentCombatMode == PlayerCombatMode.CombatMode.Offensive || currentCombatMode == PlayerCombatMode.CombatMode.Defensive);
+				SetLeftWeaponEnabled(false);
+				SetRightWeaponEnabled(true);
 				if (!GetComponent<PlayerMovement>().IsDashing)
 				{
 					if (DynamicInput.GetButtonDown("Right Hand Action") && RightWeaponEnabled)
@@ -231,17 +200,17 @@ namespace TechnoWolf.Project1
 			leftHandWeapon.GetComponent<SpriteRenderer>().enabled = enabled;
 			leftHandWeapon.GetComponent<Collider2D>().enabled = false;
 		}
+	}
 
-		public class TimelineRecord_PlayerMelee : TimelineRecord_PlayerCombatModeUser
-		{
-			public float cooldown;
-			public int damagePerHit;
-			public float swingDuration;
-			public float swordIdleAngle;
-			public float swordSwingArc;
-			public float comboLimit;
-			public int currentSwingNumberRight;
-			public int currentSwingNumberLeft;
-		}
+	public class TimelineRecord_PlayerMelee : TimelineRecordForBehaviour
+	{
+		public float cooldown;
+		public int damagePerHit;
+		public float swingDuration;
+		public float swordIdleAngle;
+		public float swordSwingArc;
+		public float comboLimit;
+		public int currentSwingNumberRight;
+		public int currentSwingNumberLeft;
 	}
 }

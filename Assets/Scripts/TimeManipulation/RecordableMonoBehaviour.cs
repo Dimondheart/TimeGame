@@ -26,7 +26,7 @@ namespace TechnoWolf.TimeManipulation
 	public abstract class RecordableMonoBehaviour<T> : RecordableMonoBehaviour where T : TimelineRecordForBehaviour, new()
 	{
 		/**<summary>The timeline of records for this recordable.</summary>*/
-		public Timeline<T> timeline { get; private set; }
+		private Timeline<T> timeline = new Timeline<T>();
 
 		/**<summary>Write the current state (values) of the class into the specified
 		 * record.</summary>
