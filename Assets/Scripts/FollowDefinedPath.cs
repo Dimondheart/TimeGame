@@ -15,9 +15,9 @@ namespace TechnoWolf.Project1
 		public float maxSpeed = 4.0f;
 		public int targetIndex = 0;
 
-		protected override void WriteCurrentState(TimelineRecord_FollowDefinedPath record)
+		protected override void RecordCurrentState(TimelineRecord_FollowDefinedPath record)
 		{
-			base.WriteCurrentState(record);
+			base.RecordCurrentState(record);
 			record.targets = (Transform[])targets.Clone();
 			record.maxSpeed = maxSpeed;
 			record.targetIndex = targetIndex;

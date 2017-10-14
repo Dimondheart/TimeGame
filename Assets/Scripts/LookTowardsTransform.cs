@@ -13,7 +13,7 @@ namespace TechnoWolf.Project1
 		/**<summary>Max distance to look towards the transform.</summary>*/
 		public float maxDistance = 6.0f;
 
-		protected override void WriteCurrentState(TimelineRecord_LookTowardsTransform record)
+		protected override void RecordCurrentState(TimelineRecord_LookTowardsTransform record)
 		{
 			record.lookTowards = lookTowards;
 			record.maxDistance = maxDistance;

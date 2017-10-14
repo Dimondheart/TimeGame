@@ -67,7 +67,7 @@ namespace TechnoWolf.Project1
 		 */
 		private bool forceUpdateThisCycle;
 
-		protected override void WriteCurrentState(TimelineRecord_SpriteAngleSelector record)
+		protected override void RecordCurrentState(TimelineRecord_SpriteAngleSelector record)
 		{
 			record.syncronizeRotations = syncronizeRotations.ToArray();
 			record.currentAngle = currentAngle;

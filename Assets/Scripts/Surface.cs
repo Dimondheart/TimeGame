@@ -67,7 +67,7 @@ namespace TechnoWolf.Project1
 			return sum / surfaces.Count;
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_Surface record)
+		protected override void RecordCurrentState(TimelineRecord_Surface record)
 		{
 			record.surfaceType = surfaceType;
 		}

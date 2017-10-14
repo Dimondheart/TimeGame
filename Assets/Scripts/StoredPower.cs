@@ -149,7 +149,7 @@ namespace TechnoWolf.Project1
 			CurrentMaxPP -= amount;
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_StoredPower record)
+		protected override void RecordCurrentState(TimelineRecord_StoredPower record)
 		{
 			record.currentMaxPP = currentMaxPP;
 			record.currentPP = currentPP;

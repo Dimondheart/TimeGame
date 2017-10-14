@@ -4,24 +4,21 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	/**<summary>A timeline record for a game object.</summary>*/
-	public class TimelineRecordForGameObject : TimelineRecord
+	/**<summary>A timeline record for a GameObject.</summary>*/
+	public sealed class TimelineRecordForGameObject : TimelineRecord<GameObject>
 	{
 		public bool activeSelf;
 
-		public TimelineRecordForGameObject(GameObject gameObject)
+		protected override void ApplyRecordedState(GameObject gameObject)
 		{
-			AddCommonData(gameObject);
-		}
-
-		public void AddCommonData(GameObject gameObject)
-		{
-			activeSelf = gameObject.activeSelf;
-		}
-
-		public void ApplyCommonData(GameObject gameObject)
-		{
+			base.ApplyRecordedState(gameObject);
 			gameObject.SetActive(activeSelf);
+		}
+
+		protected override void WriteCurrentState(GameObject gameObject)
+		{
+			base.WriteCurrentState(gameObject);
+			activeSelf = gameObject.activeSelf;
 		}
 	}
 }

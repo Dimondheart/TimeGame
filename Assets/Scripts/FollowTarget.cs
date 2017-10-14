@@ -43,9 +43,9 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_FollowTarget record)
+		protected override void RecordCurrentState(TimelineRecord_FollowTarget record)
 		{
-			base.WriteCurrentState(record);
+			base.RecordCurrentState(record);
 			record.maxSpeed = maxSpeed;
 			record.velocityBlendRate = velocityBlendRate;
 			record.targetLocationReached = targetLocationReached;

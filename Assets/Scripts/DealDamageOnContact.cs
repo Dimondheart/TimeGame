@@ -15,7 +15,7 @@ namespace TechnoWolf.Project1
 		/**<summary>Time the last attack was made.</summary>*/
 		private ConvertableTime lastAttackTime;
 
-		protected override void WriteCurrentState(TimelineRecord_DealDamageOnContact record)
+		protected override void RecordCurrentState(TimelineRecord_DealDamageOnContact record)
 		{
 			record.cooldown = cooldown;
 			record.damagePerHit = damagePerHit;

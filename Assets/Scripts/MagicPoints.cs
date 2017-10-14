@@ -87,7 +87,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_MagicPoints record)
+		protected override void RecordCurrentState(TimelineRecord_MagicPoints record)
 		{
 			record.absoluteMaxMP = absoluteMaxMP;
 			record.maxMP = maxMP;

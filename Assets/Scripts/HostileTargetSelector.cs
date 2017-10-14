@@ -13,7 +13,7 @@ namespace TechnoWolf.Project1
 		public List<GameObject> otherHostilesDetected = new List<GameObject>();
 		public Vector3 targetLastSpotted { get; private set; }
 
-		protected override void WriteCurrentState(TimelineRecord_HostileTargetSelector record)
+		protected override void RecordCurrentState(TimelineRecord_HostileTargetSelector record)
 		{
 			record.target = target;
 			record.hostilesInLineOfSight = hostilesInLineOfSight.ToArray();

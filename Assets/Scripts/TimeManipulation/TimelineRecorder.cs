@@ -38,11 +38,12 @@ namespace TechnoWolf.TimeManipulation
 				else if (TimelineRecordForComponent.IsComponentWithEnabled(c))
 				{
 					otherComponentTimelines[c] =
-						new Timeline<TimelineRecord_ComponentWithEnabled>();
+						new Timeline(typeof(TimelineRecord_ComponentWithEnabled), true);
 				}
 				else if (c is Behaviour)
 				{
-					otherComponentTimelines[c] = new Timeline<TimelineRecord_Behaviour>();
+					otherComponentTimelines[c] =
+						new Timeline(typeof(TimelineRecord_Behaviour), true);
 				}
 			}
 		}
@@ -77,16 +78,16 @@ namespace TechnoWolf.TimeManipulation
 						if (!otherComponentTimelines.ContainsKey(c))
 						{
 							otherComponentTimelines[c] =
-								new Timeline<TimelineRecord_ComponentWithEnabled>();
+								new Timeline(typeof(TimelineRecord_ComponentWithEnabled), true);
 						}
-						((Timeline<TimelineRecord_ComponentWithEnabled>)otherComponentTimelines[c])
-							.GetRecordForCurrentCycle().AddCommonData(c);
+						otherComponentTimelines[c].GetRecordForCurrentCycle().WriteCurrentState(c);
 					}
 					else if (c is Behaviour)
 					{
 						if (!otherComponentTimelines.ContainsKey(c))
 						{
-							otherComponentTimelines[c] = new Timeline<TimelineRecord_Behaviour>();
+							otherComponentTimelines[c] =
+								new Timeline(typeof(TimelineRecord_Behaviour), true);
 						}
 						((Timeline<TimelineRecord_Behaviour>)otherComponentTimelines[c])
 							.GetRecordForCurrentCycle().AddCommonData((Behaviour)c);

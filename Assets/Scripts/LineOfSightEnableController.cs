@@ -15,7 +15,7 @@ namespace TechnoWolf.Project1
 
 		private List<Collider2D> enemiesInRange = new List<Collider2D>();
 
-		protected override void WriteCurrentState(TimelineRecord_LineOfSightEnableController record)
+		protected override void RecordCurrentState(TimelineRecord_LineOfSightEnableController record)
 		{
 			record.enemiesInRange = enemiesInRange.ToArray();
 		}

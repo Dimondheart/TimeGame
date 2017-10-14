@@ -1,13 +1,15 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	/**<summary>Base timeline class, implements all instance-independent behaviour
-	 * and properties for easy access.</summary>
+	/**<summary>A timeline contains all records for a single GameObject,
+	 * Component, etc. and also synchronizes all timelines so the cycles
+	 * corresponding to the record at each position are the same.</summary>
 	 */
-	public abstract class Timeline
+	public class Timeline
 	{
 		/**<summary>The number of records that can be contained in a timeline.</summary>*/
 		public static readonly int timelineRecordCapacity;
@@ -23,10 +25,56 @@ namespace TechnoWolf.TimeManipulation
 		 */
 		protected static int cycleNumberAtLastIndex;
 
+		/**<summary>What ManipulableTime cycle this timeline was created during.
+		 * A value less than 0 indicates the timeline was created before the first
+		 * cycle (such as in a constructor.)</summary>
+		 */
+		public readonly int timelineCreatedDuringCycle;
+		/**<summary>The Type of the record this timeline contains. Used to
+		 * populate the internal storage of records when the timeline is first
+		 * created, or when the timeline is resized.</summary>
+		 */
+		public readonly Type recordType;
+		/**<summary>The array of records.</summary>*/
+		private TimelineRecord[] recordLoop;
+
 		static Timeline()
 		{
 			timelineRecordCapacity = Mathf.CeilToInt(ManipulableTime.rewindTimeLimit / 0.008f);
 			Reset();
+		}
+
+		/**<summary>The type parameter is either the type of the timeline record,
+		 * or the type of the class containing the definition for the timeline record.
+		 * The typeParamIsRecordType indicates if the type parameter is the record
+		 * type itself or the record definition is nested in the given type.</summary>
+		 * <param name="type">Either the type of the timeline record, or the type of
+		 * the class containing the definition for the timeline record.</param>
+		 * <param name="typeParamIsRecordType">True if the type param is the type of
+		 * the record, false if it is the type of the class containing the timeline
+		 * record declaration.</param>
+		 */
+		public Timeline(System.Type type, bool typeParamIsRecordType)
+		{
+			timelineCreatedDuringCycle = ManipulableTime.cycleNumber;
+			recordLoop = new TimelineRecord[timelineRecordCapacity];
+			if (typeParamIsRecordType)
+			{
+				recordType = type;
+			}
+			else
+			{
+				Type[] nestedTypes = type.GetNestedTypes();
+				foreach (Type nestedType in nestedTypes)
+				{
+					if (nestedType.IsSubclassOf(typeof(TimelineRecord)) && nestedType.IsSealed)
+					{
+						recordType = nestedType;
+						break;
+					}
+				}
+			}
+			PopulateRecordArray(0, recordLoop.Length - 1);
 		}
 
 		/**<summary>Update the shared/static timeline values so they line up with
@@ -81,29 +129,14 @@ namespace TechnoWolf.TimeManipulation
 				}
 			}
 		}
-	}
-
-	/**<summary></summary>*/
-	public class Timeline<T> : Timeline where T : TimelineRecord, new()
-	{
-		public readonly int timelineCreatedDuringCycle;
-
-		/**<summary>The array of records.</summary>*/
-		private T[] recordLoop;
-
-		public Timeline()
-		{
-			timelineCreatedDuringCycle = ManipulableTime.cycleNumber;
-			recordLoop = new T[timelineRecordCapacity];
-			PopulateRecordArray(0, recordLoop.Length - 1);
-		}
 
 		/**<summary>Get the TimelineRecord for the current cycle.</summary>*/
-		public T GetRecordForCurrentCycle()
+		public TimelineRecord GetRecordForCurrentCycle()
 		{
 			return recordLoop[currentCycleIndex];
 		}
 
+		/**<summary>Check if the timeline contains the specified record.</summary>*/
 		public bool HasRecord(int cycle)
 		{
 			return GetIndexOfCycle(cycle) >= 0;
@@ -114,7 +147,7 @@ namespace TechnoWolf.TimeManipulation
 		 * to check if this timeline has a record for the given cycle. An exception will occur
 		 * if the record does not exist.</summary>
 		 */
-		public T GetRecord(int cycle)
+		public TimelineRecord GetRecord(int cycle)
 		{
 			return recordLoop[GetIndexOfCycle(cycle)];
 		}
@@ -150,7 +183,7 @@ namespace TechnoWolf.TimeManipulation
 		{
 			for (int i = startIndex; i <= endIndex; i++)
 			{
-				recordLoop[i] = new T();
+				recordLoop[i] = (TimelineRecord)Activator.CreateInstance(recordType);
 			}
 		}
 	}

@@ -54,7 +54,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_PlayerMelee record)
+		protected override void RecordCurrentState(TimelineRecord_PlayerMelee record)
 		{
 			record.cooldown = cooldown;
 			record.damagePerHit = damagePerHit;

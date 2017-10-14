@@ -6,7 +6,8 @@ using UnityEngine;
 namespace TechnoWolf.TimeManipulation
 {
 	/**<summary>Timeline record base for component records.</summary>*/
-	public abstract class TimelineRecordForComponent : TimelineRecord
+	public abstract class TimelineRecordForComponent<T> : TimelineRecord<T>
+		where T : Component
 	{
 		/**<summary>Check if the specified component has a timeline maker
 		 * implemented by this class.</summary>
@@ -22,16 +23,20 @@ namespace TechnoWolf.TimeManipulation
 		{
 			if (component is Transform)
 			{
-				return new Timeline<TimelineRecord_Transform>();
+				return new Timeline(typeof(TimelineRecord_Transform), true);
 			}
 			else if (component is SpriteRenderer)
 			{
-				return new Timeline<TimelineRecord_SpriteRenderer>();
+				return new Timeline(typeof(TimelineRecord_SpriteRenderer), true);
 			}
 			else if (component is Rigidbody2D)
 			{
-				return new Timeline<TimelineRecord_Rigidbody2D>();
+				return new Timeline(typeof(TimelineRecord_Rigidbody2D), true);
 			}
+			Debug.LogError(
+				"Attempted to use TimelineRecordForComponent to make a" +
+				"timeline for a component that does not support it."
+				);
 			return null;
 		}
 
@@ -47,13 +52,6 @@ namespace TechnoWolf.TimeManipulation
 		{
 			if (component is Transform)
 			{
-				Transform t = (Transform)component;
-				TimelineRecord_Transform rec =
-					((Timeline<TimelineRecord_Transform>)timeline).GetRecordForCurrentCycle();
-				rec.localPosition = t.localPosition;
-				rec.localRotation = t.localRotation;
-				rec.localScale = t.localScale;
-				rec.AddCommonData(t);
 			}
 			else if (component is SpriteRenderer)
 			{
@@ -80,13 +78,6 @@ namespace TechnoWolf.TimeManipulation
 		{
 			if (component is Transform)
 			{
-				Transform t = (Transform)component;
-				TimelineRecord_Transform rec =
-					((Timeline<TimelineRecord_Transform>)timeline).GetRecord(cycle);
-				t.localPosition = rec.localPosition;
-				t.localRotation = rec.localRotation;
-				t.localScale = rec.localScale;
-				rec.ApplyCommonData(t);
 			}
 			else if (component is SpriteRenderer)
 			{
@@ -108,11 +99,7 @@ namespace TechnoWolf.TimeManipulation
 				rec.ApplyCommonData(rb2d);
 			}
 		}
-
-		public virtual void AddCommonData(Component component)
-		{
-		}
-		public virtual void ApplyCommonData(Component component)
+		public override void ApplyRecordedState<T>(T recordable)
 		{
 		}
 	}

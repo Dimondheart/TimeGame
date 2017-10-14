@@ -36,7 +36,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void WriteCurrentState(T record)
+		protected override void RecordCurrentState(T record)
 		{
 			record.isApplyingMotion = isApplyingMotion;
 		}

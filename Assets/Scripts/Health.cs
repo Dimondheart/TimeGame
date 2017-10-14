@@ -113,7 +113,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_Health record)
+		protected override void RecordCurrentState(TimelineRecord_Health record)
 		{
 			record.absoluteMaxHP = absoluteMaxHP;
 			record.currentMaxHP = currentmaxHP;

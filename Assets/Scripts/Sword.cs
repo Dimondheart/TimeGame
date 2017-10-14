@@ -35,7 +35,7 @@ namespace TechnoWolf.Project1
 			freezeDuration = record.freezeDuration;
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_Sword record)
+		protected override void RecordCurrentState(TimelineRecord_Sword record)
 		{
 			record.idleAngle = idleAngle;
 			record.swingAngleStart = swingAngleStart;

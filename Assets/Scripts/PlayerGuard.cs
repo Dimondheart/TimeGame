@@ -25,7 +25,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_PlayerGuard record)
+		protected override void RecordCurrentState(TimelineRecord_PlayerGuard record)
 		{
 			record.shield = shield;
 			record.sideShieldLeft = sideShieldLeft;

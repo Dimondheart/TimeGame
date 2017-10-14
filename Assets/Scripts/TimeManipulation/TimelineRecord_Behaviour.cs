@@ -8,7 +8,7 @@ namespace TechnoWolf.TimeManipulation
 	 * RecordableMonoBehaviour. Used to record shared data like enabled
 	 * for all behaviour components.</summary>
 	 */
-	public class TimelineRecord_Behaviour : TimelineRecordForBehaviour
+	public class TimelineRecord_Behaviour : TimelineRecordForBehaviour<Behaviour>
 	{
 	}
 }

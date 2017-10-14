@@ -136,7 +136,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_ElementalAlignment record)
+		protected override void RecordCurrentState(TimelineRecord_ElementalAlignment record)
 		{
 			record.minGainRate = minGainRate;
 			record.maxGainRate = maxGainRate;

@@ -41,7 +41,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_SurfaceInteraction record)
+		protected override void RecordCurrentState(TimelineRecord_SurfaceInteraction record)
 		{
 			record.frictionResistance = frictionResistance;
 			record.touchingSurfaces = touchingSurfaces.ToArray();

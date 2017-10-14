@@ -78,7 +78,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_CharacterTracker record)
+		protected override void RecordCurrentState(TimelineRecord_CharacterTracker record)
 		{
 			record.players = players.ToArray();
 			record.enemies = enemies.ToArray();

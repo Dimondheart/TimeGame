@@ -64,7 +64,7 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void WriteCurrentState(TimelineRecord_PlayerMovement record)
+		protected override void RecordCurrentState(TimelineRecord_PlayerMovement record)
 		{
 			record.isApplyingMotion = isApplyingMotion;
 			record.movementSpeed = movementSpeed;
