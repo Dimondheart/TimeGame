@@ -8,7 +8,7 @@ using System;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Movement controlled by the player.</summary>*/
-	public class PlayerMovement : RecordableMonoBehaviour<TimelineRecord_PlayerMovement>
+	public class PlayerMovement : RecordableMonoBehaviour
 	{
 		public PhysicsMaterial2D stationaryMaterial;
 		public PhysicsMaterial2D applyingMotionMaterial;
@@ -62,34 +62,6 @@ namespace TechnoWolf.Project1
 			{
 				return !Mathf.Approximately(0.0f, DynamicInput.GetAxis("Move Horizontal")) || !Mathf.Approximately(0.0f, DynamicInput.GetAxis("Move Vertical"));
 			}
-		}
-
-		protected override void RecordCurrentState(TimelineRecord_PlayerMovement record)
-		{
-			record.isApplyingMotion = isApplyingMotion;
-			record.movementSpeed = movementSpeed;
-			record.dashSpeed = dashSpeed;
-			record.dashDuration = dashDuration;
-			record.stopApplying = stopApplying;
-
-			record.lastDashStart = lastDashStart;
-			record.dashVelocity = dashVelocity;
-			record.isDashingInternal = isDashingInternal;
-			record.dashReleasedAfterExitingWater = dashReleasedAfterExitingWater;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_PlayerMovement record)
-		{
-			isApplyingMotion = record.isApplyingMotion;
-			movementSpeed = record.movementSpeed;
-			dashSpeed = record.dashSpeed;
-			dashDuration = record.dashDuration;
-			stopApplying = record.stopApplying;
-
-			lastDashStart = record.lastDashStart;
-			dashVelocity = record.dashVelocity;
-			isDashingInternal = record.isDashingInternal;
-			dashReleasedAfterExitingWater = record.dashReleasedAfterExitingWater;
 		}
 
 		private void Awake()
@@ -167,19 +139,49 @@ namespace TechnoWolf.Project1
 				|| !Mathf.Approximately(0.0f, newVelocity.x)
 				|| !Mathf.Approximately(0.0f, newVelocity.y);
 		}
-	}
 
-	public class TimelineRecord_PlayerMovement : TimelineRecordForBehaviour
-	{
-		public bool isApplyingMotion;
-		public float movementSpeed;
-		public float dashSpeed;
-		public float dashDuration;
-		public bool stopApplying;
+		public sealed class TimelineRecord_PlayerMovement : TimelineRecordForBehaviour<PlayerMovement>
+		{
+			public bool isApplyingMotion;
+			public float movementSpeed;
+			public float dashSpeed;
+			public float dashDuration;
+			public bool stopApplying;
 
-		public ConvertableTime lastDashStart;
-		public Vector3 dashVelocity;
-		public bool isDashingInternal;
-		public bool dashReleasedAfterExitingWater;
+			public ConvertableTime lastDashStart;
+			public Vector3 dashVelocity;
+			public bool isDashingInternal;
+			public bool dashReleasedAfterExitingWater;
+
+			protected override void WriteCurrentState(PlayerMovement pm)
+			{
+				base.WriteCurrentState(pm);
+				isApplyingMotion = pm.isApplyingMotion;
+				movementSpeed = pm.movementSpeed;
+				dashSpeed = pm.dashSpeed;
+				dashDuration = pm.dashDuration;
+				stopApplying = pm.stopApplying;
+
+				lastDashStart = pm.lastDashStart;
+				dashVelocity = pm.dashVelocity;
+				isDashingInternal = pm.isDashingInternal;
+				dashReleasedAfterExitingWater = pm.dashReleasedAfterExitingWater;
+			}
+
+			protected override void ApplyRecordedState(PlayerMovement pm)
+			{
+				base.ApplyRecordedState(pm);
+				pm.isApplyingMotion = isApplyingMotion;
+				pm.movementSpeed = movementSpeed;
+				pm.dashSpeed = dashSpeed;
+				pm.dashDuration = dashDuration;
+				pm.stopApplying = stopApplying;
+
+				pm.lastDashStart = lastDashStart;
+				pm.dashVelocity = dashVelocity;
+				pm.isDashingInternal = isDashingInternal;
+				pm.dashReleasedAfterExitingWater = dashReleasedAfterExitingWater;
+			}
+		}
 	}
 }

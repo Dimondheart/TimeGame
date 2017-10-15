@@ -23,24 +23,23 @@ namespace TechnoWolf.TimeManipulation
 		private void Start()
 		{
 			// Create necessary timelines now to make the first record cycle smoother
-			Component[] components = GetComponents<Component>();
-			foreach (Component c in components)
+			foreach (Component c in GetComponents<Component>())
 			{
 				if (c is RecordableMonoBehaviour)
 				{
 					continue;
 				}
-				if (TimelineRecordForComponent.HasTimelineMaker(c))
+				if (TimelineRecordForComponent<Component>.HasTimelineMaker(c))
 				{
 					otherComponentTimelines[c] =
-						TimelineRecordForComponent.MakeTimeline(c);
+						TimelineRecordForComponent<Component>.MakeTimeline(c);
 				}
-				else if (TimelineRecordForComponent.IsComponentWithEnabled(c))
+				else if (TimelineRecordForComponent<Component>.IsComponentWithEnabled(c))
 				{
 					otherComponentTimelines[c] =
 						new Timeline(typeof(TimelineRecord_ComponentWithEnabled), true);
 				}
-				else if (c is Behaviour)
+				else if (c is Behaviour && !(c is TimelineRecorder))
 				{
 					otherComponentTimelines[c] =
 						new Timeline(typeof(TimelineRecord_Behaviour), true);
@@ -57,77 +56,58 @@ namespace TechnoWolf.TimeManipulation
 		{
 			if (ManipulableTime.IsRecording)
 			{
-				Component[] components = GetComponents<Component>();
-				foreach (Component c in components)
+				foreach (Component c in GetComponents<Component>())
 				{
 					if (c is RecordableMonoBehaviour)
 					{
-						((RecordableMonoBehaviour)c).WriteRecord();
+						((RecordableMonoBehaviour)c).timeline.GetRecordForCurrentCycle().WriteRecord(c);
 					}
-					else if (TimelineRecordForComponent.HasTimelineMaker(c))
+					else if (TimelineRecordForComponent<Component>.HasTimelineMaker(c))
 					{
 						if (!otherComponentTimelines.ContainsKey(c))
 						{
 							otherComponentTimelines[c] =
-								TimelineRecordForComponent.MakeTimeline(c);
+								TimelineRecordForComponent<Component>.MakeTimeline(c);
 						}
-						TimelineRecordForComponent.WriteRecord(otherComponentTimelines[c], c);
+						otherComponentTimelines[c].GetRecordForCurrentCycle().WriteRecord(c);
 					}
-					else if (TimelineRecordForComponent.IsComponentWithEnabled(c))
+					else if (TimelineRecordForComponent<Component>.IsComponentWithEnabled(c))
 					{
 						if (!otherComponentTimelines.ContainsKey(c))
 						{
 							otherComponentTimelines[c] =
 								new Timeline(typeof(TimelineRecord_ComponentWithEnabled), true);
 						}
-						otherComponentTimelines[c].GetRecordForCurrentCycle().WriteCurrentState(c);
+						otherComponentTimelines[c].GetRecordForCurrentCycle().WriteRecord(c);
 					}
-					else if (c is Behaviour)
+					else if (c is Behaviour && !(c is TimelineRecorder))
 					{
 						if (!otherComponentTimelines.ContainsKey(c))
 						{
 							otherComponentTimelines[c] =
 								new Timeline(typeof(TimelineRecord_Behaviour), true);
 						}
-						((Timeline<TimelineRecord_Behaviour>)otherComponentTimelines[c])
-							.GetRecordForCurrentCycle().AddCommonData((Behaviour)c);
+						otherComponentTimelines[c].GetRecordForCurrentCycle().WriteRecord(c);
 					}
 				}
 			}
 			else if (ManipulableTime.IsApplyingRecords)
 			{
-				Component[] components = GetComponents<Component>();
-				foreach (Component c in components)
+				foreach (Component c in GetComponents<Component>())
 				{
 					if (c is RecordableMonoBehaviour)
 					{
-						((RecordableMonoBehaviour)c).ApplyRecord(ManipulableTime.cycleNumber);
-					}
-					else if (TimelineRecordForComponent.HasTimelineMaker(c))
-					{
-						if (otherComponentTimelines.ContainsKey(c))
+						if (((RecordableMonoBehaviour)c).timeline.HasRecord(ManipulableTime.cycleNumber))
 						{
-							TimelineRecordForComponent.ApplyRecord(
-								otherComponentTimelines[c],
-								ManipulableTime.cycleNumber,
-								c
-								);
+							((RecordableMonoBehaviour)c).timeline
+								.GetRecord(ManipulableTime.cycleNumber).ApplyRecord(c);
 						}
 					}
-					else if (TimelineRecordForComponent.IsComponentWithEnabled(c))
+					else if (otherComponentTimelines.ContainsKey(c))
 					{
-						if (otherComponentTimelines.ContainsKey(c))
+						if (otherComponentTimelines[c].HasRecord(ManipulableTime.cycleNumber))
 						{
-							((Timeline<TimelineRecord_ComponentWithEnabled>)otherComponentTimelines[c])
-								.GetRecordForCurrentCycle().ApplyCommonData(c);
-						}
-					}
-					else if (c is Behaviour)
-					{
-						if (otherComponentTimelines.ContainsKey(c))
-						{
-							((Timeline<TimelineRecord_Behaviour>)otherComponentTimelines[c])
-								.GetRecordForCurrentCycle().ApplyCommonData((Behaviour)c);
+							otherComponentTimelines[c].GetRecord(ManipulableTime.cycleNumber).ApplyRecord(c);
 						}
 					}
 				}

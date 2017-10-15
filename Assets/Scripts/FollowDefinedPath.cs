@@ -9,27 +9,11 @@ namespace TechnoWolf.Project1
 	/**<summary>Follow a path using a predefined set of points, which
 	 * loop back to the first point.</summary>
 	 */
-	public class FollowDefinedPath : ControlledMovement<TimelineRecord_FollowDefinedPath>
+	public class FollowDefinedPath : ControlledMovement
 	{
 		public Transform[] targets;
 		public float maxSpeed = 4.0f;
 		public int targetIndex = 0;
-
-		protected override void RecordCurrentState(TimelineRecord_FollowDefinedPath record)
-		{
-			base.RecordCurrentState(record);
-			record.targets = (Transform[])targets.Clone();
-			record.maxSpeed = maxSpeed;
-			record.targetIndex = targetIndex;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_FollowDefinedPath record)
-		{
-			base.ApplyRecordedState(record);
-			targets = (Transform[])record.targets.Clone();
-			maxSpeed = record.maxSpeed;
-			targetIndex = record.targetIndex;
-		}
 
 		private void OnEnable()
 		{
@@ -85,12 +69,28 @@ namespace TechnoWolf.Project1
 			IsApplyingMotion = true;
 			GetComponent<DirectionLooking>().Direction = newVelocity;
 		}
-	}
 
-	public class TimelineRecord_FollowDefinedPath : TimelineRecord_ControlledMovement
-	{
-		public Transform[] targets;
-		public float maxSpeed;
-		public int targetIndex;
+		public class TimelineRecord_FollowDefinedPath : TimelineRecord_ControlledMovement<FollowDefinedPath>
+		{
+			public Transform[] targets;
+			public float maxSpeed;
+			public int targetIndex;
+
+			protected override void WriteCurrentState(FollowDefinedPath fdp)
+			{
+				base.WriteCurrentState(fdp);
+				record.targets = (Transform[])fdp.targets.Clone();
+				record.maxSpeed = maxSpeed;
+				record.targetIndex = targetIndex;
+			}
+
+			protected override void ApplyRecordedState(FollowDefinedPath fdp)
+			{
+				base.ApplyRecordedState(record);
+				targets = (Transform[])record.targets.Clone();
+				maxSpeed = record.maxSpeed;
+				targetIndex = record.targetIndex;
+			}
+		}
 	}
 }

@@ -8,8 +8,7 @@ namespace TechnoWolf.Project1
 	/**<summary>Base class for components that handle controlled motion
 	 * from the player or an AI.</summary>
 	 */
-	public abstract class ControlledMovement<T> : RecordableMonoBehaviour<T>
-		where T : TimelineRecord_ControlledMovement, new()
+	public abstract class ControlledMovement : RecordableMonoBehaviour
 	{
 		public PhysicsMaterial2D stationaryMaterial;
 		public PhysicsMaterial2D applyingMotionMaterial;
@@ -36,19 +35,20 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void RecordCurrentState(T record)
+		public abstract class TimelineRecord_ControlledMovement<T> : TimelineRecordForBehaviour<T>
+			where T : ControlledMovement
 		{
-			record.isApplyingMotion = isApplyingMotion;
-		}
+			public bool isApplyingMotion;
 
-		protected override void ApplyRecordedState(T record)
-		{
-			isApplyingMotion = record.isApplyingMotion;
-		}
-	}
+			protected override void WriteCurrentState(T cm)
+			{
+				isApplyingMotion = cm.isApplyingMotion;
+			}
 
-	public abstract class TimelineRecord_ControlledMovement : TimelineRecordForBehaviour
-	{
-		public bool isApplyingMotion;
+			protected override void ApplyRecordedState(T cm)
+			{
+				cm.isApplyingMotion = isApplyingMotion;
+			}
+		}
 	}
 }

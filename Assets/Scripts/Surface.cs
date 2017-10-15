@@ -8,7 +8,7 @@ namespace TechnoWolf.Project1
 	/**<summary>Information about a ground/etc. surface and detecting
 	 * touching game objects that have SurfaceIntaraction.</summary>
 	 */
-	public class Surface : RecordableMonoBehaviour<TimelineRecord_Surface>
+	public class Surface : RecordableMonoBehaviour
 	{
 		/**<summary>What type of ground/etc. covers this surface.</summary>*/
 		public SurfaceType surfaceType;
@@ -67,16 +67,6 @@ namespace TechnoWolf.Project1
 			return sum / surfaces.Count;
 		}
 
-		protected override void RecordCurrentState(TimelineRecord_Surface record)
-		{
-			record.surfaceType = surfaceType;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_Surface record)
-		{
-			surfaceType = record.surfaceType;
-		}
-
 		private void OnTriggerEnter2D(Collider2D collision)
 		{
 			if (ManipulableTime.IsApplyingRecords)
@@ -110,10 +100,22 @@ namespace TechnoWolf.Project1
 			Floor,
 			Path
 		}
-	}
 
-	public class TimelineRecord_Surface : TimelineRecordForBehaviour
-	{
-		public Surface.SurfaceType surfaceType;
+		public sealed class TimelineRecord_Surface : TimelineRecordForBehaviour<Surface>
+		{
+			public Surface.SurfaceType surfaceType;
+
+			protected override void WriteCurrentState(Surface surface)
+			{
+				base.WriteCurrentState(surface);
+				surfaceType = surface.surfaceType;
+			}
+
+			protected override void ApplyRecordedState(Surface surface)
+			{
+				base.ApplyRecordedState(surface);
+				surface.surfaceType = surfaceType;
+			}
+		}
 	}
 }

@@ -10,7 +10,7 @@ namespace TechnoWolf.Project1
 	 * note; the sprite variables are not accounted for in the record, so if in
 	 * the future the sprites are changed then this will need to be added.</summary>
 	 */
-	public class SpriteAngleSelector : RecordableMonoBehaviour<TimelineRecord_SpriteAngleSelector>
+	public class SpriteAngleSelector : RecordableMonoBehaviour
 	{
 		private static readonly Quaternion upRotation = Quaternion.Euler(0.0f, 0.0f, 0.0f);
 		private static readonly Quaternion downRotation = Quaternion.Euler(0.0f, 0.0f, 180.0f);
@@ -66,23 +66,6 @@ namespace TechnoWolf.Project1
 		 * trying to update.</summary>
 		 */
 		private bool forceUpdateThisCycle;
-
-		protected override void RecordCurrentState(TimelineRecord_SpriteAngleSelector record)
-		{
-			record.syncronizeRotations = syncronizeRotations.ToArray();
-			record.currentAngle = currentAngle;
-			record.usingDeadVersion = usingDeadVersion;
-			record.forceUpdateThisCycle = forceUpdateThisCycle;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_SpriteAngleSelector record)
-		{
-			syncronizeRotations.Clear();
-			syncronizeRotations.AddRange(record.syncronizeRotations);
-			currentAngle = record.currentAngle;
-			usingDeadVersion = record.usingDeadVersion;
-			forceUpdateThisCycle = record.forceUpdateThisCycle;
-		}
 
 		protected override void FlowingUpdate()
 		{
@@ -222,13 +205,32 @@ namespace TechnoWolf.Project1
 				t.localRotation = synchRotation;
 			}
 		}
-	}
 
-	public class TimelineRecord_SpriteAngleSelector : TimelineRecordForBehaviour
-	{
-		public Transform[] syncronizeRotations;
-		public int currentAngle;
-		public bool usingDeadVersion;
-		public bool forceUpdateThisCycle;
+		public class TimelineRecord_SpriteAngleSelector : TimelineRecordForBehaviour<SpriteAngleSelector>
+		{
+			public Transform[] syncronizeRotations;
+			public int currentAngle;
+			public bool usingDeadVersion;
+			public bool forceUpdateThisCycle;
+
+			protected override void WriteCurrentState(SpriteAngleSelector sas)
+			{
+				base.WriteCurrentState(sas);
+				syncronizeRotations = sas.syncronizeRotations.ToArray();
+				currentAngle = sas.currentAngle;
+				usingDeadVersion = sas.usingDeadVersion;
+				forceUpdateThisCycle = sas.forceUpdateThisCycle;
+			}
+
+			protected override void ApplyRecordedState(SpriteAngleSelector sas)
+			{
+				base.ApplyRecordedState(sas);
+				sas.syncronizeRotations.Clear();
+				sas.syncronizeRotations.AddRange(syncronizeRotations);
+				sas.currentAngle = currentAngle;
+				sas.usingDeadVersion = usingDeadVersion;
+				sas.forceUpdateThisCycle = forceUpdateThisCycle;
+			}
+		}
 	}
 }

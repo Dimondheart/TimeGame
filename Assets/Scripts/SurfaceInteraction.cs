@@ -8,7 +8,7 @@ namespace TechnoWolf.Project1
 	/**<summary>Surface interactions (like friction) and information
 	 * relating to touching surfaces.</summary>
 	 */
-	public class SurfaceInteraction : RecordableMonoBehaviour<TimelineRecord_SurfaceInteraction>
+	public class SurfaceInteraction : RecordableMonoBehaviour
 	{
 		/**<summary>Velocity multiplier when not touching a specific surface
 		 * (meaning outside the map/play area.)</summary>
@@ -39,19 +39,6 @@ namespace TechnoWolf.Project1
 				}
 				return true;
 			}
-		}
-
-		protected override void RecordCurrentState(TimelineRecord_SurfaceInteraction record)
-		{
-			record.frictionResistance = frictionResistance;
-			record.touchingSurfaces = touchingSurfaces.ToArray();
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_SurfaceInteraction record)
-		{
-			frictionResistance = record.frictionResistance;
-			touchingSurfaces.Clear();
-			touchingSurfaces.AddRange(record.touchingSurfaces);
 		}
 
 		protected override void FlowingUpdate()
@@ -104,11 +91,26 @@ namespace TechnoWolf.Project1
 		{
 			touchingSurfaces.Remove(surface);
 		}
-	}
 
-	public class TimelineRecord_SurfaceInteraction : TimelineRecordForBehaviour
-	{
-		public float frictionResistance;
-		public Surface[] touchingSurfaces;
+		public sealed class TimelineRecord_SurfaceInteraction : TimelineRecordForBehaviour<SurfaceInteraction>
+		{
+			public float frictionResistance;
+			public Surface[] touchingSurfaces;
+
+			protected override void WriteCurrentState(SurfaceInteraction si)
+			{
+				base.WriteCurrentState(si);
+				frictionResistance = si.frictionResistance;
+				touchingSurfaces = si.touchingSurfaces.ToArray();
+			}
+
+			protected override void ApplyRecordedState(SurfaceInteraction si)
+			{
+				base.ApplyRecordedState(si);
+				si.frictionResistance = frictionResistance;
+				si.touchingSurfaces.Clear();
+				si.touchingSurfaces.AddRange(touchingSurfaces);
+			}
+		}
 	}
 }

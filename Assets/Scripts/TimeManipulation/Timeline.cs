@@ -73,6 +73,14 @@ namespace TechnoWolf.TimeManipulation
 						break;
 					}
 				}
+				if (recordType == null)
+				{
+					Debug.LogError(
+						"Unable to find nested sealed class extending TimelineRecord"
+						+ "for type:"
+						+ type
+						);
+				}
 			}
 			PopulateRecordArray(0, recordLoop.Length - 1);
 		}

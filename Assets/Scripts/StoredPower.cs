@@ -7,7 +7,7 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Finite stored power available for use.</summary>*/
-	public class StoredPower : RecordableMonoBehaviour<TimelineRecord_StoredPower>, IPrimaryValue
+	public class StoredPower : RecordableMonoBehaviour, IPrimaryValue
 	{
 		public double initialMaxPP = 1000.0;
 		public double regenRate = 0.0;
@@ -149,22 +149,24 @@ namespace TechnoWolf.Project1
 			CurrentMaxPP -= amount;
 		}
 
-		protected override void RecordCurrentState(TimelineRecord_StoredPower record)
+		public sealed class TimelineRecord_StoredPower : TimelineRecordForBehaviour<StoredPower>
 		{
-			record.currentMaxPP = currentMaxPP;
-			record.currentPP = currentPP;
-		}
+			public double currentMaxPP;
+			public double currentPP;
 
-		protected override void ApplyRecordedState(TimelineRecord_StoredPower record)
-		{
-			currentMaxPP = record.currentMaxPP;
-			currentPP = record.currentPP;
-		}
-	}
+			protected override void WriteCurrentState(StoredPower sp)
+			{
+				base.WriteCurrentState(sp);
+				currentMaxPP = sp.currentMaxPP;
+				currentPP = sp.currentPP;
+			}
 
-	public class TimelineRecord_StoredPower : TimelineRecordForBehaviour
-	{
-		public double currentMaxPP;
-		public double currentPP;
+			protected override void ApplyRecordedState(StoredPower sp)
+			{
+				base.ApplyRecordedState(sp);
+				sp.currentMaxPP = currentMaxPP;
+				sp.currentPP = currentPP;
+			}
+		}
 	}
 }

@@ -8,7 +8,7 @@ using System;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Player controlled guarding.</summary>*/
-	public class PlayerGuard : RecordableMonoBehaviour<TimelineRecord_PlayerGuard>, IHitTaker
+	public class PlayerGuard : RecordableMonoBehaviour, IHitTaker
 	{
 		public GameObject shield;
 		public GameObject sideShieldLeft;
@@ -23,20 +23,6 @@ namespace TechnoWolf.Project1
 			{
 				return shield.GetComponent<SpriteRenderer>().enabled;
 			}
-		}
-
-		protected override void RecordCurrentState(TimelineRecord_PlayerGuard record)
-		{
-			record.shield = shield;
-			record.sideShieldLeft = sideShieldLeft;
-			record.sideShieldRight = sideShieldRight;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_PlayerGuard record)
-		{
-			shield = record.shield;
-			sideShieldLeft = record.sideShieldLeft;
-			sideShieldRight = record.sideShieldRight;
 		}
 
 		bool IHitTaker.TakeHit(HitInfo hit)
@@ -125,12 +111,28 @@ namespace TechnoWolf.Project1
 			sideShieldRight.GetComponent<Collider2D>().isTrigger = !enabled;
 			sideShieldRight.GetComponent<Collider2D>().enabled = enabled;
 		}
-	}
 
-	public class TimelineRecord_PlayerGuard : TimelineRecordForBehaviour
-	{
-		public GameObject shield;
-		public GameObject sideShieldLeft;
-		public GameObject sideShieldRight;
+		public class TimelineRecord_PlayerGuard : TimelineRecordForBehaviour<PlayerGuard>
+		{
+			public GameObject shield;
+			public GameObject sideShieldLeft;
+			public GameObject sideShieldRight;
+
+			protected override void WriteCurrentState(PlayerGuard guard)
+			{
+				base.WriteCurrentState(guard);
+				shield = guard.shield;
+				sideShieldLeft = guard.sideShieldLeft;
+				sideShieldRight = guard.sideShieldRight;
+			}
+
+			protected override void ApplyRecordedState(PlayerGuard guard)
+			{
+				base.ApplyRecordedState(guard);
+				guard.shield = shield;
+				guard.sideShieldLeft = sideShieldLeft;
+				guard.sideShieldRight = sideShieldRight;
+			}
+		}
 	}
 }

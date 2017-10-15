@@ -5,54 +5,58 @@ using UnityEngine;
 
 namespace TechnoWolf.TimeManipulation
 {
-	/**<summary>Timeline record for non-behaviour Unity components that have an
-	 * enabled property, but don't have their own timeline record.</summary>
-	 */
-	public class TimelineRecord_ComponentWithEnabled : TimelineRecordForComponent, IWriteApplyTimelineRecord<Component>
+	public abstract class TimelineRecord_ComponentWithEnabled<T> : TimelineRecordForComponent<T>
+		where T : Component
 	{
 		/**<summary>If component was enabled at this point in time.</summary>*/
-		public bool enabled { get; private set; }
+		public bool enabled;
 
-		public void ApplyRecordedState(Component component)
+		protected override void ApplyRecordedState(T component)
 		{
 			base.ApplyRecordedState(component);
 			if (component is Collider)
 			{
-				((Collider)component).enabled = enabled;
+				((Collider)(object)component).enabled = enabled;
 			}
 			else if (component is LODGroup)
 			{
-				((LODGroup)component).enabled = enabled;
+				((LODGroup)(object)component).enabled = enabled;
 			}
 			else if (component is Cloth)
 			{
-				((Cloth)component).enabled = enabled;
+				((Cloth)(object)component).enabled = enabled;
 			}
 			else if (component is Renderer)
 			{
-				((Renderer)component).enabled = enabled;
+				((Renderer)(object)component).enabled = enabled;
 			}
 		}
 
-		public void WriteCurrentState(Component component)
+		protected override void WriteCurrentState(T component)
 		{
 			base.WriteCurrentState(component);
 			if (component is Collider)
 			{
-				enabled = ((Collider)component).enabled;
+				enabled = ((Collider)(object)component).enabled;
 			}
 			else if (component is LODGroup)
 			{
-				enabled = ((LODGroup)component).enabled;
+				enabled = ((LODGroup)(object)component).enabled;
 			}
 			else if (component is Cloth)
 			{
-				enabled = ((Cloth)component).enabled;
+				enabled = ((Cloth)(object)component).enabled;
 			}
 			else if (component is Renderer)
 			{
-				enabled = ((Renderer)component).enabled;
+				enabled = ((Renderer)(object)component).enabled;
 			}
 		}
+	}
+	/**<summary>Timeline record for non-behaviour Unity components that have an
+	 * enabled property, but don't have their own timeline record.</summary>
+	 */
+	public sealed class TimelineRecord_ComponentWithEnabled : TimelineRecord_ComponentWithEnabled<Component>
+	{
 	}
 }

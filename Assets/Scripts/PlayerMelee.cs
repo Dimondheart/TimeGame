@@ -7,7 +7,7 @@ using System;
 
 namespace TechnoWolf.Project1
 {
-	public class PlayerMelee : RecordableMonoBehaviour<TimelineRecord_PlayerMelee>
+	public class PlayerMelee : RecordableMonoBehaviour
 	{
 		public Sword rightHandWeapon;
 		public Sword leftHandWeapon;
@@ -52,30 +52,6 @@ namespace TechnoWolf.Project1
 			{
 				return leftHandWeapon.GetComponent<SpriteRenderer>().enabled;
 			}
-		}
-
-		protected override void RecordCurrentState(TimelineRecord_PlayerMelee record)
-		{
-			record.cooldown = cooldown;
-			record.damagePerHit = damagePerHit;
-			record.swingDuration = swingDuration;
-			record.swordIdleAngle = swordIdleAngle;
-			record.swordSwingArc = swordSwingArc;
-			record.comboLimit = comboLimit;
-			record.currentSwingNumberRight = currentSwingNumberRight;
-			record.currentSwingNumberLeft = currentSwingNumberLeft;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_PlayerMelee record)
-		{
-			cooldown = record.cooldown;
-			damagePerHit = record.damagePerHit;
-			swingDuration = record.swingDuration;
-			swordIdleAngle = record.swordIdleAngle;
-			swordSwingArc = record.swordSwingArc;
-			comboLimit = record.comboLimit;
-			currentSwingNumberRight = record.currentSwingNumberRight;
-			currentSwingNumberLeft = record.currentSwingNumberLeft;
 		}
 
 		protected override void FlowingUpdate()
@@ -200,17 +176,43 @@ namespace TechnoWolf.Project1
 			leftHandWeapon.GetComponent<SpriteRenderer>().enabled = enabled;
 			leftHandWeapon.GetComponent<Collider2D>().enabled = false;
 		}
-	}
 
-	public class TimelineRecord_PlayerMelee : TimelineRecordForBehaviour
-	{
-		public float cooldown;
-		public int damagePerHit;
-		public float swingDuration;
-		public float swordIdleAngle;
-		public float swordSwingArc;
-		public float comboLimit;
-		public int currentSwingNumberRight;
-		public int currentSwingNumberLeft;
+		public class TimelineRecord_PlayerMelee : TimelineRecordForBehaviour<PlayerMelee>
+		{
+			public float cooldown;
+			public int damagePerHit;
+			public float swingDuration;
+			public float swordIdleAngle;
+			public float swordSwingArc;
+			public float comboLimit;
+			public int currentSwingNumberRight;
+			public int currentSwingNumberLeft;
+
+			protected override void WriteCurrentState(PlayerMelee melee)
+			{
+				base.WriteCurrentState(melee);
+				cooldown = melee.cooldown;
+				damagePerHit = melee.damagePerHit;
+				swingDuration = melee.swingDuration;
+				swordIdleAngle = melee.swordIdleAngle;
+				swordSwingArc = melee.swordSwingArc;
+				comboLimit = melee.comboLimit;
+				currentSwingNumberRight = melee.currentSwingNumberRight;
+				currentSwingNumberLeft = melee.currentSwingNumberLeft;
+			}
+
+			protected override void ApplyRecordedState(PlayerMelee melee)
+			{
+				base.ApplyRecordedState(melee);
+				melee.cooldown = cooldown;
+				melee.damagePerHit = damagePerHit;
+				melee.swingDuration = swingDuration;
+				melee.swordIdleAngle = swordIdleAngle;
+				melee.swordSwingArc = swordSwingArc;
+				melee.comboLimit = comboLimit;
+				melee.currentSwingNumberRight = currentSwingNumberRight;
+				melee.currentSwingNumberLeft = currentSwingNumberLeft;
+			}
+		}
 	}
 }

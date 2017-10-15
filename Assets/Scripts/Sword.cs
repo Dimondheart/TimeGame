@@ -6,7 +6,7 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Handles sword related stuff.</summary>*/
-	public class Sword : RecordableMonoBehaviour<TimelineRecord_Sword>
+	public class Sword : RecordableMonoBehaviour
 	{
 		public float idleAngle;
 		public float swingAngleStart;
@@ -19,36 +19,6 @@ namespace TechnoWolf.Project1
 		private ConvertableTime swingStartTime;
 		private float swingDuration;
 		private float freezeDuration;
-
-		protected override void ApplyRecordedState(TimelineRecord_Sword record)
-		{
-			idleAngle = record.idleAngle;
-			swingAngleStart = record.swingAngleStart;
-			swingAngleEnd = record.swingAngleEnd;
-			swingTransform = record.swingTransform;
-			owner = record.owner;
-			isSwinging = record.isSwinging;
-			isEndingSwing = record.isEndingSwing;
-
-			swingStartTime = record.swingStartTime;
-			swingDuration = record.swingDuration;
-			freezeDuration = record.freezeDuration;
-		}
-
-		protected override void RecordCurrentState(TimelineRecord_Sword record)
-		{
-			record.idleAngle = idleAngle;
-			record.swingAngleStart = swingAngleStart;
-			record.swingAngleEnd = swingAngleEnd;
-			record.swingTransform = swingTransform;
-			record.owner = owner;
-			record.isSwinging = isSwinging;
-			record.isEndingSwing = isEndingSwing;
-
-			record.swingStartTime = swingStartTime;
-			record.swingDuration = swingDuration;
-			record.freezeDuration = freezeDuration;
-		}
 
 		private void Start()
 		{
@@ -137,20 +107,52 @@ namespace TechnoWolf.Project1
 			swingTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, idleAngle);
 			GetComponent<Collider2D>().enabled = false;
 		}
-	}
 
-	public class TimelineRecord_Sword : TimelineRecordForBehaviour
-	{
-		public float idleAngle;
-		public float swingAngleStart;
-		public float swingAngleEnd;
-		public Transform swingTransform;
-		public GameObject owner;
-		public bool isSwinging;
-		public bool isEndingSwing;
+		public sealed class TimelineRecord_Sword : TimelineRecordForBehaviour<Sword>
+		{
+			public float idleAngle;
+			public float swingAngleStart;
+			public float swingAngleEnd;
+			public Transform swingTransform;
+			public GameObject owner;
+			public bool isSwinging;
+			public bool isEndingSwing;
 
-		public ConvertableTime swingStartTime;
-		public float swingDuration;
-		public float freezeDuration;
+			public ConvertableTime swingStartTime;
+			public float swingDuration;
+			public float freezeDuration;
+
+			protected override void ApplyRecordedState(Sword sword)
+			{
+				base.ApplyRecordedState(sword);
+				sword.idleAngle = idleAngle;
+				sword.swingAngleStart = swingAngleStart;
+				sword.swingAngleEnd = swingAngleEnd;
+				sword.swingTransform = swingTransform;
+				sword.owner = owner;
+				sword.isSwinging = isSwinging;
+				sword.isEndingSwing = isEndingSwing;
+
+				sword.swingStartTime = swingStartTime;
+				sword.swingDuration = swingDuration;
+				sword.freezeDuration = freezeDuration;
+			}
+
+			protected override void WriteCurrentState(Sword sword)
+			{
+				base.WriteCurrentState(sword);
+				idleAngle = sword.idleAngle;
+				swingAngleStart = sword.swingAngleStart;
+				swingAngleEnd = sword.swingAngleEnd;
+				swingTransform = sword.swingTransform;
+				owner = sword.owner;
+				isSwinging = sword.isSwinging;
+				isEndingSwing = sword.isEndingSwing;
+
+				swingStartTime = sword.swingStartTime;
+				swingDuration = sword.swingDuration;
+				freezeDuration = sword.freezeDuration;
+			}
+		}
 	}
 }

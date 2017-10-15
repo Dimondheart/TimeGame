@@ -6,7 +6,7 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Deal damage to opponents on contact.</summary>*/
-	public class DealDamageOnContact : RecordableMonoBehaviour<TimelineRecord_DealDamageOnContact>
+	public class DealDamageOnContact : RecordableMonoBehaviour
 	{
 		/**<summary>Delay between attacks, in seconds.</summary>*/
 		public float cooldown = 0.25f;
@@ -14,20 +14,6 @@ namespace TechnoWolf.Project1
 		public int damagePerHit = 5;
 		/**<summary>Time the last attack was made.</summary>*/
 		private ConvertableTime lastAttackTime;
-
-		protected override void RecordCurrentState(TimelineRecord_DealDamageOnContact record)
-		{
-			record.cooldown = cooldown;
-			record.damagePerHit = damagePerHit;
-			record.lastAttackTime = lastAttackTime;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_DealDamageOnContact record)
-		{
-			cooldown = record.cooldown;
-			damagePerHit = record.damagePerHit;
-			lastAttackTime = record.lastAttackTime;
-		}
 
 		private void Awake()
 		{
@@ -61,12 +47,26 @@ namespace TechnoWolf.Project1
 			otherHealth.Hit(hit);
 			lastAttackTime.SetToCurrent();
 		}
-	}
 
-	public class TimelineRecord_DealDamageOnContact : TimelineRecordForBehaviour
-	{
-		public float cooldown;
-		public int damagePerHit;
-		public ConvertableTime lastAttackTime;
+		public sealed class TimelineRecord_DealDamageOnContact : TimelineRecordForBehaviour<DealDamageOnContact>
+		{
+			public float cooldown;
+			public int damagePerHit;
+			public ConvertableTime lastAttackTime;
+
+			protected override void WriteCurrentState(DealDamageOnContact ddc)
+			{
+				cooldown = ddc.cooldown;
+				damagePerHit = ddc.damagePerHit;
+				lastAttackTime = ddc.lastAttackTime;
+			}
+
+			protected override void ApplyRecordedState(DealDamageOnContact ddc)
+			{
+				ddc.cooldown = cooldown;
+				ddc.damagePerHit = damagePerHit;
+				ddc.lastAttackTime = lastAttackTime;
+			}
+		}
 	}
 }

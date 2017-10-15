@@ -8,7 +8,7 @@ namespace TechnoWolf.Project1
 	/**<summary>Track statistics and other data on all characters currently in
 	 * the scene.</summary>
 	 */
-	public class CharacterTracker : RecordableMonoBehaviour<TimelineRecord_CharacterTracker>
+	public class CharacterTracker : RecordableMonoBehaviour
 	{
 		private List<PlayerTrackerHelper> players = new List<PlayerTrackerHelper>();
 		private List<EnemyTrackerHelper> enemies = new List<EnemyTrackerHelper>();
@@ -78,20 +78,6 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void RecordCurrentState(TimelineRecord_CharacterTracker record)
-		{
-			record.players = players.ToArray();
-			record.enemies = enemies.ToArray();
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_CharacterTracker record)
-		{
-			players.Clear();
-			players.AddRange(record.players);
-			enemies.Clear();
-			enemies.AddRange(record.enemies);
-		}
-
 		/**<summary>Add a player character to the tracking system.</summary>*/
 		public void AddPlayer(PlayerTrackerHelper helper)
 		{
@@ -111,11 +97,25 @@ namespace TechnoWolf.Project1
 			}
 			enemies.Add(helper);
 		}
-	}
 
-	public class TimelineRecord_CharacterTracker : TimelineRecordForBehaviour
-	{
-		public PlayerTrackerHelper[] players;
-		public EnemyTrackerHelper[] enemies;
+		public sealed class TimelineRecord_CharacterTracker : TimelineRecordForBehaviour<CharacterTracker>
+		{
+			public PlayerTrackerHelper[] players;
+			public EnemyTrackerHelper[] enemies;
+
+			protected override void WriteCurrentState(CharacterTracker tracker)
+			{
+				players = tracker.players.ToArray();
+				enemies = tracker.enemies.ToArray();
+			}
+
+			protected override void ApplyRecordedState(CharacterTracker tracker)
+			{
+				tracker.players.Clear();
+				tracker.players.AddRange(players);
+				tracker.enemies.Clear();
+				tracker.enemies.AddRange(enemies);
+			}
+		}
 	}
 }
