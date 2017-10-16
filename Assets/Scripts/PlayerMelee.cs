@@ -177,7 +177,7 @@ namespace TechnoWolf.Project1
 			leftHandWeapon.GetComponent<Collider2D>().enabled = false;
 		}
 
-		public class TimelineRecord_PlayerMelee : TimelineRecordForBehaviour<PlayerMelee>
+		public sealed class TimelineRecord_PlayerMelee : TimelineRecordForBehaviour<PlayerMelee>
 		{
 			public float cooldown;
 			public int damagePerHit;
@@ -188,9 +188,9 @@ namespace TechnoWolf.Project1
 			public int currentSwingNumberRight;
 			public int currentSwingNumberLeft;
 
-			protected override void WriteCurrentState(PlayerMelee melee)
+			protected override void RecordState(PlayerMelee melee)
 			{
-				base.WriteCurrentState(melee);
+				base.RecordState(melee);
 				cooldown = melee.cooldown;
 				damagePerHit = melee.damagePerHit;
 				swingDuration = melee.swingDuration;
@@ -201,9 +201,9 @@ namespace TechnoWolf.Project1
 				currentSwingNumberLeft = melee.currentSwingNumberLeft;
 			}
 
-			protected override void ApplyRecordedState(PlayerMelee melee)
+			protected override void ApplyRecord(PlayerMelee melee)
 			{
-				base.ApplyRecordedState(melee);
+				base.ApplyRecord(melee);
 				melee.cooldown = cooldown;
 				melee.damagePerHit = damagePerHit;
 				melee.swingDuration = swingDuration;

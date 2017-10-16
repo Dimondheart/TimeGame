@@ -35,7 +35,7 @@ namespace TechnoWolf.TimeManipulation
 		 * Must always call the base implementation of this method so inherited
 		 * classes are also applied properly.</summary>
 		 */
-		protected virtual void ApplyRecordedState(T recordable)
+		protected virtual void ApplyRecord(T recordable)
 		{
 		}
 
@@ -43,18 +43,18 @@ namespace TechnoWolf.TimeManipulation
 		 * Must always call the base implementation of this method so inherited
 		 * classes are also recorded properly.</summary>
 		 */
-		protected virtual void WriteCurrentState(T recordable)
+		protected virtual void RecordState(T recordable)
 		{
 		}
 
 		public override sealed void ApplyRecord(object recordable)
 		{
-			ApplyRecordedState((T)recordable);
+			ApplyRecord((T)recordable);
 		}
 
 		public override sealed void WriteRecord(object recordable)
 		{
-			WriteCurrentState((T)recordable);
+			RecordState((T)recordable);
 		}
 	}
 }

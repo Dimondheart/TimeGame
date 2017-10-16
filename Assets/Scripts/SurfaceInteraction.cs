@@ -97,16 +97,16 @@ namespace TechnoWolf.Project1
 			public float frictionResistance;
 			public Surface[] touchingSurfaces;
 
-			protected override void WriteCurrentState(SurfaceInteraction si)
+			protected override void RecordState(SurfaceInteraction si)
 			{
-				base.WriteCurrentState(si);
+				base.RecordState(si);
 				frictionResistance = si.frictionResistance;
 				touchingSurfaces = si.touchingSurfaces.ToArray();
 			}
 
-			protected override void ApplyRecordedState(SurfaceInteraction si)
+			protected override void ApplyRecord(SurfaceInteraction si)
 			{
-				base.ApplyRecordedState(si);
+				base.ApplyRecord(si);
 				si.frictionResistance = frictionResistance;
 				si.touchingSurfaces.Clear();
 				si.touchingSurfaces.AddRange(touchingSurfaces);

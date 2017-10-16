@@ -112,23 +112,23 @@ namespace TechnoWolf.Project1
 			sideShieldRight.GetComponent<Collider2D>().enabled = enabled;
 		}
 
-		public class TimelineRecord_PlayerGuard : TimelineRecordForBehaviour<PlayerGuard>
+		public sealed class TimelineRecord_PlayerGuard : TimelineRecordForBehaviour<PlayerGuard>
 		{
 			public GameObject shield;
 			public GameObject sideShieldLeft;
 			public GameObject sideShieldRight;
 
-			protected override void WriteCurrentState(PlayerGuard guard)
+			protected override void RecordState(PlayerGuard guard)
 			{
-				base.WriteCurrentState(guard);
+				base.RecordState(guard);
 				shield = guard.shield;
 				sideShieldLeft = guard.sideShieldLeft;
 				sideShieldRight = guard.sideShieldRight;
 			}
 
-			protected override void ApplyRecordedState(PlayerGuard guard)
+			protected override void ApplyRecord(PlayerGuard guard)
 			{
-				base.ApplyRecordedState(guard);
+				base.ApplyRecord(guard);
 				guard.shield = shield;
 				guard.sideShieldLeft = sideShieldLeft;
 				guard.sideShieldRight = sideShieldRight;

@@ -7,7 +7,7 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Standard MP concept.</summary>*/
-	public class MagicPoints : RecordableMonoBehaviour<TimelineRecord_MagicPoints>, IPrimaryValue
+	public class MagicPoints : RecordableMonoBehaviour, IPrimaryValue
 	{
 		public float initialMaxMP = 100.0f;
 		public float regenRate = 10.0f;
@@ -87,22 +87,6 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void RecordCurrentState(TimelineRecord_MagicPoints record)
-		{
-			record.absoluteMaxMP = absoluteMaxMP;
-			record.maxMP = maxMP;
-			record.regenRate = regenRate;
-			record.currentMP = currentMP;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_MagicPoints record)
-		{
-			absoluteMaxMP = record.absoluteMaxMP;
-			maxMP = record.maxMP;
-			regenRate = record.regenRate;
-			currentMP = record.currentMP;
-		}
-
 		private void Awake()
 		{
 			AbsoluteMaxMP = initialMaxMP;
@@ -141,14 +125,32 @@ namespace TechnoWolf.Project1
 			}
 			currentMP = newMP;
 		}
-	}
 
-	public class TimelineRecord_MagicPoints : TimelineRecordForBehaviour
-	{
-		public float mpUsed;
-		public float absoluteMaxMP;
-		public float maxMP;
-		public float regenRate;
-		public float currentMP;
+		public sealed class TimelineRecord_MagicPoints : TimelineRecordForBehaviour<MagicPoints>
+		{
+			public float mpUsed;
+			public float absoluteMaxMP;
+			public float maxMP;
+			public float regenRate;
+			public float currentMP;
+
+			protected override void RecordState(MagicPoints mp)
+			{
+				base.RecordState(mp);
+				absoluteMaxMP = mp.absoluteMaxMP;
+				maxMP = mp.maxMP;
+				regenRate = mp.regenRate;
+				currentMP = mp.currentMP;
+			}
+
+			protected override void ApplyRecord(MagicPoints mp)
+			{
+				base.ApplyRecord(mp);
+				mp.absoluteMaxMP = absoluteMaxMP;
+				mp.maxMP = maxMP;
+				mp.regenRate = regenRate;
+				mp.currentMP = currentMP;
+			}
+		}
 	}
 }

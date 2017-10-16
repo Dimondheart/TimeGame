@@ -8,7 +8,7 @@ namespace TechnoWolf.Project1
 	/**<summary>Elemental alignment is the amount of each element
 	 * stored in something.</summary>
 	 */
-	public class ElementalAlignment : RecordableMonoBehaviour<TimelineRecord_ElementalAlignment>
+	public class ElementalAlignment : RecordableMonoBehaviour
 	{
 		/**<summary>Minimum value for an elemental alignment to be considered
 		 * aligned with an element.</summary>
@@ -136,28 +136,6 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void RecordCurrentState(TimelineRecord_ElementalAlignment record)
-		{
-			record.minGainRate = minGainRate;
-			record.maxGainRate = maxGainRate;
-			record.gainFocus = gainFocus;
-			record.temperature = temperature;
-			record.moisture = moisture;
-			record.temperatureGainRate = temperatureGainRate;
-			record.moistureGainRate = moistureGainRate;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_ElementalAlignment record)
-		{
-			minGainRate = record.minGainRate;
-			maxGainRate = record.maxGainRate;
-			gainFocus = record.gainFocus;
-			temperature = record.temperature;
-			moisture = record.moisture;
-			temperatureGainRate = record.temperatureGainRate;
-			moistureGainRate = record.moistureGainRate;
-		}
-
 		public void UseTemperature(float use)
 		{
 			if (ManipulableTime.IsApplyingRecords)
@@ -249,18 +227,42 @@ namespace TechnoWolf.Project1
 			/**<summary>Never set an alignment value to this, only use as a shortcut for bit ops.</summary>*/
 			Moist = Dry | Wet
 		}
-	}
 
-	public class TimelineRecord_ElementalAlignment : TimelineRecordForBehaviour
-	{
-		public float minGainRate;
-		public float maxGainRate;
+		public sealed class TimelineRecord_ElementalAlignment : TimelineRecordForBehaviour<ElementalAlignment>
+		{
+			public float minGainRate;
+			public float maxGainRate;
 
-		public ElementalAlignment.Element gainFocus;
-		public float temperature;
-		public float moisture;
+			public ElementalAlignment.Element gainFocus;
+			public float temperature;
+			public float moisture;
 
-		public float temperatureGainRate;
-		public float moistureGainRate;
+			public float temperatureGainRate;
+			public float moistureGainRate;
+
+			protected override void RecordState(ElementalAlignment ea)
+			{
+				base.RecordState(ea);
+				minGainRate = ea.minGainRate;
+				maxGainRate = ea.maxGainRate;
+				gainFocus = ea.gainFocus;
+				temperature = ea.temperature;
+				moisture = ea.moisture;
+				temperatureGainRate = ea.temperatureGainRate;
+				moistureGainRate = ea.moistureGainRate;
+			}
+
+			protected override void ApplyRecord(ElementalAlignment ea)
+			{
+				base.ApplyRecord(ea);
+				ea.minGainRate = minGainRate;
+				ea.maxGainRate = maxGainRate;
+				ea.gainFocus = gainFocus;
+				ea.temperature = temperature;
+				ea.moisture = moisture;
+				ea.temperatureGainRate = temperatureGainRate;
+				ea.moistureGainRate = moistureGainRate;
+			}
+		}
 	}
 }

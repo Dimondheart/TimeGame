@@ -70,26 +70,26 @@ namespace TechnoWolf.Project1
 			GetComponent<DirectionLooking>().Direction = newVelocity;
 		}
 
-		public class TimelineRecord_FollowDefinedPath : TimelineRecord_ControlledMovement<FollowDefinedPath>
+		public sealed class TimelineRecord_FollowDefinedPath : TimelineRecord_ControlledMovement<FollowDefinedPath>
 		{
 			public Transform[] targets;
 			public float maxSpeed;
 			public int targetIndex;
 
-			protected override void WriteCurrentState(FollowDefinedPath fdp)
+			protected override void RecordState(FollowDefinedPath fdp)
 			{
-				base.WriteCurrentState(fdp);
-				record.targets = (Transform[])fdp.targets.Clone();
-				record.maxSpeed = maxSpeed;
-				record.targetIndex = targetIndex;
+				base.RecordState(fdp);
+				targets = (Transform[])fdp.targets.Clone();
+				maxSpeed = fdp.maxSpeed;
+				targetIndex = fdp.targetIndex;
 			}
 
-			protected override void ApplyRecordedState(FollowDefinedPath fdp)
+			protected override void ApplyRecord(FollowDefinedPath fdp)
 			{
-				base.ApplyRecordedState(record);
-				targets = (Transform[])record.targets.Clone();
-				maxSpeed = record.maxSpeed;
-				targetIndex = record.targetIndex;
+				base.ApplyRecord(fdp);
+				fdp.targets = (Transform[])targets.Clone();
+				fdp.maxSpeed = maxSpeed;
+				fdp.targetIndex = targetIndex;
 			}
 		}
 	}

@@ -6,30 +6,12 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Selects a target for hostile actions.</summary>*/
-	public class HostileTargetSelector : RecordableMonoBehaviour<TimelineRecord_HostileTargetSelector>
+	public class HostileTargetSelector : RecordableMonoBehaviour
 	{
 		public GameObject target { get; private set; }
 		public List<GameObject> hostilesInLineOfSight = new List<GameObject>();
 		public List<GameObject> otherHostilesDetected = new List<GameObject>();
 		public Vector3 targetLastSpotted { get; private set; }
-
-		protected override void RecordCurrentState(TimelineRecord_HostileTargetSelector record)
-		{
-			record.target = target;
-			record.hostilesInLineOfSight = hostilesInLineOfSight.ToArray();
-			record.otherHostilesDetected = otherHostilesDetected.ToArray();
-			record.targetLastSpotted = targetLastSpotted;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_HostileTargetSelector record)
-		{
-			target = record.target;
-			hostilesInLineOfSight.Clear();
-			hostilesInLineOfSight.AddRange(record.hostilesInLineOfSight);
-			otherHostilesDetected.Clear();
-			otherHostilesDetected.AddRange(record.otherHostilesDetected);
-			targetLastSpotted = record.targetLastSpotted;
-		}
 
 		public void OnLineOfSightEnter(GameObject entered)
 		{
@@ -148,13 +130,33 @@ namespace TechnoWolf.Project1
 			}
 			return closest;
 		}
-	}
 
-	public class TimelineRecord_HostileTargetSelector : TimelineRecordForBehaviour
-	{
-		public GameObject target;
-		public GameObject[] hostilesInLineOfSight;
-		public GameObject[] otherHostilesDetected;
-		public Vector3 targetLastSpotted;
+		public sealed class TimelineRecord_HostileTargetSelector : TimelineRecordForBehaviour<HostileTargetSelector>
+		{
+			public GameObject target;
+			public GameObject[] hostilesInLineOfSight;
+			public GameObject[] otherHostilesDetected;
+			public Vector3 targetLastSpotted;
+
+			protected override void RecordState(HostileTargetSelector tsel)
+			{
+				base.RecordState(tsel);
+				target = tsel.target;
+				hostilesInLineOfSight = tsel.hostilesInLineOfSight.ToArray();
+				otherHostilesDetected = tsel.otherHostilesDetected.ToArray();
+				targetLastSpotted = tsel.targetLastSpotted;
+			}
+
+			protected override void ApplyRecord(HostileTargetSelector tsel)
+			{
+				base.ApplyRecord(tsel);
+				tsel.target = target;
+				tsel.hostilesInLineOfSight.Clear();
+				tsel.hostilesInLineOfSight.AddRange(hostilesInLineOfSight);
+				tsel.otherHostilesDetected.Clear();
+				tsel.otherHostilesDetected.AddRange(otherHostilesDetected);
+				tsel.targetLastSpotted = targetLastSpotted;
+			}
+		}
 	}
 }

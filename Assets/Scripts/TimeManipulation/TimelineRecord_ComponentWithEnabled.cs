@@ -11,9 +11,9 @@ namespace TechnoWolf.TimeManipulation
 		/**<summary>If component was enabled at this point in time.</summary>*/
 		public bool enabled;
 
-		protected override void ApplyRecordedState(T component)
+		protected override void ApplyRecord(T component)
 		{
-			base.ApplyRecordedState(component);
+			base.ApplyRecord(component);
 			if (component is Collider)
 			{
 				((Collider)(object)component).enabled = enabled;
@@ -32,9 +32,9 @@ namespace TechnoWolf.TimeManipulation
 			}
 		}
 
-		protected override void WriteCurrentState(T component)
+		protected override void RecordState(T component)
 		{
-			base.WriteCurrentState(component);
+			base.RecordState(component);
 			if (component is Collider)
 			{
 				enabled = ((Collider)(object)component).enabled;

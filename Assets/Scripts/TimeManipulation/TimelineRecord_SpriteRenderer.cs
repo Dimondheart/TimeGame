@@ -10,16 +10,16 @@ namespace TechnoWolf.TimeManipulation
 		public Sprite sprite;
 		public Color color;
 
-		protected override void ApplyRecordedState(SpriteRenderer spriteRenderer)
+		protected override void ApplyRecord(SpriteRenderer spriteRenderer)
 		{
-			base.ApplyRecordedState(spriteRenderer);
+			base.ApplyRecord(spriteRenderer);
 			spriteRenderer.sprite = sprite;
 			spriteRenderer.color = color;
 		}
 
-		protected override void WriteCurrentState(SpriteRenderer spriteRenderer)
+		protected override void RecordState(SpriteRenderer spriteRenderer)
 		{
-			base.WriteCurrentState(spriteRenderer);
+			base.RecordState(spriteRenderer);
 			sprite = spriteRenderer.sprite;
 			color = spriteRenderer.color;
 		}

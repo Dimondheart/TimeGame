@@ -153,9 +153,9 @@ namespace TechnoWolf.Project1
 			public bool isDashingInternal;
 			public bool dashReleasedAfterExitingWater;
 
-			protected override void WriteCurrentState(PlayerMovement pm)
+			protected override void RecordState(PlayerMovement pm)
 			{
-				base.WriteCurrentState(pm);
+				base.RecordState(pm);
 				isApplyingMotion = pm.isApplyingMotion;
 				movementSpeed = pm.movementSpeed;
 				dashSpeed = pm.dashSpeed;
@@ -168,9 +168,9 @@ namespace TechnoWolf.Project1
 				dashReleasedAfterExitingWater = pm.dashReleasedAfterExitingWater;
 			}
 
-			protected override void ApplyRecordedState(PlayerMovement pm)
+			protected override void ApplyRecord(PlayerMovement pm)
 			{
-				base.ApplyRecordedState(pm);
+				base.ApplyRecord(pm);
 				pm.isApplyingMotion = isApplyingMotion;
 				pm.movementSpeed = movementSpeed;
 				pm.dashSpeed = dashSpeed;

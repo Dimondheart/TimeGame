@@ -7,7 +7,7 @@ using System;
 namespace TechnoWolf.Project1
 {
 	/**<summary>Move towards a target.</summary>*/
-	public class FollowTarget : ControlledMovement<TimelineRecord_FollowTarget>
+	public class FollowTarget : ControlledMovement
 	{
 		public float maxSpeed = 4.0f;
 		public float velocityBlendRate = 100.0f;
@@ -43,22 +43,6 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void RecordCurrentState(TimelineRecord_FollowTarget record)
-		{
-			base.RecordCurrentState(record);
-			record.maxSpeed = maxSpeed;
-			record.velocityBlendRate = velocityBlendRate;
-			record.targetLocationReached = targetLocationReached;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_FollowTarget record)
-		{
-			base.ApplyRecordedState(record);
-			maxSpeed = record.maxSpeed;
-			velocityBlendRate = record.velocityBlendRate;
-			targetLocationReached = record.targetLocationReached;
-		}
-
 		private void Start()
 		{
 			targetLocationReached = true;
@@ -66,7 +50,6 @@ namespace TechnoWolf.Project1
 
 		protected override void FirstPausedUpdate()
 		{
-			Debug.Log("hello from here");
 			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
 		}
 
@@ -110,12 +93,28 @@ namespace TechnoWolf.Project1
 			IsApplyingMotion = true;
 			GetComponent<DirectionLooking>().Direction = newVelocity;
 		}
-	}
 
-	public class TimelineRecord_FollowTarget : TimelineRecord_ControlledMovement
-	{
-		public float maxSpeed;
-		public float velocityBlendRate;
-		public bool targetLocationReached;
+		public sealed class TimelineRecord_FollowTarget : TimelineRecord_ControlledMovement<FollowTarget>
+		{
+			public float maxSpeed;
+			public float velocityBlendRate;
+			public bool targetLocationReached;
+
+			protected override void RecordState(FollowTarget ft)
+			{
+				base.RecordState(ft);
+				maxSpeed = ft.maxSpeed;
+				velocityBlendRate = ft.velocityBlendRate;
+				targetLocationReached = ft.targetLocationReached;
+			}
+
+			protected override void ApplyRecord(FollowTarget ft)
+			{
+				base.ApplyRecord(ft);
+				ft.maxSpeed = maxSpeed;
+				ft.velocityBlendRate = velocityBlendRate;
+				ft.targetLocationReached = targetLocationReached;
+			}
+		}
 	}
 }

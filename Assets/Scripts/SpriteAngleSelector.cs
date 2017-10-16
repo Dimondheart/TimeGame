@@ -206,25 +206,25 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		public class TimelineRecord_SpriteAngleSelector : TimelineRecordForBehaviour<SpriteAngleSelector>
+		public sealed class TimelineRecord_SpriteAngleSelector : TimelineRecordForBehaviour<SpriteAngleSelector>
 		{
 			public Transform[] syncronizeRotations;
 			public int currentAngle;
 			public bool usingDeadVersion;
 			public bool forceUpdateThisCycle;
 
-			protected override void WriteCurrentState(SpriteAngleSelector sas)
+			protected override void RecordState(SpriteAngleSelector sas)
 			{
-				base.WriteCurrentState(sas);
+				base.RecordState(sas);
 				syncronizeRotations = sas.syncronizeRotations.ToArray();
 				currentAngle = sas.currentAngle;
 				usingDeadVersion = sas.usingDeadVersion;
 				forceUpdateThisCycle = sas.forceUpdateThisCycle;
 			}
 
-			protected override void ApplyRecordedState(SpriteAngleSelector sas)
+			protected override void ApplyRecord(SpriteAngleSelector sas)
 			{
-				base.ApplyRecordedState(sas);
+				base.ApplyRecord(sas);
 				sas.syncronizeRotations.Clear();
 				sas.syncronizeRotations.AddRange(syncronizeRotations);
 				sas.currentAngle = currentAngle;

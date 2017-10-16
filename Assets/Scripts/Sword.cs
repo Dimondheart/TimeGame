@@ -122,9 +122,9 @@ namespace TechnoWolf.Project1
 			public float swingDuration;
 			public float freezeDuration;
 
-			protected override void ApplyRecordedState(Sword sword)
+			protected override void ApplyRecord(Sword sword)
 			{
-				base.ApplyRecordedState(sword);
+				base.ApplyRecord(sword);
 				sword.idleAngle = idleAngle;
 				sword.swingAngleStart = swingAngleStart;
 				sword.swingAngleEnd = swingAngleEnd;
@@ -138,9 +138,9 @@ namespace TechnoWolf.Project1
 				sword.freezeDuration = freezeDuration;
 			}
 
-			protected override void WriteCurrentState(Sword sword)
+			protected override void RecordState(Sword sword)
 			{
-				base.WriteCurrentState(sword);
+				base.RecordState(sword);
 				idleAngle = sword.idleAngle;
 				swingAngleStart = sword.swingAngleStart;
 				swingAngleEnd = sword.swingAngleEnd;

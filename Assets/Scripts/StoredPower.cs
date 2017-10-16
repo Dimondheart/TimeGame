@@ -154,16 +154,16 @@ namespace TechnoWolf.Project1
 			public double currentMaxPP;
 			public double currentPP;
 
-			protected override void WriteCurrentState(StoredPower sp)
+			protected override void RecordState(StoredPower sp)
 			{
-				base.WriteCurrentState(sp);
+				base.RecordState(sp);
 				currentMaxPP = sp.currentMaxPP;
 				currentPP = sp.currentPP;
 			}
 
-			protected override void ApplyRecordedState(StoredPower sp)
+			protected override void ApplyRecord(StoredPower sp)
 			{
-				base.ApplyRecordedState(sp);
+				base.ApplyRecord(sp);
 				sp.currentMaxPP = currentMaxPP;
 				sp.currentPP = currentPP;
 			}

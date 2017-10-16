@@ -105,15 +105,15 @@ namespace TechnoWolf.Project1
 		{
 			public Surface.SurfaceType surfaceType;
 
-			protected override void WriteCurrentState(Surface surface)
+			protected override void RecordState(Surface surface)
 			{
-				base.WriteCurrentState(surface);
+				base.RecordState(surface);
 				surfaceType = surface.surfaceType;
 			}
 
-			protected override void ApplyRecordedState(Surface surface)
+			protected override void ApplyRecord(Surface surface)
 			{
-				base.ApplyRecordedState(surface);
+				base.ApplyRecord(surface);
 				surface.surfaceType = surfaceType;
 			}
 		}

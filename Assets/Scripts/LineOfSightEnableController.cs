@@ -9,22 +9,11 @@ namespace TechnoWolf.Project1
 	/**<summary>Simple script to disable the 2DDL light used for line of sight
 	 * when no enemies are nearby.</summary>
 	 */
-	public class LineOfSightEnableController : RecordableMonoBehaviour<TimelineRecord_LineOfSightEnableController>
+	public class LineOfSightEnableController : RecordableMonoBehaviour
 	{
 		public DynamicLight2D.DynamicLight dynamicLight { get; private set; }
 
 		private List<Collider2D> enemiesInRange = new List<Collider2D>();
-
-		protected override void RecordCurrentState(TimelineRecord_LineOfSightEnableController record)
-		{
-			record.enemiesInRange = enemiesInRange.ToArray();
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_LineOfSightEnableController record)
-		{
-			enemiesInRange.Clear();
-			enemiesInRange.AddRange(record.enemiesInRange);
-		}
 
 		private void OnTriggerEnter2D(Collider2D collision)
 		{
@@ -57,10 +46,23 @@ namespace TechnoWolf.Project1
 		{
 			dynamicLight.enabled = enemiesInRange.Count > 0;
 		}
-	}
 
-	public class TimelineRecord_LineOfSightEnableController : TimelineRecordForBehaviour
-	{
-		public Collider2D[] enemiesInRange;
+		public sealed class TimelineRecord_LineOfSightEnableController : TimelineRecordForBehaviour<LineOfSightEnableController>
+		{
+			public Collider2D[] enemiesInRange;
+
+			protected override void RecordState(LineOfSightEnableController lose)
+			{
+				base.RecordState(lose);
+				enemiesInRange = lose.enemiesInRange.ToArray();
+			}
+
+			protected override void ApplyRecord(LineOfSightEnableController lose)
+			{
+				base.ApplyRecord(lose);
+				lose.enemiesInRange.Clear();
+				lose.enemiesInRange.AddRange(enemiesInRange);
+			}
+		}
 	}
 }

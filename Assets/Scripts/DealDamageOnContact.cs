@@ -54,15 +54,17 @@ namespace TechnoWolf.Project1
 			public int damagePerHit;
 			public ConvertableTime lastAttackTime;
 
-			protected override void WriteCurrentState(DealDamageOnContact ddc)
+			protected override void RecordState(DealDamageOnContact ddc)
 			{
+				base.RecordState(ddc);
 				cooldown = ddc.cooldown;
 				damagePerHit = ddc.damagePerHit;
 				lastAttackTime = ddc.lastAttackTime;
 			}
 
-			protected override void ApplyRecordedState(DealDamageOnContact ddc)
+			protected override void ApplyRecord(DealDamageOnContact ddc)
 			{
+				base.ApplyRecord(ddc);
 				ddc.cooldown = cooldown;
 				ddc.damagePerHit = damagePerHit;
 				ddc.lastAttackTime = lastAttackTime;

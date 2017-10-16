@@ -6,7 +6,7 @@ using TechnoWolf.TimeManipulation;
 namespace TechnoWolf.Project1
 {
 	/**<summary>HP tracking and releated data/functionality.</summary>*/
-	public class Health : RecordableMonoBehaviour<TimelineRecord_Health>, IPrimaryValue
+	public class Health : RecordableMonoBehaviour, IPrimaryValue
 	{
 		/**<summary>Minimum percent of current max health for a normal damage hit
 		 * to deal perminent damage.</summary>
@@ -113,22 +113,6 @@ namespace TechnoWolf.Project1
 			}
 		}
 
-		protected override void RecordCurrentState(TimelineRecord_Health record)
-		{
-			record.absoluteMaxHP = absoluteMaxHP;
-			record.currentMaxHP = currentmaxHP;
-			record.currentHP = currentHP;
-			record.isAlignedWithPlayer = isAlignedWithPlayer;
-		}
-
-		protected override void ApplyRecordedState(TimelineRecord_Health record)
-		{
-			absoluteMaxHP = record.absoluteMaxHP;
-			currentmaxHP = record.currentMaxHP;
-			currentHP = record.currentHP;
-			isAlignedWithPlayer = record.isAlignedWithPlayer;
-		}
-
 		private void Awake()
 		{
 			absoluteMaxHP = initialMaxHealth;
@@ -195,13 +179,31 @@ namespace TechnoWolf.Project1
 				CurrentMaxHP -= damage;
 			}
 		}
-	}
 
-	public class TimelineRecord_Health : TimelineRecordForBehaviour
-	{
-		public float absoluteMaxHP;
-		public float currentMaxHP;
-		public float currentHP;
-		public bool isAlignedWithPlayer;
+		public sealed class TimelineRecord_Health : TimelineRecordForBehaviour<Health>
+		{
+			public float absoluteMaxHP;
+			public float currentMaxHP;
+			public float currentHP;
+			public bool isAlignedWithPlayer;
+
+			protected override void RecordState(Health h)
+			{
+				base.RecordState(h);
+				absoluteMaxHP = h.absoluteMaxHP;
+				currentMaxHP = h.currentmaxHP;
+				currentHP = h.currentHP;
+				isAlignedWithPlayer = h.isAlignedWithPlayer;
+			}
+
+			protected override void ApplyRecord(Health h)
+			{
+				base.ApplyRecord(h);
+				h.absoluteMaxHP = absoluteMaxHP;
+				h.currentmaxHP = currentMaxHP;
+				h.currentHP = currentHP;
+				h.isAlignedWithPlayer = isAlignedWithPlayer;
+			}
+		}
 	}
 }

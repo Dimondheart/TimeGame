@@ -9,15 +9,15 @@ namespace TechnoWolf.TimeManipulation
 	{
 		public bool activeSelf;
 
-		protected override void ApplyRecordedState(GameObject gameObject)
+		protected override void ApplyRecord(GameObject gameObject)
 		{
-			base.ApplyRecordedState(gameObject);
+			base.ApplyRecord(gameObject);
 			gameObject.SetActive(activeSelf);
 		}
 
-		protected override void WriteCurrentState(GameObject gameObject)
+		protected override void RecordState(GameObject gameObject)
 		{
-			base.WriteCurrentState(gameObject);
+			base.RecordState(gameObject);
 			activeSelf = gameObject.activeSelf;
 		}
 	}

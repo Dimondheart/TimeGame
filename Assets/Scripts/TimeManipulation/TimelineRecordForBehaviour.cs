@@ -10,15 +10,15 @@ namespace TechnoWolf.TimeManipulation
 	{
 		public bool enabled;
 
-		protected override void ApplyRecordedState(T behaviour)
+		protected override void ApplyRecord(T behaviour)
 		{
-			base.ApplyRecordedState(behaviour);
+			base.ApplyRecord(behaviour);
 			behaviour.enabled = enabled;
 		}
 
-		protected override void WriteCurrentState(T behaviour)
+		protected override void RecordState(T behaviour)
 		{
-			base.WriteCurrentState(behaviour);
+			base.RecordState(behaviour);
 			enabled = behaviour.enabled;
 		}
 	}

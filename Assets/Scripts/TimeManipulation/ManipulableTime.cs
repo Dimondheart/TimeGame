@@ -33,7 +33,7 @@ namespace TechnoWolf.TimeManipulation
 		public static int newestRecordedCycle { get; private set; }
 		public static int oldestCycleWithinRewindLimit { get; private set; }
 		public static TimePauseState timePauseState { get; private set; }
-		private static Timeline<TimelineRecord_ManipulableTime> timeline;
+		private static Timeline timeline;
 		private static int shiftTimelineAmount;
 		/**<summary>Indicates and controls if the manipulable time is frozen. This cannnot
 		 * be changed while the game is paused.</summary>
@@ -165,7 +165,7 @@ namespace TechnoWolf.TimeManipulation
 			deltaTime = Time.deltaTime;
 			fixedTime = Time.fixedTime;
 			fixedDeltaTime = Time.fixedDeltaTime;
-			timeline = new Timeline<TimelineRecord_ManipulableTime>();
+			timeline = new Timeline(typeof(TimelineRecord_ManipulableTime), true);
 			shiftTimelineAmount = 0;
 		}
 
@@ -270,7 +270,8 @@ namespace TechnoWolf.TimeManipulation
 				cycleNumber++;
 			}
 			newestRecordedCycle = cycleNumber;
-			TimelineRecord_ManipulableTime rec = timeline.GetRecordForCurrentCycle();
+			TimelineRecord_ManipulableTime rec =
+				(TimelineRecord_ManipulableTime)timeline.GetRecordForCurrentCycle();
 			rec.time = time;
 			rec.deltaTime = deltaTime;
 			rec.fixedTime = fixedTime;
@@ -282,7 +283,7 @@ namespace TechnoWolf.TimeManipulation
 			for (int cn = oldestRecordedCycle; cn <= newestRecordedCycle; cn++)
 			{
 				oldestCycleWithinRewindLimit = cn;
-				if (time - timeline.GetRecord(cn).time <= rewindTimeLimit)
+				if (time - ((TimelineRecord_ManipulableTime)timeline.GetRecord(cn)).time <= rewindTimeLimit)
 				{
 					break;
 				}
@@ -291,7 +292,8 @@ namespace TechnoWolf.TimeManipulation
 
 		private void SetCurrentCycle(int newCycleNumber)
 		{
-			TimelineRecord_ManipulableTime rec = timeline.GetRecord(newCycleNumber);
+			TimelineRecord_ManipulableTime rec =
+				(TimelineRecord_ManipulableTime)timeline.GetRecord(newCycleNumber);
 			time = rec.time;
 			deltaTime = rec.deltaTime;
 			fixedTime = rec.fixedTime;
@@ -317,7 +319,7 @@ namespace TechnoWolf.TimeManipulation
 			Replaying = ReplayRequest | Paused
 		}
 
-		private class TimelineRecord_ManipulableTime : TimelineRecord
+		private class TimelineRecord_ManipulableTime : TimelineRecord<ManipulableTime>
 		{
 			public float time;
 			public float deltaTime;

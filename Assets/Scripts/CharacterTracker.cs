@@ -103,14 +103,16 @@ namespace TechnoWolf.Project1
 			public PlayerTrackerHelper[] players;
 			public EnemyTrackerHelper[] enemies;
 
-			protected override void WriteCurrentState(CharacterTracker tracker)
+			protected override void RecordState(CharacterTracker tracker)
 			{
+				base.RecordState(tracker);
 				players = tracker.players.ToArray();
 				enemies = tracker.enemies.ToArray();
 			}
 
-			protected override void ApplyRecordedState(CharacterTracker tracker)
+			protected override void ApplyRecord(CharacterTracker tracker)
 			{
+				base.ApplyRecord(tracker);
 				tracker.players.Clear();
 				tracker.players.AddRange(players);
 				tracker.enemies.Clear();

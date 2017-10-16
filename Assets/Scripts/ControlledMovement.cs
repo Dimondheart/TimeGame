@@ -40,13 +40,15 @@ namespace TechnoWolf.Project1
 		{
 			public bool isApplyingMotion;
 
-			protected override void WriteCurrentState(T cm)
+			protected override void RecordState(T cm)
 			{
+				base.RecordState(cm);
 				isApplyingMotion = cm.isApplyingMotion;
 			}
 
-			protected override void ApplyRecordedState(T cm)
+			protected override void ApplyRecord(T cm)
 			{
+				base.ApplyRecord(cm);
 				cm.isApplyingMotion = isApplyingMotion;
 			}
 		}

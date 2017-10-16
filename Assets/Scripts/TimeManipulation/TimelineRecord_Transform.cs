@@ -12,9 +12,9 @@ namespace TechnoWolf.TimeManipulation
 		public Quaternion localRotation;
 		public Vector3 localScale;
 
-		protected override void ApplyRecordedState(Transform transform)
+		protected override void ApplyRecord(Transform transform)
 		{
-			base.ApplyRecordedState(transform);
+			base.ApplyRecord(transform);
 			if (!ReferenceEquals(parent, transform.parent))
 			{
 				Debug.Log("Shouldn't be here");
@@ -25,9 +25,9 @@ namespace TechnoWolf.TimeManipulation
 			transform.localScale = localScale;
 		}
 
-		protected override void WriteCurrentState(Transform transform)
+		protected override void RecordState(Transform transform)
 		{
-			base.WriteCurrentState(transform);
+			base.RecordState(transform);
 			parent = transform.parent;
 			localPosition = transform.localPosition;
 			localRotation = transform.localRotation;
