@@ -14,6 +14,35 @@ namespace TechnoWolf.SystemConfiguration
 			ControllerDPad.horizontalAxisName = "6th axis (Joysticks)";
 			ControllerDPad.verticalAxisName = "7th axis (Joysticks)";
 
+			DynamicInput.SetupButtonControl(
+				"Toggle Camera View",
+				new DynamicControlButton(
+					"Toggle camera between modes",
+					new VirtualButtonBasic(KeyCode.Joystick1Button9),
+					new VirtualButtonBasic(KeyCode.LeftControl),
+					null
+					)
+				);
+
+			DynamicInput.SetupAxisControl(
+				"Horizontal Rotate Camera",
+				new DynamicControlAxis(
+					"Rotate the camera horizontally",
+					new VirtualAxisBasic("4th axis (Joysticks)"),
+					new VirtualAxisFromMouseMovement(true)
+					)
+				);
+
+			DynamicInput.SetupButtonControl(
+				"Rotate Camera",
+				new DynamicControlButton(
+					"Hold to rotate the camera",
+					new VirtualButtonFromAxis("4th axis (Joysticks)"),
+					new VirtualButtonBasic(KeyCode.Mouse1),
+					null
+					)
+				);
+
 			DynamicInput.SetupAxisControl(
 				"Move Horizontal",
 				new DynamicControlAxis(

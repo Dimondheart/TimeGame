@@ -126,9 +126,11 @@ namespace TechnoWolf.Project1
 			{
 				return;
 			}
+			/*
 			CurrentHP += 10.0f
 				* ManipulableTime.deltaTime
 				* (Mathf.Approximately(0.0f, GetComponent<Rigidbody2D>().velocity.magnitude) ? 1.0f : 0.5f);
+			*/
 		}
 
 		/**<summary>Deal damage to this thing. Will not be applied if takeDamage

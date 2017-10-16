@@ -60,7 +60,7 @@ namespace TechnoWolf.Project1
 			{
 				if (DynamicInput.GetButtonDown("Left Hand Action"))
 				{
-					if (!GetComponent<PlayerMovement>().IsDashing)
+					if (!GetComponent<PlayerMovementOld>().IsDashing)
 					{
 						GetComponent<PlayerMelee>().StopSwinging();
 						SetGuardEnabled(true);
@@ -72,7 +72,7 @@ namespace TechnoWolf.Project1
 				}
 				else if (DynamicInput.GetButtonHeld("Left Hand Action"))
 				{
-					if (!GetComponent<PlayerMovement>().IsDashing && (GetComponent<PlayerMelee>().IsInCooldown || !GetComponent<PlayerMelee>().IsSwinging))
+					if (!GetComponent<PlayerMovementOld>().IsDashing && (GetComponent<PlayerMelee>().IsInCooldown || !GetComponent<PlayerMelee>().IsSwinging))
 					{
 						GetComponent<PlayerMelee>().StopSwinging();
 						SetGuardEnabled(true);

@@ -68,7 +68,7 @@ namespace TechnoWolf.Project1
 			{
 				SetLeftWeaponEnabled(false);
 				SetRightWeaponEnabled(true);
-				if (!GetComponent<PlayerMovement>().IsDashing)
+				if (!GetComponent<PlayerMovementOld>().IsDashing)
 				{
 					if (DynamicInput.GetButtonDown("Right Hand Action") && RightWeaponEnabled)
 					{

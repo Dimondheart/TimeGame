@@ -13,7 +13,7 @@ namespace TechnoWolf.Project1
 		protected override void FlowingUpdate()
 		{
 			if (
-				((GetComponent<PlayerMelee>().IsInCooldown || !GetComponent<PlayerMelee>().IsSwinging) && !GetComponent<PlayerMovement>().IsDashing)
+				((GetComponent<PlayerMelee>().IsInCooldown || !GetComponent<PlayerMelee>().IsSwinging) && !GetComponent<PlayerMovementOld>().IsDashing)
 				|| GetComponent<SurfaceInteraction>().IsSwimming
 				)
 			{

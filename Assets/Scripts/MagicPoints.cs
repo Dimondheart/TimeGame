@@ -100,10 +100,6 @@ namespace TechnoWolf.Project1
 				return;
 			}
 			float regenAmount = regenRate * ManipulableTime.deltaTime;
-			if (!GetComponent<ElementalAlignment>().IsStable)
-			{
-				regenAmount *= 0.5f;
-			}
 			float newMP = currentMP + regenAmount;
 			if (newMP > maxMP)
 			{

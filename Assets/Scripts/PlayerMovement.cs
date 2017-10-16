@@ -2,185 +2,61 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TechnoWolf.DynamicInputSystem;
-using TechnoWolf.TimeManipulation;
-using System;
 
 namespace TechnoWolf.Project1
 {
-	/**<summary>Movement controlled by the player.</summary>*/
-	public class PlayerMovement : RecordableMonoBehaviour
+	/**<summary></summary>*/
+	public class PlayerMovement : MonoBehaviour
 	{
-		public PhysicsMaterial2D stationaryMaterial;
-		public PhysicsMaterial2D applyingMotionMaterial;
-		public float movementSpeed = 6.0f;
-		public float dashSpeed = 15.0f;
-		public float dashDuration = 0.2f;
-		private bool stopApplying = false;
-
-		private ConvertableTime lastDashStart;
-		private Vector3 dashVelocity;
-		private bool isDashingInternal = false;
-		private bool dashReleasedAfterExitingWater = true;
-		private bool isApplyingMotion = false;
-
-		public bool IsApplyingMotion
-		{
-			get
-			{
-				return isApplyingMotion;
-			}
-			protected set
-			{
-				isApplyingMotion = value;
-				if (value)
-				{
-					GetComponent<Rigidbody2D>().sharedMaterial = applyingMotionMaterial;
-				}
-				else
-				{
-					GetComponent<Rigidbody2D>().sharedMaterial = stationaryMaterial;
-				}
-			}
-		}
-
-		public bool IsDashing
-		{
-			get
-			{
-				return isDashingInternal;
-			}
-			private set
-			{
-				isDashingInternal = value;
-				GetComponent<SurfaceInteraction>().enabled = !value;
-			}
-		}
-
-		public bool IsTryingToMove
-		{
-			get
-			{
-				return !Mathf.Approximately(0.0f, DynamicInput.GetAxis("Move Horizontal")) || !Mathf.Approximately(0.0f, DynamicInput.GetAxis("Move Vertical"));
-			}
-		}
+		private Transform mainCameraContainerTransform;
+		private Transform mainCamera;
 
 		private void Awake()
 		{
-			lastDashStart = ConvertableTime.GetTime();
+			mainCamera = GameObject.FindGameObjectWithTag("MainCamera").transform;
+			mainCameraContainerTransform = mainCamera.parent;
 		}
 
-		public override void Update()
+		private void Update()
 		{
-			if (ManipulableTime.IsTimeOrGamePaused)
+			transform.forward = mainCameraContainerTransform.forward;
+			float ix = DynamicInput.GetAxisRaw("Move Horizontal");
+			float iy = DynamicInput.GetAxisRaw("Move Vertical");
+			Quaternion rotate =
+				Quaternion.Euler(0.0f, mainCameraContainerTransform.localRotation.eulerAngles.y, 0.0f);
+			Vector3 movement =
+				rotate
+				* new Vector3(
+					DynamicInput.GetAxisRaw("Move Horizontal") * 4.0f,
+					0.0f,
+					DynamicInput.GetAxisRaw("Move Vertical") * 4.0f
+					);
+			if (movement.magnitude >= 0.01f)
 			{
-				GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-				return;
+				GetComponent<CharacterController>().SimpleMove(movement);
 			}
-			GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
-			if (!GetComponent<Health>().IsAlive)
+			Vector3 look =
+				rotate *
+				new Vector3(
+					DynamicInput.GetAxis("Look Horizontal"),
+					0.0f,
+					DynamicInput.GetAxis("Look Vertical")
+					);
+			if (
+				mainCamera.GetComponent<CameraViewToggle>().transitioning
+				|| mainCamera.GetComponent<CameraViewToggle>().view1Active
+				|| look.magnitude < 0.01f
+				|| !DynamicInput.GetButtonHeld("Rotate Camera")
+			)
 			{
-				IsApplyingMotion = false;
-				return;
-			}
-			Vector3 newVelocity =
-				Vector3.ClampMagnitude(
-					new Vector3(DynamicInput.GetAxisRaw("Move Horizontal"), DynamicInput.GetAxisRaw("Move Vertical"), 0.0f),
-					1.0f
-					)
-				* movementSpeed;
-			if (IsDashing)
-			{
-				float currentTime = ManipulableTime.time;
-				float lastDashTime = lastDashStart.manipulableTime;
-				if (ManipulableTime.IsTimeOrGamePaused)
+				if (movement.magnitude > 0.01f)
 				{
-					currentTime = Time.time;
-					lastDashTime = lastDashStart.unityTime;
-				}
-				if (currentTime - lastDashTime >= dashDuration)
-				{
-					IsDashing = false;
-				}
-				else
-				{
-					newVelocity = dashVelocity;
+					transform.forward = movement;
 				}
 			}
 			else
 			{
-				SurfaceInteraction sf = GetComponent<SurfaceInteraction>();
-				if (DynamicInput.GetButtonDown("Dash") || (DynamicInput.GetButtonHeld("Dash") && sf.IsSwimming))
-				{
-					GetComponent<PlayerMelee>().StopSwinging();
-					if (sf.IsSwimming)
-					{
-						dashReleasedAfterExitingWater = false;
-						newVelocity = newVelocity.normalized * ((movementSpeed + dashSpeed) / 2.0f);
-					}
-					else if (dashReleasedAfterExitingWater)
-					{
-						IsDashing = true;
-						lastDashStart.SetToCurrent();
-						dashVelocity = newVelocity.normalized * dashSpeed;
-					}
-				}
-				else
-				{
-					dashReleasedAfterExitingWater = true;
-					if (GetComponent<PlayerMelee>().IsSwinging || GetComponent<PlayerGuard>().IsGuarding)
-					{
-						newVelocity = newVelocity * 0.1f;
-					}
-				}
-			}
-			GetComponent<Rigidbody2D>().velocity = newVelocity;
-			IsApplyingMotion =
-				IsDashing
-				|| !Mathf.Approximately(0.0f, newVelocity.x)
-				|| !Mathf.Approximately(0.0f, newVelocity.y);
-		}
-
-		public sealed class TimelineRecord_PlayerMovement : TimelineRecordForBehaviour<PlayerMovement>
-		{
-			public bool isApplyingMotion;
-			public float movementSpeed;
-			public float dashSpeed;
-			public float dashDuration;
-			public bool stopApplying;
-
-			public ConvertableTime lastDashStart;
-			public Vector3 dashVelocity;
-			public bool isDashingInternal;
-			public bool dashReleasedAfterExitingWater;
-
-			protected override void RecordState(PlayerMovement pm)
-			{
-				base.RecordState(pm);
-				isApplyingMotion = pm.isApplyingMotion;
-				movementSpeed = pm.movementSpeed;
-				dashSpeed = pm.dashSpeed;
-				dashDuration = pm.dashDuration;
-				stopApplying = pm.stopApplying;
-
-				lastDashStart = pm.lastDashStart;
-				dashVelocity = pm.dashVelocity;
-				isDashingInternal = pm.isDashingInternal;
-				dashReleasedAfterExitingWater = pm.dashReleasedAfterExitingWater;
-			}
-
-			protected override void ApplyRecord(PlayerMovement pm)
-			{
-				base.ApplyRecord(pm);
-				pm.isApplyingMotion = isApplyingMotion;
-				pm.movementSpeed = movementSpeed;
-				pm.dashSpeed = dashSpeed;
-				pm.dashDuration = dashDuration;
-				pm.stopApplying = stopApplying;
-
-				pm.lastDashStart = lastDashStart;
-				pm.dashVelocity = dashVelocity;
-				pm.isDashingInternal = isDashingInternal;
-				pm.dashReleasedAfterExitingWater = dashReleasedAfterExitingWater;
+				transform.forward = look;
 			}
 		}
 	}
