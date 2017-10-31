@@ -10,8 +10,8 @@ namespace TechnoWolf.Project1
 	 */
 	public class CharacterTracker : RecordableMonoBehaviour
 	{
-		private List<PlayerTrackerHelper> players = new List<PlayerTrackerHelper>();
-		private List<EnemyTrackerHelper> enemies = new List<EnemyTrackerHelper>();
+		private List<Health> players = new List<Health>();
+		private List<Health> enemies = new List<Health>();
 
 		/**<summary>Total number of characters being tracked.</summary>*/
 		public int TotalCharacterCount
@@ -51,9 +51,9 @@ namespace TechnoWolf.Project1
 			get
 			{
 				int count = 0;
-				foreach (Component t in players)
+				foreach (Health h in players)
 				{
-					if (t.GetComponent<Health>().IsAlive)
+					if (h.IsAlive)
 					{
 						count++;
 					}
@@ -67,9 +67,9 @@ namespace TechnoWolf.Project1
 			get
 			{
 				int count = 0;
-				foreach (Component t in enemies)
+				foreach (Health h in enemies)
 				{
-					if (t.GetComponent<Health>().IsAlive)
+					if (h.IsAlive)
 					{
 						count++;
 					}
@@ -79,29 +79,29 @@ namespace TechnoWolf.Project1
 		}
 
 		/**<summary>Add a player character to the tracking system.</summary>*/
-		public void AddPlayer(PlayerTrackerHelper helper)
+		public void AddPlayer(Health player)
 		{
-			if (players.Contains(helper))
+			if (players.Contains(player))
 			{
 				return;
 			}
-			players.Add(helper);
+			players.Add(player);
 		}
 
 		/**<summary>Add an enemy to the tracking system.</summary>*/
-		public void AddEnemy(EnemyTrackerHelper helper)
+		public void AddEnemy(Health enemy)
 		{
-			if (enemies.Contains(helper))
+			if (enemies.Contains(enemy))
 			{
 				return;
 			}
-			enemies.Add(helper);
+			enemies.Add(enemy);
 		}
 
 		public sealed class TimelineRecord_CharacterTracker : TimelineRecordForBehaviour<CharacterTracker>
 		{
-			public PlayerTrackerHelper[] players;
-			public EnemyTrackerHelper[] enemies;
+			private Health[] players;
+			private Health[] enemies;
 
 			protected override void RecordState(CharacterTracker tracker)
 			{

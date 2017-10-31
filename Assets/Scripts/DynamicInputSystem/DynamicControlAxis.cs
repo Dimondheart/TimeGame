@@ -7,6 +7,10 @@ namespace TechnoWolf.DynamicInputSystem
 	/**<summary>Standard dynamic control for a set of virtual axes.</summary>*/
 	public class DynamicControlAxis : DynamicControl<VirtualAxis>
 	{
+		public DynamicControlAxis() : base()
+		{
+		}
+
 		public DynamicControlAxis(string description, VirtualAxis gamepadAxis, VirtualAxis keyMouseAxis) : base(description)
 		{
 			SetGamepadInput(gamepadAxis);

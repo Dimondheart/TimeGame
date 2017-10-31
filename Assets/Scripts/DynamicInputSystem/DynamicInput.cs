@@ -13,8 +13,9 @@ namespace TechnoWolf.DynamicInputSystem
 	 */
 	public class DynamicInput : MonoBehaviour
 	{
+		private static OperatingSystem currentOS;
 		/**<summary>Internal for GamepadModeEnabled.</summary>*/
-		private static bool gamepadModeEnabled = false;
+		private static bool gamepadModeEnabled;
 		/**<summary>Button-type controls</summary>*/
 		private static Dictionary<string, DynamicControlButton> buttonControls =
 			new Dictionary<string, DynamicControlButton>();
@@ -23,6 +24,18 @@ namespace TechnoWolf.DynamicInputSystem
 		/**<summary>The current virtual controls.</summary>*/
 		private static Dictionary<string, DynamicControl> specialControls =
 			new Dictionary<string, DynamicControl>();
+
+		public static OperatingSystem CurrentOS
+		{
+			get
+			{
+				return currentOS;
+			}
+			set
+			{
+				currentOS = value;
+			}
+		}
 
 		public static bool GamepadModeEnabled
 		{
@@ -69,7 +82,7 @@ namespace TechnoWolf.DynamicInputSystem
 			{
 				return;
 			}
-			DynamicInputConfiguration.ConfigureInput();
+			Configure();
 		}
 
 		private void Update()
@@ -88,6 +101,26 @@ namespace TechnoWolf.DynamicInputSystem
 			}
 		}
 
+		public static void Configure()
+		{
+			ControllerDPad.Configure();
+			DynamicInputConfiguration.ConfigureInput();
+		}
+
+		public static List<string> GetButtonNames()
+		{
+			return new List<string>(buttonControls.Keys);
+		}
+
+		public static List<string> GetAxisNames()
+		{
+			return new List<string>(axisControls.Keys);
+		}
+
+		public static void SetupButtonControl(string name)
+		{
+			buttonControls[name] = new DynamicControlButton();
+		}
 		/**<summary>Add the specified dynamic control as a standard button,
 		 * replacing any control under the same name that was also added as a 
 		 * standard button.</summary>
@@ -104,6 +137,11 @@ namespace TechnoWolf.DynamicInputSystem
 		public static void SetupAxisControl(string name, DynamicControlAxis control)
 		{
 			axisControls[name] = control;
+		}
+
+		public static void SetupAxisControl(string name)
+		{
+			axisControls[name] = new DynamicControlAxis();
 		}
 
 		/**<summary>Add the specified dynamic control as a special control,
@@ -184,5 +222,54 @@ namespace TechnoWolf.DynamicInputSystem
 			}
 			return null;
 		}
+	}
+
+	public enum OperatingSystem : byte
+	{
+		Auto = 0,
+		Windows,
+		MacOSX,
+		Linux,
+		Other
+	}
+
+	public enum GamepadButton
+	{
+		A,
+		B,
+		X,
+		Y,
+		LeftBumper,
+		RightBumper,
+		Back,
+		Start,
+		LeftStick,
+		RightStick
+	}
+
+	public enum DPadButton
+	{
+		Up,
+		Down,
+		Left,
+		Right
+	}
+
+	public enum GamepadAxis
+	{
+		LeftStickX,
+		LeftStickY,
+		XAxis = LeftStickX,
+		YAxis = LeftStickY,
+		RightStickX,
+		RightStickY,
+		LeftTrigger,
+		RightTrigger
+	}
+
+	public enum DPadAxis
+	{
+		Horizontal,
+		Vertical
 	}
 }

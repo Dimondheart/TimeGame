@@ -7,6 +7,10 @@ namespace TechnoWolf.DynamicInputSystem
 	/**<summary>The basic type of dynamic control for buttons.</summary>*/
 	public class DynamicControlButton : DynamicControl<VirtualButton>
 	{
+		public DynamicControlButton() : base()
+		{
+		}
+
 		public DynamicControlButton(string description, VirtualButton gamepadButton, VirtualButton keyMouseButton, VirtualButton keyMouseButtonAlt) : base(description)
 		{
 			SetGamepadInput(gamepadButton);

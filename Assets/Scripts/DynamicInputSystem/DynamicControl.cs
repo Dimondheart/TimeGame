@@ -7,7 +7,12 @@ namespace TechnoWolf.DynamicInputSystem
 	/**<summary>Base class for for the different variants of dynamic control types.</summary>*/
 	public abstract class DynamicControl
 	{
-		public readonly string description;
+		public string description;
+
+		public DynamicControl()
+		{
+			description = "";
+		}
 
 		public DynamicControl(string description)
 		{
@@ -25,6 +30,10 @@ namespace TechnoWolf.DynamicInputSystem
 		public T gamepadInput { get; private set; }
 		public T keyMouseInput { get; private set; }
 		public T keyMouseAltInput { get; private set; }
+
+		public DynamicControl() : base()
+		{
+		}
 
 		public DynamicControl(string description) : base(description)
 		{

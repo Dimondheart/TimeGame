@@ -10,10 +10,6 @@ namespace TechnoWolf.SystemConfiguration
 	{
 		public static void ConfigureInput()
 		{
-			ControllerDPad.dPadReadMode = ControllerDPad.DPadReadMode.Axis;
-			ControllerDPad.horizontalAxisName = "6th axis (Joysticks)";
-			ControllerDPad.verticalAxisName = "7th axis (Joysticks)";
-
 			DynamicInput.SetupButtonControl(
 				"Toggle Camera View",
 				new DynamicControlButton(
@@ -174,5 +170,26 @@ namespace TechnoWolf.SystemConfiguration
 					)
 				);
 		}
+	}
+
+	public enum DynamicInputButton
+	{
+		CameraViewToggle = 0,
+		CameraRotateEnable,
+		MenuToggle,
+		Action1,
+		Action2,
+		Dash,
+		TimePauseToggle
+	}
+
+	public enum DynamicInputAxis
+	{
+		HorizontalCameraRotate = 0,
+		HorizontalMove,
+		VerticalMove,
+		HorizontalLook,
+		VerticalLook,
+		TimeAxisControl
 	}
 }

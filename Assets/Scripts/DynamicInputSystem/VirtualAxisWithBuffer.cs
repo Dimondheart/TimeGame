@@ -10,11 +10,26 @@ namespace TechnoWolf.DynamicInputSystem
  */
 	public abstract class VirtualAxisWithBuffer : VirtualAxis
 	{
+		/**<summary>Rate at which the smoothed axis value moves towards
+		 * the raw axis value, in units per second.</summary>
+		 */
+		public float smoothRate = 0.1f;
+		/**<summary>Raw axis value.</summary>*/
 		protected float rawAxisValue;
+		/**<summary>Smoothed axis value.</summary>*/
+		protected float axisValue;
 
 		public override void UpdateState()
 		{
-			// Smooth axisValue here
+			float offBy = rawAxisValue - axisValue;
+			if (offBy > 0)
+			{
+				axisValue += Mathf.Clamp(smoothRate * Time.deltaTime, 0.0f, offBy);
+			}
+			else
+			{
+				axisValue += Mathf.Clamp(-smoothRate * Time.deltaTime, offBy, 0.0f);
+			}
 		}
 
 		public override float GetAxisRaw()

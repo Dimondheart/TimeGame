@@ -12,7 +12,7 @@ namespace TechnoWolf.Project1
 		protected override void Awake()
 		{
 			base.Awake();
-			tracker.AddPlayer(this);
+			tracker.AddPlayer(GetComponent<Health>());
 		}
 	}
 }
